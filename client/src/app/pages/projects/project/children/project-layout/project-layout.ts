@@ -4,25 +4,22 @@ import {SvgIconComponent} from '@shared/utils/svg.component';
 import {CommonModule} from '@angular/common';
 
 @Component({
-  selector: 'app-layout',
+  selector: 'app-project-layout',
   imports: [
     RouterOutlet,
-    SvgIconComponent,
     RouterLink,
-    CommonModule,
+    SvgIconComponent,
+    CommonModule
   ],
-  templateUrl: './layout.html',
-  styleUrl: './layout.css',
-  standalone: true
+  templateUrl: './project-layout.html',
+  styleUrl: './project-layout.css'
 })
-export class Layout {
-
+export class ProjectLayout {
   readonly pages = [
-    { label: 'Feed', path: '/feed', icon: 'home' },
-    { label: 'Projects', path: '/projects', icon: 'projects' },
+    { label: 'Back', path: '/projects/my', icon: 'projects' },
+    { label: 'Projects', path: '/projects/search', icon: 'search' },
     { label: 'Marketplace', path: '/marketplace', icon: 'marketplace' },
-    { label: 'News', path: '/news', icon: 'news' },
-    { label: 'Profile', path: '/profile/me', icon: 'profile' }
+    { label: 'More', path: '/more', icon: 'menu' }
   ];
 
   isActive(path: string) {

@@ -3,7 +3,7 @@ import {Block} from '@shared/ui/block/block';
 import {SvgIconComponent} from '@shared/utils/svg.component';
 import {AuthService} from '@core/services/auth.service';
 import {CommonModule, DatePipe} from '@angular/common';
-import {Profile as ProfileType} from "@core/eviroments/config.constants"
+import {ProfileType} from './data/profile.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProfileService as ProfileService} from './data/profile.service';
 
