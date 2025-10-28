@@ -1,0 +1,107 @@
+import { model, Schema, Types } from "mongoose";
+
+const departmentsList = ['Maschinenbau', 'Wirtschaftsingenieure', 'Informatik', 'Elektrotechnik', "Elektronik und Technische Informatik"]
+
+const rolesList = [
+  "student",
+  "teacher",
+  "dep president",
+  "school president",
+  "director",
+  "admin",
+]
+
+
+export interface IUser {
+  _id: Types.ObjectId;
+  first_name?: string | null;
+  last_name?: string | null;
+  description?: string | null;
+  department?: typeof departmentsList | null;
+  class?: string | null;
+  photo_path?: string | null;
+  role?: typeof rolesList | null;
+  github_link?: string | null;
+  linkedin_link?: string | null;
+  banner_link?: string | null;
+  created_at?: Date;
+  pc_number: number;
+}
+
+export const userSchema = new Schema<IUser>(
+  {
+    first_name: {
+      type: String,
+      minlength: 3,
+      maxlength: 20,
+      required: false,
+      default: null,
+    },
+    last_name: {
+      type: String,
+      minlength: 3,
+      maxlength: 20,
+      required: false,
+      default: null,
+    },
+    description: {
+      type: String,
+      maxlength: 300,
+      required: false,
+      default: null,
+    },
+    department: {
+      type: String,
+      enum: departmentsList,
+      required: false,
+      default: null,
+    },
+    class: {
+      type: String,
+      required: false,
+      default: null,
+      match: /^[1-5][A-Z]{1}[A-Z]{2,4}$/i,
+    },
+    photo_path: {
+      type: String,
+      maxlength: 100,
+      required: false,
+      default: null,
+    },
+    role: {
+      type: String,
+      enum: rolesList,
+      required: false,
+      default: "student",
+    },
+    github_link: {
+      type: String,
+      maxlength: 100,
+      required: false,
+      default: null,
+    },
+    linkedin_link: {
+      type: String,
+      maxlength: 100,
+      required: false,
+      default: null,
+    },
+    banner_link: {
+      type: String,
+      maxlength: 100,
+      required: false,
+      default: null,
+    },
+    created_at: {
+      type: Date,
+      default: Date.now,
+    },
+	pc_number: {
+		type: Number,
+		required: true
+	}
+  },
+  { versionKey: false }
+);
+
+export const User = model<IUser>("User", userSchema);

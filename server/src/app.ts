@@ -31,8 +31,13 @@ app.use(
 app.use(express.json());
 
 // ROUTES
-import router from "./modules/skills/skills.routes";
-app.use('/skills', router)
+import skills from "./modules/skills/skills.routes";
+import users from "./modules/users/users.routes";
+import login from "./modules/users/users.auth.routes"
+
+app.use('/', login)
+app.use('/skills', skills)
+app.use('/users', users)
 
 
 // Additional handlers
