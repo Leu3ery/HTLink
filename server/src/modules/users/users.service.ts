@@ -11,10 +11,12 @@ class UsersService {
 
 	static async login(dto: LoginDTO) {
 		if (!await this.isUserValid(dto)) throw new ErrorWithStatus(400, "Login or password is false")
-		const user = new User()
-		user.pc_number = dto.login
-		await user.save()
-		return jwt.sign({ userId: user._id }, config.JWT_SECRET, { expiresIn: '14d' })
+		const user = await User.findOne({ pc_number: dto.login })
+		if (user) return jwt.sign({ userId: user._id }, config.JWT_SECRET, { expiresIn: '14d' })
+		const newuser = new User()
+		newuser.pc_number = dto.login
+		await newuser.save()
+		return jwt.sign({ userId: newuser._id }, config.JWT_SECRET, { expiresIn: '14d' })
 	}
 }
 

@@ -7,7 +7,7 @@ class UsersController {
 	static async login(req: Request, res: Response, next: NextFunction) {
 		const dto = validationWrapper(LoginSchema, req.body || {})
 		const token = await UsersService.login(dto)
-		res.json({token: token}).status(200)
+		res.status(200).json({token: token})
 	}
 }
 

@@ -1,17 +1,17 @@
 import { Skill } from "../modules/skills/skills.model"
 
-class setSkills {
+class SetSkills {
 	static skills = ["Express Js", "Angular", "Python"]
 
 	constructor(skills: string[] = []) {
 		if (skills.length > 1) {
-			setSkills.skills = skills
+			SetSkills.skills = skills
 		}
 	}
 
 	async isAlreadySet() {
 		const skillsCount = await Skill.countDocuments()
-		return skillsCount == setSkills.skills.length
+		return skillsCount == SetSkills.skills.length
 	}
 
 	async set() {
@@ -20,7 +20,7 @@ class setSkills {
 			return
 		}
 		await Skill.deleteMany({})
-		await Skill.bulkWrite(setSkills.skills.map(skill => ({
+		await Skill.bulkWrite(SetSkills.skills.map(skill => ({
 			insertOne: {
 				document: {
 					name: skill
@@ -31,4 +31,4 @@ class setSkills {
 	}
 }
 
-export default setSkills
+export default SetSkills
