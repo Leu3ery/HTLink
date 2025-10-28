@@ -18,7 +18,7 @@ import {CommonModule} from '@angular/common';
 export class Layout {
 
   readonly pages = [
-    { label: 'My Projects', path: '/projects/my', icon: 'projects' },
+    { label: 'Feed', path: '/feed', icon: 'home' },
     { label: 'Projects', path: '/projects/search', icon: 'search' },
     { label: 'Marketplace', path: '/marketplace', icon: 'marketplace' },
     { label: 'More', path: '/more', icon: 'menu' }

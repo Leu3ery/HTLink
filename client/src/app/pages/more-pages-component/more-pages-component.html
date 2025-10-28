@@ -1,1 +1,11 @@
-<p>more-pages-component works!</p>
+@for (block of blocks; track block) {
+  <app-block>
+  @for (page of block; track page) {
+  <div class="item" [routerLink]="page.path">
+    <svg [icon]="page.icon"></svg>{{page.label}}
+
+    <svg style="position: absolute; right: 0; color: var(--contrast-color)" icon="arrowRight"></svg>
+  </div>
+  }
+  </app-block>
+}

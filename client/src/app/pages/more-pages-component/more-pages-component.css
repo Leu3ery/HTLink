@@ -1,0 +1,74 @@
+:host {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  gap: 1rem;
+
+  padding: 0 1rem;
+}
+
+.item {
+  position: relative;
+  height: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+
+  font-size: 1rem;
+
+  svg {
+    height: 80%;
+    aspect-ratio: 1/1;
+  }
+}
+app-block {
+  width: 100%;
+  height: auto;
+  padding: .5rem 1.5rem;
+
+  .item:not(:last-child)::after {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    content: '';
+    width: calc(100% - 2rem);
+    height: 1px;
+    background-color: var(--border-color);
+
+    transform: translateY(10px);
+  }
+}
+
+
+.item:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.header {
+  height: 4rem;
+}
+
+.profile-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 1px solid var(--contrast-color);
+
+  svg {
+    height: 60%;
+    aspect-ratio: 1/1;
+
+    color: var(--contrast-color);
+  }
+}
