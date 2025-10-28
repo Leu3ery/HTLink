@@ -1,6 +1,6 @@
 import { Skill } from "./skills.model";
 
-class skillService {
+class SkillService {
 	static async getSkills() {
 		const skills = await Skill.find()
 		return skills.map(skill => ({
@@ -10,4 +10,4 @@ class skillService {
 	}
 }
 
-export default skillService
+export default SkillService

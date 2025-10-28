@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { ErrorWrapper } from "../../common/utils/utils.wrappers";
-import SkillController from "./skills.controller";
+import UsersController from "./users.controller";
 
 const router = Router()
 
-router.get('/', ErrorWrapper(SkillController.getSkills))
+router.post('/login', ErrorWrapper(UsersController.login))
 
 export default router
