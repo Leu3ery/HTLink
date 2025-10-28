@@ -31,6 +31,8 @@ app.use(
 app.use(express.json());
 
 // ROUTES
+import router from "./modules/skills/skills.routes";
+app.use('/skills', router)
 
 
 // Additional handlers
