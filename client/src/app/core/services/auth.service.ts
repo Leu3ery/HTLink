@@ -1,12 +1,12 @@
 import {Injectable, signal, WritableSignal} from '@angular/core';
-import {Profile} from '@core/eviroments/config.constants';
+import {ProfileType} from '@app/pages/profile/data/profile.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   token: WritableSignal<string | null> = signal(null);
-  private me$ = signal< Profile | null>(null);
+  private me$ = signal< ProfileType | null>(null);
 
 
   constructor() {
@@ -14,7 +14,7 @@ export class AuthService {
   }
 
 
-  async getMe(): Promise<void> {
+  private async getMe(): Promise<void> {
     this.me$.set({
       id: '123456',
       name: 'Maksym Rvachov',
@@ -44,7 +44,7 @@ export class AuthService {
   }
 
 
-  get me(): Profile | null {
+  get me(): ProfileType | null {
     return this.me$();
   }
   logout(): void {

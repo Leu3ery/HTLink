@@ -34,12 +34,12 @@
   height: 8.5vh;
   width: 100%;
   background-color: var(--primary-color);
-  border-bottom: 1px solid color-mix(in srgb, var(--main-color), white 20%);
+  border-bottom: 1px solid var(--main-color);
   opacity: 90%;
   z-index: 2;
 }
 .content {
-  padding-top: 8.5vh;
+  padding-top: 2vh;
   height: 100%;
   width: 100%;
 

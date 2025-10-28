@@ -13,9 +13,9 @@ client/.editorconfig
 .DS_Store
 
 # Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
+/client/node_modules/
+/client/package-lock.json
+/client/yarn.lock
 
 # Environment files
 /.env

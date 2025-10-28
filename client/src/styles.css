@@ -12,7 +12,8 @@ svg {
   --primary-color: white;
   --contrast-color: black;
 
-  --main-color: green;
+  --main-color: #9CCE2B;
+  --main-color-light: color-mix(in srgb, var(--main-color), white 80%);
   --gray-color: rgba(97, 116, 142);
   --hover-gray-color: rgba(50, 65, 88);
 
@@ -73,6 +74,7 @@ svg * {
   line-height: 1.5rem;
   background: transparent;
   color: var(--gray-color);
+  font-size: .8rem;
 
   transition: all 0.3s ease;
 
@@ -127,18 +129,67 @@ svg * {
 }
 
 
+.btn.secondary {
+  background-color: var(--primary-color);
+  color: var(--contrast-color);
+  font-weight: 800;
+  border-radius: 2rem;
+  border: 1px solid var(--gray-color);
+  justify-content: center;
+
+  svg {
+    color: var(--contrast-color);
+  }
+
+  &:hover {
+    background-color: var(--main-color-light);
+    color: var(--contrast-color);
+
+    svg {
+      color: var(--contrast-color);
+    }
+  }
+}
+.btn.main {
+  background-color: var(--main-color);
+  color: var(--bg-color);
+  font-weight: 800;
+  border-radius: 2rem;
+  justify-content: center;
+  gap: 0.5rem;
+
+
+  svg {
+    height: 1rem;
+    color: var(--bg-color);
+  }
+
+  &:hover {
+    svg {
+      color: var(--contrast-color);
+    }
+  }
+}
+
 .tag {
   padding: 0.2rem 0.5rem;
   border-radius: 1rem;
   background-color: color-mix(in srgb, var(--contrast-color), white 80%);
   color: var(--contrast-color);
   font-size: 0.8rem;
+
+
   &.class {
-    background-color: color-mix(in srgb, var(--main-color), white 80%);
+    background-color: var(--main-color-light);
     color: var(--main-color);
+    text-shadow: 1px 1px 1px var(--contrast-color);
+
   }
 }
 
+h1,h2,h3,h4,h5,h6 {
+  color: var(--hover-gray-color);
+}
 /** {*/
 /*  outline: 1px solid red;*/
 /*}*/

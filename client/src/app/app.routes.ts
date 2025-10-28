@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
-import {Layout} from '@app/features/layout/layout';
-import {Profile} from '@app/features/profile/profile';
-import {Projects} from '@app/features/projects/projects';
+import {Layout} from '@app/pages/main/layout/layout';
+import {SearchProjects} from '@app/pages/projects/search-projects/search-projects';
+import {MyProjects} from '@app/pages/projects/my-projects/my-projects';
+import {MorePagesComponent} from '@app/pages/more-pages-component/more-pages-component';
+import {Marketplace} from '@app/pages/marketplace/marketplace';
+import ProjectRoutes from '@app/pages/projects/project/project.routes';
 
 export const routes: Routes = [
   {
@@ -10,12 +13,31 @@ export const routes: Routes = [
     children: [
       {
         path: "projects",
-        component: Projects
+        children: [
+          {
+            path: "my",
+            component: MyProjects,
+            pathMatch: 'full'
+          },
+          {
+            path: "search",
+            component: SearchProjects,
+            pathMatch: 'full'
+          }
+        ]
       },
       {
-        path: "profile/:id",
-        component: Profile
+        path: "marketplace",
+        component: Marketplace,
+      },
+      {
+        path: "more",
+        component: MorePagesComponent
       }
-    ]
-  }
+    ],
+  },
+  {
+    path: 'projects/:id',
+    children: ProjectRoutes
+  },
 ];
