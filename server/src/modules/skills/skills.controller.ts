@@ -4,7 +4,7 @@ import SkillService from "./skills.service";
 class SkillController {
 	static async getSkills(req: Request, res: Response, next: NextFunction) {
 		const skills = await SkillService.getSkills()
-		res.json(skills).status(200)
+		res.status(200).json(skills)
 	}
 }
 

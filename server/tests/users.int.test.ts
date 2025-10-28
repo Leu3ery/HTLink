@@ -40,5 +40,22 @@ describe("POST /login", () => {
 		const user = await User.findOne({ pc_number: 20220467 });
 		expect(user).toBeTruthy()
 		if (user) expect((jwt.verify(res.body.token, config.JWT_SECRET) as {userId: string}).userId).toBe(user._id.toString())
-	})
+	});
+
+
+
+	it("should return JWT for existing user", async () => {
+		const res = await request(app)
+			.post('/login')
+			.send({
+				login: 20220467,
+				password: "1234"
+			})
+			.expect(200)
+		
+		expect(typeof res.body.token).toBe("string");
+		const user = await User.findOne({ pc_number: 20220467 });
+		expect(user).toBeTruthy()
+		if (user) expect((jwt.verify(res.body.token, config.JWT_SECRET) as {userId: string}).userId).toBe(user._id.toString())
+	});	
 })

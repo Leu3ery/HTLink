@@ -98,6 +98,7 @@ export const userSchema = new Schema<IUser>(
     },
 	pc_number: {
 		type: Number,
+    unique: true,
 		required: true
 	}
   },
