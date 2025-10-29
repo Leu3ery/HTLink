@@ -1,15 +1,18 @@
 import { model, Schema, Types } from "mongoose";
 
-const departmentsList = ['Maschinenbau', 'Wirtschaftsingenieure', 'Informatik', 'Elektrotechnik', "Elektronik und Technische Informatik"]
+export const departmentsList = ['IF', 'WI', 'MB', 'EL', "ETI"] as const
+export type Department = (typeof departmentsList)[number]
 
-const rolesList = [
+
+export const rolesList = [
   "student",
   "teacher",
   "dep president",
   "school president",
   "director",
   "admin",
-]
+] as const
+export type Role = (typeof rolesList)[number]
 
 
 export interface IUser {
@@ -17,10 +20,10 @@ export interface IUser {
   first_name?: string | null;
   last_name?: string | null;
   description?: string | null;
-  department?: typeof departmentsList | null;
+  department?: Department | null;
   class?: string | null;
   photo_path?: string | null;
-  role?: typeof rolesList | null;
+  role?: Role | null;
   github_link?: string | null;
   linkedin_link?: string | null;
   banner_link?: string | null;
