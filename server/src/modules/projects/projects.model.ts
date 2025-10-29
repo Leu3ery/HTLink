@@ -17,18 +17,7 @@ export interface IProject {
 
 
 // TODO separate in new table and add import script
-export enum ProjectCategory {
-    WEB = "Web development",
-    MOBILE = "Mobile development",
-    DESIGN = "Design",
-    FULLSTACK = "Fullstack",
-    AI = "AI",
-    GAME = "Game development",
-    DATA = "Data science",
-    TUTORING = "Tutoring",
-    ELECTRONICS = "Electronics",
-    OTHER = "Other",
-}
+
 
 export enum ProjectStatus {
     PLANNED = "Planned",

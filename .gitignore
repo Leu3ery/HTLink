@@ -49,3 +49,4 @@ yarn-error.log*
 /server/.DS_Store
 
 /server/public/
+/server/tests/fixtures/

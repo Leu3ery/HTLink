@@ -3,7 +3,9 @@ import { model, Schema, Types } from "mongoose"
 export interface IImage {
     _id: Types.ObjectId,
     image_path: string,
-    projectId: Types.ObjectId
+    projectId: Types.ObjectId,
+    createdAt: Date,
+    updatedAt: Date
 }
 
 export const imageSchema = new Schema<IImage>({
@@ -15,6 +17,9 @@ export const imageSchema = new Schema<IImage>({
         type: Schema.Types.ObjectId,
         ref: 'Project',
         required: true
-    }})
+    }}
+, {
+    timestamps: true
+})
 
 export const Image = model<IImage>("Image", imageSchema)
