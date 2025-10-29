@@ -7,6 +7,7 @@ import { config } from "../src/config/config";
 import { User } from "../src/modules/users/users.model";
 import UsersService from "../src/modules/users/users.service";
 import setSkills from "../src/scripts/setSkills";
+import { beforeAll, afterAll, it, expect, describe, jest, afterEach, beforeEach } from "@jest/globals";
 
 let mongo: MongoMemoryServer;
 let token: string;
