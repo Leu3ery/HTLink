@@ -4,6 +4,7 @@ import app from "../src/app"
 import mongoose from "mongoose";
 import { Skill } from "../src/modules/skills/skills.model";
 import setSkills from "../src/scripts/setSkills";
+import { beforeAll, afterAll, it, expect, describe } from "@jest/globals";
 
 let mongo: MongoMemoryServer;
 
