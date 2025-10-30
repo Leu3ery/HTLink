@@ -5,7 +5,12 @@ import { ErrorWithStatus } from "../../../common/middlewares/errorHandlerMiddlew
 import { FullProjectDto } from "../dto/full.project.dto";
 import { ProjectDocument } from "../projects.model";
 
-export const toObjectId = (id: string) => new mongoose.Types.ObjectId(id);
+export const toObjectId = (id: string) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new ErrorWithStatus(400, `Invalid id: ${id}`);
+    }
+    return new mongoose.Types.ObjectId(id);
+};
 
 export const parseIdArray = (input: string[] | string): string[] => {
     if (Array.isArray(input)) return input;

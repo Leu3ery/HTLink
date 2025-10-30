@@ -7,7 +7,7 @@ import request from "supertest";
 import { makeCreateProjectPayload } from "./fixtures/projects";
 import { beforeAll, afterAll, it, expect, describe } from "@jest/globals";
 import path from "path";
-import { ProjectStatus } from "../src/modules/projects/projects.model";
+import { Project, ProjectStatus } from "../src/modules/projects/projects.model";
 import { Category } from "../src/modules/categories/category.model";
 import { Skill } from "../src/modules/skills/skills.model";
 import { fail } from "assert";
@@ -93,5 +93,98 @@ describe("Create new project", () => {
         expect(res.body.project.images[1]).toHaveProperty("projectId");
         expect(res.body.project.images[1]).toHaveProperty("createdAt");
         expect(res.body.project.images[1]).toHaveProperty("updatedAt");
+
+        
       })
-})
+      it("should return 409 if the project already exists", async () => {
+        
+        
+        const base = makeCreateProjectPayload();
+        const existingData = await Project.findOne({ title: base.title });
+        if (!existingData) {
+            const category = await Category.findOne({ name: base.category });
+            const skills = await Skill.find({ name: { $in: base.skills } });
+            const skillIds = skills.map(s => s._id.toString());
+
+            const { category: _, skills: __, ...baseWithoutCategoryAndSkills } = base;
+            const payload = {
+                ...baseWithoutCategoryAndSkills,
+                categoryId: category?._id.toString() || '',
+                skills: skillIds.join(','),
+            };
+
+            const res = await request(app)
+            .post("/projects")
+            .field("data", JSON.stringify(payload))
+            .attach("image", path.join(__dirname, "fixtures/test.jpg"))
+            .attach("image", path.join(__dirname, "fixtures/test.jpg"));
+        }
+        const category = await Category.findOne({ name: base.category });
+        const skills = await Skill.find({ name: { $in: base.skills } });
+        const skillIds = skills.map(s => s._id.toString());
+
+        const { category: _, skills: __, ...baseWithoutCategoryAndSkills } = base;
+        const payload = {
+            ...baseWithoutCategoryAndSkills,
+            categoryId: category?._id.toString() || '',
+            skills: skillIds.join(','),
+        };
+
+        const res = await request(app)
+            .post("/projects")
+            .field("data", JSON.stringify(payload))
+            .attach("image", path.join(__dirname, "fixtures/test.jpg"))
+            .attach("image", path.join(__dirname, "fixtures/test.jpg"));
+
+        expect(res.status).toBe(409);
+      })
+
+      it("should return 400 if the payload is invalid", async () => {
+        const base = makeCreateProjectPayload();
+        const title = "different title";
+
+        const category = "some category";
+        const skills = await Skill.find({ name: { $in: base.skills } });
+        const skillIds = skills.map(s => s._id.toString());
+
+        const { category: _, skills: __, title: ___, ...baseWithoutCategoryAndSkills } = base;
+        const payload = {
+            ...baseWithoutCategoryAndSkills,
+            categoryId: category,
+            title: title,
+            skills: skillIds.join(',') || '',
+        };
+
+        const res = await request(app)
+            .post("/projects")
+            .field("data", JSON.stringify(payload))
+            .attach("image", path.join(__dirname, "fixtures/test.jpg"))
+            .attach("image", path.join(__dirname, "fixtures/test.jpg"));
+
+        expect(res.status).toBe(400);
+
+        const base2 = makeCreateProjectPayload();
+
+        const category2 = await Category.findOne({ name: base2.category });
+        const deadline = "not a date";
+
+
+
+        const { category: _2, skills: __2, title: ___2, deadline: _____2, ...baseWithoutCategoryAndSkillsAndDeadlineAndTitle } = base2;
+        const payload2 = {
+            ...baseWithoutCategoryAndSkillsAndDeadlineAndTitle,
+            categoryId: category2?._id.toString() || '',
+            deadline: deadline,
+            skills: skillIds.join(',') || '',
+        };
+
+        const res2 = await request(app)
+            .post("/projects")
+            .field("data", JSON.stringify(payload2))
+            .attach("image", path.join(__dirname, "fixtures/test.jpg"))
+            .attach("image", path.join(__dirname, "fixtures/test.jpg"));
+
+        expect(res2.status).toBe(400);
+      })
+      
+    })

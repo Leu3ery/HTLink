@@ -30,6 +30,7 @@ export const projectSchema = new Schema<IProject>({
     title: {
         type: String,
         required: true,
+        unique: true,
         trim: true,
         maxlength: 30
     },

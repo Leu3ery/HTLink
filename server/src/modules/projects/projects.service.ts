@@ -23,17 +23,28 @@ export default class ProjectsService {
         const skillIdsInput = parseIdArray(project.skills as unknown as string[] | string);
         const skillObjectIds = await fetchSkillsOrFail(skillIdsInput);
 
-        const newProject = await Project.create({
-            _id: projectId,
-            title: project.title,
-            categoryId: categoryObjectId.toString(),
-            shortDescription: project.shortDescription,
-            fullReadme: project.fullReadme ?? '',
-            deadline: new Date(project.deadline).toISOString(),
-            ownerId: ownerId.toString(),
-            status: ProjectStatus.PLANNED,
-            skills: skillObjectIds.map(id => id.toString()),
-        });
+        let newProject;
+        try {
+            newProject = await Project.create({
+                _id: projectId,
+                title: project.title,
+                categoryId: categoryObjectId.toString(),
+                shortDescription: project.shortDescription,
+                fullReadme: project.fullReadme ?? '',
+                deadline: new Date(project.deadline).toISOString(),
+                ownerId: ownerId.toString(),
+                status: ProjectStatus.PLANNED,
+                skills: skillObjectIds.map(id => id.toString()),
+            });
+        } catch (err: unknown) {
+            const maybeMongoErr = err as { code?: number; keyValue?: Record<string, unknown> };
+            if (maybeMongoErr && maybeMongoErr.code === 11000) {
+                const duplicateField = Object.keys(maybeMongoErr.keyValue || {})[0] || 'field';
+                const duplicateValue = maybeMongoErr.keyValue?.[duplicateField];
+                throw new ErrorWithStatus(409, `Project with ${duplicateField} "${duplicateValue}" already exists`);
+            }
+            throw err as Error;
+        }
 
         const images = await Promise.all(
             (files || []).map(file => Image.create({
