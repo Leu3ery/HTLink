@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import skillService from "./skills.service";
+import SkillService from "./skills.service";
 
-class skillController {
+class SkillController {
 	static async getSkills(req: Request, res: Response, next: NextFunction) {
-		const skills = await skillService.getSkills()
-		res.json(skills).status(200)
+		const skills = await SkillService.getSkills()
+		res.status(200).json(skills)
 	}
 }
 
-export default skillController
+export default SkillController

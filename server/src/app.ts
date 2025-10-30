@@ -33,8 +33,7 @@ app.use(express.json());
 // ROUTES
 import router from "./modules/skills/skills.routes";
 app.use('/skills', router)
-import projectsRouter from "./modules/projects/projects.router";
-app.use('/projects', projectsRouter)
+
 
 // Additional handlers
 import errorHandler from './common/middlewares/errorHandlerMiddleware'
