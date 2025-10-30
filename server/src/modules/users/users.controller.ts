@@ -14,7 +14,8 @@ class UsersController {
 
 	static async updateMe(req: Request, res: Response, next: NextFunction) {
 		const userId = res.locals.user.userId
-		const dto = validationWrapper(UpdateMeSchema, req.body || {})
+		const body = req.file ? {...req.body, photo_path: req.file.filename} : (req.body || {})
+		const dto = validationWrapper(UpdateMeSchema, body)
 		const user = await UsersService.updateMe(userId, dto)
 		res.status(200).json({user: user})
 	}

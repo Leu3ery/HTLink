@@ -1,28 +1,12 @@
 import { ErrorWithStatus } from "../../common/middlewares/errorHandlerMiddleware";
 import { GetUsersDTO, LoginDTO, UpdateMeDTO } from "./users.dto";
 import jwt from 'jsonwebtoken'
-import { IUser, User } from "./users.model";
+import { User } from "./users.model";
 import { config } from "../../config/config";
+import UserMapper from "./users.mapper";
+import deleteFile from "../../common/utils/utils.deleteFile";
 
 class UsersService {
-	static toPublicUser(user: IUser) {
-		return {
-			id: user._id.toString(),
-			first_name: user.first_name ?? null,
-			last_name: user.last_name ?? null,
-			description: user.description ?? null,
-			department: user.department ?? null,
-			class: user.class ?? null,
-			photo_path: user.photo_path ?? null,
-			role: user.role ?? null,
-			github_link: user.github_link ?? null,
-			linkedin_link: user.linkedin_link ?? null,
-			banner_link: user.banner_link ?? null,
-			created_at: user.created_at,
-			pc_number: user.pc_number,
-		}
-	}
-
 	static async isUserValid(dto: LoginDTO) {
 		return true
 	}
@@ -40,15 +24,18 @@ class UsersService {
 	static async updateMe(userId: string, dto: UpdateMeDTO) {
 		const user = await User.findById(userId)
 		if (!user) throw new ErrorWithStatus(404, "User not found")
+		if (dto.photo_path && user.photo_path) {
+			await deleteFile(user.photo_path)
+		}
 		user.set(dto)
 		await user.save()
-		return this.toPublicUser(user)
+		return UserMapper.toPublicUser(user)
 	}
 
 	static async getUser(userId: string) {
 		const user = await User.findById(userId)
 		if (!user) throw new ErrorWithStatus(404, "User not found")
-		return this.toPublicUser(user)
+		return UserMapper.toPublicUser(user)
 	}
 
 	static async getUsers(dto: GetUsersDTO) {
@@ -65,7 +52,7 @@ class UsersService {
 			]
 		}
 		const users = await User.find(query).skip(dto.offset).limit(dto.limit)	
-		return users.map(user => this.toPublicUser(user))
+		return users.map(user => UserMapper.toPublicUser(user))
 	}
 }
 

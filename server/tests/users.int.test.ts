@@ -1,13 +1,16 @@
 import request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import app from "../src/app";
+import app, { publicDir } from "../src/app";
 import jwt from "jsonwebtoken";
 import { config } from "../src/config/config";
 import { User } from "../src/modules/users/users.model";
 import UsersService from "../src/modules/users/users.service";
 import setSkills from "../src/scripts/setSkills";
 import { beforeAll, afterAll, it, expect, describe, jest, afterEach, beforeEach } from "@jest/globals";
+import deleteFile from "../src/common/utils/utils.deleteFile";
+import isPhotoExist from "../src/common/utils/utils.isPhotoExist";
+import path from "path";
 
 let mongo: MongoMemoryServer;
 let token: string;
@@ -20,6 +23,7 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 
   jest.spyOn(UsersService, "isUserValid").mockResolvedValue(true);
+
   await new setSkills(["Express Js", "Angular", "Python"]).set();
 });
 
@@ -92,6 +96,30 @@ describe("PATCH /users/me", () => {
 	it("PATCH /users/me → 401 without token", async () => {
 		await request(app).patch("/users/me").send({ first_name: "X" }).expect(401);
 	});
+
+	it("should upload photo and delete it if new uploaded", async () => {
+		const res = await request(app)
+			.patch('/users/me')
+			.attach('photo', path.resolve(__dirname, 'public/test.png'))
+			.set('Authorization', `Bearer ${token}`)
+			.expect(200)
+		
+		expect(isPhotoExist(res.body.user.photo_path)).toBe(true)
+
+		const photoPath = res.body.user.photo_path
+
+		const res2 = await request(app)
+			.patch('/users/me')
+			.attach('photo', path.resolve(__dirname, 'public/test_copy.png'))
+			.set('Authorization', `Bearer ${token}`)
+			.expect(200)
+
+		expect(isPhotoExist(res2.body.user.photo_path)).toBe(true)
+		expect(isPhotoExist(photoPath)).toBe(false)
+
+		await deleteFile(res2.body.user.photo_path)
+		expect(isPhotoExist(res2.body.user.photo_path)).toBe(false)
+	})
 
 	it("should return error", async () => {
 		await request(app)
@@ -243,4 +271,3 @@ describe("GET /users/", () => {
 		expect(secondPage.body.users[0].id).not.toBe(firstPage.body.users[0].id)
 	})
 })
-
