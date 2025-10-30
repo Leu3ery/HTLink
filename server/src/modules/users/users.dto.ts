@@ -20,7 +20,8 @@ export interface UpdateMeDTO {
 	photo_path?: string,
 	github_link?: string,
 	linkedin_link?: string,
-	banner_link?: string
+	banner_link?: string,
+	skills?: string[]
 }
 
 export const UpdateMeSchema = Joi.object<UpdateMeDTO>({
@@ -32,7 +33,8 @@ export const UpdateMeSchema = Joi.object<UpdateMeDTO>({
 	photo_path: Joi.string().max(100).optional(),
 	github_link: Joi.string().max(100).optional(),
 	linkedin_link: Joi.string().max(100).optional(),
-	banner_link: Joi.string().max(100).optional()
+	banner_link: Joi.string().max(100).optional(),
+	skills: Joi.array().items(Joi.string()).optional()
 }).min(1).required()
 
 

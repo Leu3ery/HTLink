@@ -1,4 +1,5 @@
 import { model, Schema, Types } from "mongoose";
+import { ISkill } from "../skills/skills.model";
 
 export const departmentsList = ['IF', 'WI', 'MB', 'EL', "ETI"] as const
 export type Department = (typeof departmentsList)[number]
@@ -29,6 +30,7 @@ export interface IUser {
   banner_link?: string | null;
   created_at?: Date;
   pc_number: number;
+  skills?: Types.ObjectId[]
 }
 
 export const userSchema = new Schema<IUser>(
@@ -99,11 +101,16 @@ export const userSchema = new Schema<IUser>(
       type: Date,
       default: Date.now,
     },
-	pc_number: {
-		type: Number,
-    unique: true,
-		required: true
-	}
+    pc_number: {
+      type: Number,
+      unique: true,
+      required: true
+    },
+    skills: {
+      type: [Schema.Types.ObjectId],
+      ref: "Skill",
+      default: [],
+    }
   },
   { versionKey: false }
 );

@@ -16,6 +16,7 @@ class UserMapper {
 			banner_link: user.banner_link ?? null,
 			created_at: user.created_at,
 			pc_number: user.pc_number,
+			skills: user.skills?.map((skill: any) => ({id: skill._id.toString(), name: skill.name})) ?? []
 		}
     }
 }
