@@ -1,0 +1,28 @@
+@if (data) {
+  <div class="item" style="grid-area: a; display: flex; gap: 10px; height: 30vh">
+    <app-image-gallery [images]="data.images"></app-image-gallery>
+  </div>
+
+  <div class="header">
+    <div class="action-buttons">
+      <div class="btn like"><svg icon="heart"></svg></div>
+      <div class="btn save"><svg icon="star"></svg></div>
+    </div>
+    <div class="members">
+      <div class="avatar"></div>
+      <div class="avatar"></div>
+      <div class="avatar"></div>
+      <div class="avatar"></div>
+    </div>
+  </div>
+
+  <div class="info">
+    <h2>{{data.title}}</h2>
+    <h4>{{data.description}}</h4>
+  </div>
+  <div class="links">
+
+  </div>
+  <div class="description">{{data.text}}</div>
+}
+

@@ -1,6 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 
+html, body {
+  touch-action: pan-x pan-y; /* отключает gestures кроме прокрутки */
+  overscroll-behavior: none;
+}
+
 svg {
   height: 100%;
   aspect-ratio: 1 / 1;
@@ -13,7 +18,10 @@ svg {
   --contrast-color: black;
 
   --main-color: #9CCE2B;
-  --main-color-light: color-mix(in srgb, var(--main-color), white 80%);
+  --main-color-light:
+  radial-gradient(circle, var(--main-color) 1px, transparent 8px)
+  0 0 / 4px 4px
+  var(--bg-color);
   --gray-color: rgba(97, 116, 142);
   --hover-gray-color: rgba(50, 65, 88);
 
@@ -171,7 +179,39 @@ svg * {
   }
 }
 
+.input-holder {
+  position: relative;
+  display: flex;
+
+  outline: 1px solid var(--border-color);
+  border-radius: 2rem;
+
+  label {
+    position: absolute;
+    top: 0rem;
+    left: 1rem;
+    padding: 0 0.2rem;
+    font-size: 0.8rem;
+    color: var(--gray-color);
+    transform: translateY(-50%);
+    background-color: var(--primary-color);
+  }
+
+  input {
+    flex: 1;
+    padding: 0.5rem;
+    outline: none;
+
+    border-radius: 2rem;
+  }
+}
+
+
 .tag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   padding: 0.2rem 0.5rem;
   border-radius: 1rem;
   background-color: color-mix(in srgb, var(--contrast-color), white 80%);

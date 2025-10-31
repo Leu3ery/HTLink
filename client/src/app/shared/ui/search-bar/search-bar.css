@@ -1,0 +1,11 @@
+app-block {
+  display: flex;
+  flex-direction: row;
+
+  .input-holder {
+    width: 70%;
+  }
+  .btn {
+    width: 30%;
+  }
+}

@@ -5,11 +5,12 @@
     <div class="banner"></div>
     <div class="action-btns"></div>
     <div class="avatar"><img [src]="data.avatarUrl" alt=""></div>
+    <div class="btn edit" *ngIf="isMy"><svg icon="pen"></svg></div>
   </div>
   <div class="body">
     <div class="name"><p style="font-size: 18px">{{data.name}}</p></div>
     <div class="tags">
-      <div class="tag class">{{data.class}}</div>
+      <app-tag>{{data.class}}</app-tag>
       <div class="tag departement">{{data.department}}</div>
     </div>
     <div class="blocks">
@@ -44,12 +45,8 @@
     <div class="body">
       <div class="tags-holder">
         @for (skill of data.skills; track skill) {
-        <div class="tag">#{{skill}}</div>
+        <app-tag>{{skill.name}}</app-tag>
         }
-      </div>
-      <div class="btn add" *ngIf="isMy">
-        <svg icon="plus" />
-        <p class="label">Add Skill</p>
       </div>
     </div>
 </app-block>
@@ -63,27 +60,7 @@
   <div class="body">
     <div class="projects-holder">
       @for (project of data.projects; track project.id) {
-      <div class="project">
-        <div class="img">
-          <img [src]="project.imageUrl" alt="">
-        </div>
-        <div class="info">
-          <div class="title">
-            {{project.title}}
-          </div>
-          <div class="description">
-             {{project.description}}
-          </div>
-          <div class="tags-holder">
-            @for (tag of project.tags; track tag) {
-            <div class="tag">#{{tag}}</div>
-            }
-          </div>
-          <div class="likes">
-            <svg icon="heart" /> {{project.likes}}
-          </div>
-        </div>
-      </div>
+      <app-project-preview [data]="project"></app-project-preview>
       }
     </div>
   </div>

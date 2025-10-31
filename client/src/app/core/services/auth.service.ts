@@ -28,16 +28,46 @@ export class AuthService {
       numberOfProjects: 42,
       numberOfFollowers: 666,
       numberOfFollowing: 999,
-      skills: ['angular', 'typeScript', 'node.js'],
+      skills: [{id:"1", name:'angular'},{id:"2", name:'angular'}],
       projects: [{
         id: 'proj1',
-        imageUrl: "https://angular.io/assets/images/logos/angular/angular.png",
+        images:[{url: "https://angular.io/assets/images/logos/angular/angular.png", size: 2048}],
         title: 'Awesome Project',
         description: 'This is an awesome project.',
         authorId: '123456',
         createdAt: new Date('2023-01-01T00:00:00Z'),
         updatedAt: new Date('2023-06-01T00:00:00Z'),
-        tags: ['angular', 'typescript'],
+        tags: [{id:"1", name:'angular'},{id:"2", name:'angular'}],
+        likes: 100,
+      },{
+        id: 'proj1',
+        images:[{url: "https://angular.io/assets/images/logos/angular/angular.png", size: 2048}],
+        title: 'Awesome Project',
+        description: 'This is an awesome project.',
+        authorId: '123456',
+        createdAt: new Date('2023-01-01T00:00:00Z'),
+        updatedAt: new Date('2023-06-01T00:00:00Z'),
+        tags: [{id:"1", name:'angular'},{id:"2", name:'angular'}],
+        likes: 100,
+      },{
+        id: 'proj1',
+        images:[{url: "https://angular.io/assets/images/logos/angular/angular.png", size: 2048}],
+        title: 'Awesome Project',
+        description: 'This is an awesome project.',
+        authorId: '123456',
+        createdAt: new Date('2023-01-01T00:00:00Z'),
+        updatedAt: new Date('2023-06-01T00:00:00Z'),
+        tags: [{id:"1", name:'angular'},{id:"2", name:'angular'}],
+        likes: 100,
+      },{
+        id: 'proj1',
+        images:[{url: "https://angular.io/assets/images/logos/angular/angular.png", size: 2048}],
+        title: 'Awesome Project',
+        description: 'This is an awesome project.',
+        authorId: '123456',
+        createdAt: new Date('2023-01-01T00:00:00Z'),
+        updatedAt: new Date('2023-06-01T00:00:00Z'),
+        tags: [{id:"1", name:'angular'},{id:"2", name:'angular'}],
         likes: 100,
       }]
     })
@@ -46,6 +76,9 @@ export class AuthService {
 
   get me(): ProfileType | null {
     return this.me$();
+  }
+  get isAuthed() {
+    return !!this.me;
   }
   logout(): void {
     this.token.set(null);

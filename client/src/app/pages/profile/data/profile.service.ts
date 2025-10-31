@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import {Project} from "@core/eviroments/config.constants"
+import {ProjectType} from '@app/pages/projects/data/projects';
+import {TagType} from '@core/eviroments/config.constants';
 
 
 export type ProfileType = {
@@ -7,7 +8,7 @@ export type ProfileType = {
   name: string;
   email: string;
   class: string;
-  skills?: string[];
+  skills?: TagType[];
   department: "IF" | "ET" | "WI" | "MB";
   bio?: string;
   role: 'student' | 'teacher' | 'president' | 'director' | 'admin';
@@ -16,7 +17,7 @@ export type ProfileType = {
   numberOfFollowers?: number;
   numberOfFollowing?: number;
 
-  projects?: Project[];
+  projects?: ProjectType[];
   registeredAt: Date;
 }
 

@@ -3,7 +3,7 @@
   @for (page of pages; track page) {
     <div class="btn svg" [routerLink]="page.path" [ngClass]="{
       active: isActive(page.path)
-    }">
+    }" (click)="page.click?.()">
       <svg icon="{{page.icon}}"></svg>
       <div class="label">
         {{page.label}}

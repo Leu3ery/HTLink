@@ -6,7 +6,7 @@
   overflow: auto;
   gap: 1rem;
 
-  padding: 0 1rem;
+  padding: 1rem 1rem 0 1rem;
 }
 
 .item {
@@ -45,8 +45,11 @@ app-block {
 
 
 .item:hover {
-  background-color: #f0f0f0;
   cursor: pointer;
+  color: var(--main-color);
+  svg {
+    color: var(--main-color);
+  }
 }
 
 .header {

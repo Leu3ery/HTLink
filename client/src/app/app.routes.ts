@@ -7,6 +7,10 @@ import {Marketplace} from '@app/pages/marketplace/marketplace';
 import ProjectRoutes from '@app/pages/projects/project/project.routes';
 import {Profile} from '@app/pages/profile/profile';
 import {Feed} from '@app/pages/feed/feed';
+import {News} from '@app/pages/news/news';
+import {Login} from '@app/pages/login/login';
+import {AuthGuard} from '@core/gruards/auth.guard';
+import {NotAuthGuard} from '@core/gruards/notauth.guard';
 
 export const routes: Routes = [
   {
@@ -37,8 +41,23 @@ export const routes: Routes = [
         component: Marketplace,
       },
       {
+        path: "news",
+        component: News
+      },
+      {
         path: "more",
-        component: MorePagesComponent
+        children: [
+          {
+            path: "",
+            canActivate: [AuthGuard],
+            component: MorePagesComponent
+          },
+          {
+            path: "login",
+            canActivate: [NotAuthGuard],
+            component: Login
+          }
+        ],
       },
       {
         path: "profile/:id",
@@ -49,14 +68,15 @@ export const routes: Routes = [
         redirectTo: "/profile/me",
         pathMatch: 'full'
       },
-      {
-        path: "**",
-        redirectTo: "feed"
-      }
     ],
   },
   {
     path: 'projects/:id',
     children: ProjectRoutes
   },
+  {
+    path: '**',
+    redirectTo: '/feed',
+    pathMatch: 'full'
+  }
 ];
