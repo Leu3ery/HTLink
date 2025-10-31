@@ -1,1 +1,12 @@
-<p>my-projects works!</p>
+
+<div class="header">
+  <h2>My Projects</h2>
+  <div class="btn create"><svg icon="plus"></svg></div>
+</div>
+<div class="holder">
+@if (projects) {
+  @for (project of projects; track project.id) {
+  <app-project-preview [data] = "project"></app-project-preview>
+  }
+}
+</div>

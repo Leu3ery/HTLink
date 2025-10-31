@@ -1,1 +1,9 @@
-<p>search-bar works!</p>
+<app-block>
+  <div class="input-holder">
+  <label>{{placeholder()}}</label>
+  <input type="text" [(ngModel)]="value">
+</div>
+  <div class="btn main">
+    <svg icon="search"></svg> Search
+  </div>
+</app-block>

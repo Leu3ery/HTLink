@@ -2,20 +2,24 @@ import {Component, inject, OnInit} from '@angular/core';
 import {Block} from '@shared/ui/block/block';
 import {SvgIconComponent} from '@shared/utils/svg.component';
 import {AuthService} from '@core/services/auth.service';
-import {CommonModule, DatePipe} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {ProfileType} from './data/profile.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProfileService as ProfileService} from './data/profile.service';
+import {Tag} from '@shared/ui/tag/tag';
+import {ProjectPreview} from '@shared/ui/project-preview/project-preview';
 
 
 @
   Component({
   selector: 'app-profile',
-  imports: [
-    Block,
-    SvgIconComponent,
-    CommonModule,
-  ],
+    imports: [
+      Block,
+      SvgIconComponent,
+      CommonModule,
+      Tag,
+      ProjectPreview,
+    ],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
