@@ -7,7 +7,7 @@
     <div class="btn edit" [routerLink]="'/profile/me/edit'" *ngIf="isMy"><svg icon="pen"></svg></div>
   </div>
   <div class="body">
-    <div class="name"><p style="font-size: 18px">{{data.user().first_name}} {{data.user().last_name.slice(0,1)}}.</p></div>
+    <div class="name"><p style="font-size: 18px">{{data.user().first_name}} {{data.user().last_name?.slice(0,1)}}.</p></div>
     <div class="tags">
       <app-tag>{{data.user().class}}</app-tag>
       <div class="tag departement">{{data.user().department}}</div>
