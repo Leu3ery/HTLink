@@ -23,10 +23,10 @@ afterAll(async () => {
   await mongo.stop();
 });
 
-describe("GET /skills", () => {
+describe("GET /api/skills", () => {
   it("should return all skills from DB", async () => {
     const res = await request(app)
-      .get("/skills")
+      .get("/api/skills")
       .expect(200);
 
     expect(Array.isArray(res.body)).toBe(true);
@@ -42,7 +42,7 @@ describe("GET /skills", () => {
     await Skill.deleteMany({});
 
     const res = await request(app)
-      .get("/skills")
+      .get("/api/skills")
       .expect(200);
 
     expect(res.body).toEqual([]);
