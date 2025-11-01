@@ -185,6 +185,7 @@ svg * {
 
   outline: 1px solid var(--border-color);
   border-radius: 2rem;
+  height: 3rem;
 
   label {
     position: absolute;
@@ -197,15 +198,24 @@ svg * {
     background-color: var(--primary-color);
   }
 
-  input {
+  input, textarea {
     flex: 1;
     padding: 0.5rem;
     outline: none;
 
     border-radius: 2rem;
+    font-size: .8rem;
   }
 }
 
+.avatar {
+  height: 10rem;
+  width: 10rem;
+  border-radius: 50%;
+  object-fit: cover;
+
+  border: 2px solid var(--contrast-color);
+}
 
 .tag {
   display: flex;

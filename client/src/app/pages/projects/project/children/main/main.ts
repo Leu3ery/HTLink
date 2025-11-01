@@ -1,8 +1,9 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {ProjectsService, ProjectType} from '@app/pages/projects/data/projects';
+import {ProjectsService } from '@core/services/projects.service';
 import {ImageGallery} from '@shared/ui/image-gallery/image-gallery';
 import {SvgIconComponent} from '@shared/utils/svg.component';
+import {ProjectType} from '@core/types/types.constans';
 
 @Component({
   selector: 'app-main',

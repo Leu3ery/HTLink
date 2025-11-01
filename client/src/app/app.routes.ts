@@ -11,6 +11,7 @@ import {News} from '@app/pages/news/news';
 import {Login} from '@app/pages/login/login';
 import {AuthGuard} from '@core/gruards/auth.guard';
 import {NotAuthGuard} from '@core/gruards/notauth.guard';
+import {Edit} from '@app/pages/profile/children/edit/edit';
 
 export const routes: Routes = [
   {
@@ -58,6 +59,10 @@ export const routes: Routes = [
             component: Login
           }
         ],
+      },
+      {
+        path: "profile/me/edit",
+        component: Edit
       },
       {
         path: "profile/:id",

@@ -1,9 +1,9 @@
 import {Component, inject, input} from '@angular/core';
-import {ProjectType} from '@app/pages/projects/data/projects';
 import {Block} from '@shared/ui/block/block';
 import {SvgIconComponent} from '@shared/utils/svg.component';
 import {Tag} from '@shared/ui/tag/tag';
 import {Router} from '@angular/router';
+import {ProjectType} from '@core/types/types.constans';
 
 @Component({
   selector: 'app-project-preview',

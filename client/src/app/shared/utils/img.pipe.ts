@@ -1,16 +1,25 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import {API_URL,DEFAULT_AVATAR_URL} from '@core/eviroments/config.constants';
 
 @Pipe({
   name: 'img',
 })
 export class ImgPipe implements PipeTransform {
-  public transform(
-    value: { path: string; [key: string]: any } | undefined
+  public static transform(
+    value: string
   ): string {
-    return "";
-    // if (!value) {
-    //   return DEFAULT_AVATAR_URL;
-    // }
-    // return API_PUBLIC_URL + "/" + value.path;
+    if (!value) {
+      return DEFAULT_AVATAR_URL;
+    }
+    return API_URL + "/public/" + value;
+  }
+
+  public transform(
+    value: string
+  ): string {
+    if (!value) {
+      return DEFAULT_AVATAR_URL;
+    }
+    return API_URL + "/public/" + value;
   }
 }
