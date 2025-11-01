@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {SvgIconComponent} from '@shared/utils/svg.component';
 import {RouterLink} from '@angular/router';
 import {Block} from '@shared/ui/block/block';
+import {AuthService} from '@core/services/auth.service';
 
 @Component({
   selector: 'app-more-pages-component',
@@ -14,6 +15,7 @@ import {Block} from '@shared/ui/block/block';
   styleUrl: './more-pages-component.css'
 })
 export class MorePagesComponent {
+  authService = inject(AuthService);
   readonly blocks = [
     [
       {label: "My Profile", path: "/profile", icon: "person"}
@@ -25,7 +27,8 @@ export class MorePagesComponent {
       // { label: 'Chats (comming soon)', path: '/chats', icon: 'chats' },
     ],
     [
-      { label: 'Settings', path: '/settings', icon: 'settings' }
-    ],
+      { label: 'Settings', path: '/settings', icon: 'settings' },
+      {label: "Logout", path: "/logout", icon: "logout", click: ()=>this.authService.logout()},
+    ]
   ];
 }

@@ -1,5 +1,5 @@
 import {Component, input} from '@angular/core';
-import {ImageType} from '@core/eviroments/config.constants';
+import {ImageType} from '@core/types/types.constans';
 
 @Component({
   selector: 'app-image-gallery',

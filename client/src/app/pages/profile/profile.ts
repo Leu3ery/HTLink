@@ -1,13 +1,15 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {Block} from '@shared/ui/block/block';
 import {SvgIconComponent} from '@shared/utils/svg.component';
 import {AuthService} from '@core/services/auth.service';
 import {CommonModule} from '@angular/common';
-import {ProfileType} from './data/profile.service';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
-import {ProfileService as ProfileService} from './data/profile.service';
+import {ProfileService as ProfileService} from '@core/services/profile.service';
 import {Tag} from '@shared/ui/tag/tag';
 import {ProjectPreview} from '@shared/ui/project-preview/project-preview';
+import {ProjectsService} from '@core/services/projects.service';
+import {ProfileType, ProjectType} from '@core/types/types.constans';
+import {ImgPipe} from '@shared/utils/img.pipe';
 
 
 @
@@ -20,19 +22,18 @@ import {ProjectPreview} from '@shared/ui/project-preview/project-preview';
       Tag,
       ProjectPreview,
       RouterLink,
+      ImgPipe,
     ],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
 export class Profile implements OnInit {
-
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private authService = inject(AuthService);
   private profileService = inject(ProfileService);
+  private projectsService = inject(ProjectsService);
 
 
-  data: ProfileType | null = null;
+  data: {user: WritableSignal<ProfileType>, projects:ProjectType[]} | null = null;
   isMy = false;
 
 
@@ -41,10 +42,13 @@ export class Profile implements OnInit {
       const _id = params.get('id');
       if (_id === 'me') {
         this.isMy = true;
-        this.data = this.authService.me;
+        this.data = {user:this.profileService.me$, projects:[]};
       } else {
         this.isMy = false;
-        this.data = await this.profileService.getProfileById(_id || '');
+        this.data = {
+        user: signal((await this.profileService.getProfileById(_id || '')
+        )), projects: []
+        };
       }
     })
   }

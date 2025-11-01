@@ -59,3 +59,13 @@ app-block {
   position: absolute;
   right: 1rem;
 }
+
+.add-skill {
+  padding: 1rem 1rem;
+  font-size: .9rem;
+}
+.tags-holder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}

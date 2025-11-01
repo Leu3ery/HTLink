@@ -1,39 +1,38 @@
 @if (data != null) {
-
 <app-block class="Main-Info">
   <div class="header">
     <div class="banner"></div>
     <div class="action-btns"></div>
-    <div class="avatar"><img [src]="data.avatarUrl" alt=""></div>
+    <div class="avatar"><img [src]="data.user().photo_path | img" alt=""></div>
     <div class="btn edit" [routerLink]="'/profile/me/edit'" *ngIf="isMy"><svg icon="pen"></svg></div>
   </div>
   <div class="body">
-    <div class="name"><p style="font-size: 18px">{{data.name}}</p></div>
+    <div class="name"><p style="font-size: 18px">{{data.user().first_name}} {{data.user().last_name.slice(0,1)}}.</p></div>
     <div class="tags">
-      <app-tag>{{data.class}}</app-tag>
-      <div class="tag departement">{{data.department}}</div>
+      <app-tag>{{data.user().class}}</app-tag>
+      <div class="tag departement">{{data.user().department}}</div>
     </div>
     <div class="blocks">
       <div class="block-item">
-        <div class="number">{{data.numberOfProjects}}</div>
+        <div class="number">{{0}}</div>
         <div class="label">Projects</div>
       </div>
       <div class="block-item">
-        <div class="number">{{data.numberOfFollowers}}</div>
+        <div class="number">{{0}}</div>
         <div class="label">Follower</div>
       </div>
       <div class="block-item">
-        <div class="number">{{data.numberOfFollowing}}</div>
+        <div class="number">{{0}}</div>
         <div class="label">Following</div>
       </div>
     </div>
-    <div class="bio">{{data.bio}}</div>
+    <div class="bio">{{data.user().description}}</div>
     <div class="email">
-      <svg icon="email" /> <span>{{data.email}}</span>
+      <svg icon="email" /> <span>{{data.user().pc_number}}@htlstp.at</span>
     </div>
     <div class="registered-since">
       <svg icon="calendar" />
-      <span>Dabei seit {{data.registeredAt | date:"MMMM yyyy"}}</span>
+      <span>Dabei seit {{data.user().created_at | date:"MMMM yyyy"}}</span>
     </div>
   </div>
 </app-block>
@@ -44,7 +43,7 @@
     </div>
     <div class="body">
       <div class="tags-holder">
-        @for (skill of data.skills; track skill) {
+        @for (skill of data.user().skills; track skill) {
         <app-tag>{{skill.name}}</app-tag>
         }
       </div>

@@ -1,16 +1,18 @@
+@if (profileService.me$()) {
 <div class="header">
   <div class="btn" routerLink="../">
     <svg icon="arrowBack"></svg>
   </div>
   <h2>Profile</h2>
-  <div class="btn save">
+  <div class="btn save" *ngIf="profileForm.valid" (click)="submitEdit()">
     <svg icon="check"></svg>
   </div>
 </div>
-<div class="body">
+<form [formGroup]="profileForm" class="body">
   <app-block style="align-items: center">
-    <img class="avatar" src="https://angular.io/assets/images/logos/angular/angular.png" alt="">
-    <div class="btn secondary">Change Photo</div>
+    <img class="avatar" [src]="profileForm.value.photo_path" alt="">
+    <label class="btn secondary" for="fileInput">Change Photo</label>
+    <input type="file" hidden id="fileInput" accept="image/*"  (change)="onFileSelected($event)" />
   </app-block>
   <app-block>
     <div class="header">
@@ -19,11 +21,11 @@
     <div class="content">
       <div class="input-holder">
         <label>First name</label>
-        <input type="text" placeholder="" />
+        <input formControlName="first_name" type="text" placeholder="" />
       </div>
       <div class="input-holder">
         <label>Last name</label>
-        <input type="text" placeholder="" />
+        <input formControlName="last_name" type="text" placeholder="" />
       </div>
     </div>
   </app-block>
@@ -34,7 +36,22 @@
     <div class="content">
       <div class="input-holder">
         <label>Tell us about your self</label>
-        <input type="text" placeholder="" />
+        <input formControlName="description" type="text" placeholder="" />
+      </div>
+    </div>
+  </app-block>
+  <app-block>
+    <div class="header">
+      <h3>Links</h3>
+    </div>
+    <div class="content">
+      <div class="input-holder">
+        <label>GitHub.com</label>
+        <input formControlName="github_link" type="text" placeholder="" />
+      </div>
+      <div class="input-holder">
+        <label>LinkedIn.com</label>
+        <input formControlName="linkedin_link" type="text" placeholder="" />
       </div>
     </div>
   </app-block>
@@ -43,6 +60,18 @@
       <h3>Skills</h3>
     </div>
     <div class="content">
+      <select class="add-skill" (change)="addSkill($event)">
+        <option value="" disabled selected>Add Skill</option>
+        @for (skill of skills; track skill.id) {
+          <option value="{{skill.id}}">{{skill.name}}</option>
+        }
+      </select>
+      <div class="tags-holder">
+        @for (skill of profileForm.value.skills; track skill.id) {
+          <app-tag [removable]="true" (remove)="removeSkill(skill)">{{skill.name}}</app-tag>
+        }
+      </div>
     </div>
   </app-block>
-</div>
+</form>
+}

@@ -1,8 +1,16 @@
 :host {
-  display: block;
+  display: flex;
+  align-items: center;
   background: var(--main-color-light);
   color: var(--primary-color);
 
   padding: .25rem 1rem;
   border-radius: 2rem;
+
+  gap: 1rem;
+
+  svg {
+    height: 1.5rem;
+    aspect-ratio: 1/1;
+  }
 }

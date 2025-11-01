@@ -204,6 +204,7 @@ svg * {
     outline: none;
 
     border-radius: 2rem;
+    font-size: .8rem;
   }
 }
 
