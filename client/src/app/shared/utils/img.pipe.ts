@@ -17,6 +17,9 @@ export class ImgPipe implements PipeTransform {
   public transform(
     value: string
   ): string {
-    return ImgPipe.transform(value);
+    if (!value) {
+      return DEFAULT_AVATAR_URL;
+    }
+    return API_URL + "/public/" + value;
   }
 }
