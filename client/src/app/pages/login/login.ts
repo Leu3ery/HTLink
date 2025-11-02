@@ -22,8 +22,7 @@ export class Login {
   login(){
     if (this.loginForm.valid) {
       console.log(this.loginForm.value)
-      // @ts-ignore
-      this.authService.login(this.loginForm.value)
+      this.authService.login(this.loginForm.value as {login:number,password:string})
     }
   }
 }
