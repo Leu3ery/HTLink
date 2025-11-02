@@ -1,22 +1,25 @@
-import {inject, Injectable, signal} from '@angular/core';
+import {effect, inject, Injectable, signal} from '@angular/core';
 import {ProfileType, TagType} from '@core/types/types.constans';
 import {HttpClient} from '@angular/common/http';
 import {NotificationService} from '@core/services/notification.service';
+import {AuthService} from '@core/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
+
   notificationsService = inject(NotificationService);
-
-
   me$ = signal<ProfileType>(null as any);
 
   async getProfileById(id: string): Promise<{user:ProfileType } | undefined> {
     return await this.http.get<{user:ProfileType }>(`/api/users/${id}`).toPromise()
   }
-  constructor(private http: HttpClient) {
-    this.getMe()
+  constructor(private http: HttpClient, private aService: AuthService) {
+    effect(() => {
+      const token = this.aService.token()
+      this.getMe()
+    });
   }
 
 
@@ -44,7 +47,7 @@ export class ProfileService {
       this.me$.set(response.user);
     });
   }
-  private async getMe(): Promise<void> {
+  async getMe(): Promise<void> {
     this.http.get('/api/users/me').subscribe((response: any) => {
       this.me$.set(response.user);
     });
