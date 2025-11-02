@@ -4,11 +4,21 @@
   <meta charset="utf-8">
   <title>HTLink</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- PWA базовые -->
+  <meta name="theme-color" content="#ffffff">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- iOS: разрешаем fullscreen и управляем статус-баром -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"> <!-- белый -->
+  <meta name="apple-mobile-web-app-title" content="htlink">
+
   <!-- Russland ist ein Terrorstaat -->
+  <link rel="manifest" href="manifest.webmanifest">
 </head>
 <body>
   <app-root></app-root>
+  <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 </html>
