@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { API_URL } from '@core/eviroments/config.constants';
 import { catchError, Observable, throwError } from 'rxjs';
+import {NotificationService} from '@core/services/notification.service';
 
 export function loggingInterceptor(
   req: HttpRequest<unknown>,
@@ -36,9 +37,19 @@ export function errorCatcher(
 ): Observable<HttpEvent<unknown>> {
   return next(req).pipe(
     catchError((err) => {
+      console.log('Error intercepted:', err);
+
+      const notificationService = inject(NotificationService);
+
       if (err.status === 401) {
+        notificationService.addNotification('Session expired. Please log in again.', 4);
         const authService = inject(AuthService);
         authService.logout();
+      } else if (err.status === 500) {
+        notificationService.addNotification('Some error occurred', 4);
+      } else {
+        const errorMessage = err.error?.message || 'An error occurred';
+        notificationService.addNotification(errorMessage, 4);
       }
       return throwError(() => err);
     })

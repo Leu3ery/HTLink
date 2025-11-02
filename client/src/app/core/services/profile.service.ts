@@ -17,8 +17,6 @@ export class ProfileService {
 
 
   async updateProfile(data: any): Promise<void> {
-
-    console.log(data);
     const dataNew = new FormData();
     for (const key in data) {
       if (!data[key]) {
@@ -35,12 +33,14 @@ export class ProfileService {
       dataNew.append(key, data[key]);
     }
     this.http.patch('/api/users/me', dataNew).subscribe((response: any) => {
+      if (response.status === 200) {
+        // Profile updated successfully
+      }
       this.me$.set(response.user);
     });
   }
   private async getMe(): Promise<void> {
     this.http.get('/api/users/me').subscribe((response: any) => {
-      console.log(response.user);
       this.me$.set(response.user);
     });
   }

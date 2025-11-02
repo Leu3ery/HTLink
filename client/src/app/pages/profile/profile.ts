@@ -12,8 +12,7 @@ import {ProfileType, ProjectType} from '@core/types/types.constans';
 import {ImgPipe} from '@shared/utils/img.pipe';
 
 
-@
-  Component({
+@Component({
   selector: 'app-profile',
     imports: [
       Block,

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {RouterLink, RouterOutlet} from '@angular/router';
 import {SvgIconComponent} from '@shared/utils/svg.component';
 import {CommonModule} from '@angular/common';
+import {Notifications} from '@shared/ui/notifications/notifications';
 
 @Component({
   selector: 'app-layout',
@@ -10,6 +11,7 @@ import {CommonModule} from '@angular/common';
     SvgIconComponent,
     RouterLink,
     CommonModule,
+    Notifications,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.css',

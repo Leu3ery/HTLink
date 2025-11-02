@@ -1,0 +1,12 @@
+@for (n of service.notifications(); track n) {
+  <div class="item" [ngClass]="{
+    success: n.type === NotificationType.Success,
+    error: n.type === NotificationType.Error,
+    info: n.type === NotificationType.Info,
+    warning: n.type === NotificationType.Warning
+  }">
+    {{n.message}}
+
+    <div class="line"></div>
+  </div>
+}
