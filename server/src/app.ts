@@ -35,9 +35,9 @@ import skills from "./modules/skills/skills.routes";
 import users from "./modules/users/users.routes";
 import login from "./modules/users/users.auth.routes"
 
-app.use('/', login)
-app.use('/skills', skills)
-app.use('/users', users)
+app.use('/api', login)
+app.use('/api/skills', skills)
+app.use('/api/users', users)
 
 
 // Additional handlers
