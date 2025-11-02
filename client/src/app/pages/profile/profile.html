@@ -36,6 +36,24 @@
     </div>
   </div>
 </app-block>
+<app-block class="Links" *ngIf="data.user().github_link || data.user().linkedin_link">
+  <div class="header">
+    <svg icon="links"></svg>
+    <h3>Links</h3>
+  </div>
+  <div class="body">
+    <div class="links-holder">
+      <div class="link" *ngIf="data.user().github_link">
+        <svg icon="github" class="github"></svg> <a [href]="data.user().github_link">GitHub</a>
+      </div>
+      <div class="link" *ngIf="data.user().linkedin_link">
+        <svg icon="linkedin" class="linkedin"></svg> <a [href]="data.user().linkedin_link">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</app-block>
+
+
 <app-block class="Skill-Set">
     <div class="header">
       <svg icon="code"></svg>

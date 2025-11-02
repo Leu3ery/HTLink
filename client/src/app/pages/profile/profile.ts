@@ -39,14 +39,23 @@ export class Profile implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(async (params) => {
       const _id = params.get('id');
-      if (_id === 'me') {
+      if (_id === 'me' || (!_id && this.profileService.me$()) || _id === this.profileService.me$()?.id) {
         this.isMy = true;
         this.data = {user:this.profileService.me$, projects:[]};
       } else {
         this.isMy = false;
         this.data = {
-        user: signal((await this.profileService.getProfileById(_id || '')
-        )), projects: []
+        user:
+          await this.profileService.getProfileById(_id || '')
+            .then(
+              (res)=> {
+                if (!res) {
+                  this.data = null;
+                  return signal<ProfileType>(null as any);
+                }
+                  return signal<ProfileType>(res.user);
+                }
+        ), projects: []
         };
       }
     })

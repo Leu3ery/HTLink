@@ -117,7 +117,7 @@ app-block .header {
   }
 }
 
-.Skill-Set, .Projects-List {
+.Skill-Set, .Projects-List, .Links {
   .header {
     height: 2rem;
     display: flex;
@@ -146,10 +146,35 @@ app-block .header {
   }
 }
 
+.Links {
+  .links-holder {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    .link{
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+
+      svg {
+
+        height: 2rem;
+
+        &.github {
+          color: black;
+        }
+        &.linkedin {
+          color: #0A66C2;
+
+        }
+      }
+    }
+  }
+}
 .Projects-List {
   .header {}
   .body {
-
     .projects-holder {
       display: flex;
       flex-direction: column;

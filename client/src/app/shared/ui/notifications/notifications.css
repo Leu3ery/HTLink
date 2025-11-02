@@ -9,6 +9,8 @@
   max-height: calc(100vh - 5rem);
   overflow: hidden;
   gap: .5rem;
+
+  z-index: 100000;
 }
 
 .item {

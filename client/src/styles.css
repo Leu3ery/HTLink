@@ -237,6 +237,11 @@ svg * {
   }
 }
 
+a {
+  text-decoration: underline;
+  color: var(--contrast-color);
+}
+
 h1,h2,h3,h4,h5,h6 {
   color: var(--hover-gray-color);
 }
