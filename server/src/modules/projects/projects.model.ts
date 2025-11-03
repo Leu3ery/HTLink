@@ -7,7 +7,7 @@ export interface IProject {
     categoryId: Types.ObjectId,
     shortDescription: string,
     fullReadme: string,
-    deadline: Date,
+    deadline?: Date,
     createdAt: Date,
     updatedAt: Date,
     skills: ISkill[],
@@ -52,7 +52,6 @@ export const projectSchema = new Schema<IProject>({
         type: Date,
         required: false
     },
-    // TODO implement with connections many to many
     skills: [{
         type: Schema.Types.ObjectId,
         ref: 'Skill',

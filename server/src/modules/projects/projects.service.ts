@@ -7,16 +7,16 @@ import { fetchCategoryOrFail, fetchSkillsOrFail, mapProjectToFullDto, parseIdArr
 import { Image } from "./images/image.model";
 import type { Express } from "express";
 import path from "path";
+import { UpdateProjectDto } from "./dto/update.project.dto";
 
 // helpers moved to ./utils/project.helpers
 
 export default class ProjectsService {
 
-    static async createProject(project: CreateProjectDto, files: Express.Multer.File[] = []): Promise<FullProjectDto> {
+    static async createProject(project: CreateProjectDto,ownerId:string, files: Express.Multer.File[] = []): Promise<FullProjectDto> {
 
         const projectId = new mongoose.Types.ObjectId();
-        // TODO should be replaced with the user id from the request
-        const ownerId = new mongoose.Types.ObjectId();
+
 
         const categoryObjectId = await fetchCategoryOrFail(project.categoryId);
 
@@ -31,7 +31,7 @@ export default class ProjectsService {
                 categoryId: categoryObjectId.toString(),
                 shortDescription: project.shortDescription,
                 fullReadme: project.fullReadme ?? '',
-                deadline: new Date(project.deadline).toISOString(),
+                deadline: new Date(project.deadline),
                 ownerId: ownerId.toString(),
                 status: ProjectStatus.PLANNED,
                 skills: skillObjectIds.map(id => id.toString()),
@@ -177,8 +177,23 @@ export default class ProjectsService {
     //     return mapProjectToFullDto(project)
     // }
 
-    static async updateProject(projectId: string, project: FullProjectDto) {
-
+    static async updateProject(projectId: string, updateProjectDto: UpdateProjectDto) {
+        console.log(
+            "updateProjectDto",
+            updateProjectDto
+        )
+        if (!mongoose.Types.ObjectId.isValid(projectId)) {
+            throw new ErrorWithStatus(400, "Invalid project id");
+        }
+        const updatedProject = await Project.findByIdAndUpdate(projectId, { $set: updateProjectDto }, { new: true, runValidators: true, context: "query" });
+        if (!updatedProject) {
+            throw new ErrorWithStatus(404, "Project not found");
+        }
+        console.log(
+            "updatedProject",
+            updatedProject
+        )
+        return mapProjectToFullDto(updatedProject);
     }
 
     static async deleteProject(projectId: string, userId: string) {
@@ -217,4 +232,3 @@ export default class ProjectsService {
         }
 
 }
-

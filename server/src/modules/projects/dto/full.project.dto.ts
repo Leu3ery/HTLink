@@ -4,7 +4,7 @@ export type FullProjectDto = {
   category: string;
   shortDescription: string;
   fullReadme: string;
-  deadline: string;
+  deadline: Date | null;
   ownerId: string;
   status: string;
   skills: string[];

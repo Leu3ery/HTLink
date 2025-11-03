@@ -43,7 +43,7 @@ export function mapProjectToFullDto(newProject: ProjectDocument, images: Array<{
         category: newProject.categoryId.toString(),
         shortDescription: newProject.shortDescription,
         fullReadme: newProject.fullReadme || '',
-        deadline: newProject.deadline.toISOString(),
+        deadline: newProject.deadline ?? null,
         ownerId: newProject.ownerId.toString(),
         status: newProject.status,
         skills: (newProject.skills as unknown as mongoose.Types.ObjectId[]).map(id => id.toString()),

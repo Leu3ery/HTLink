@@ -7,15 +7,14 @@ export type CreateProjectDto = {
     shortDescription: string,
     fullReadme: string,
     deadline: Date,
-    skills: string
+    skills: string[]
 }
 
 export const createProjectSchema = Joi.object({
     title: Joi.string().required().min(3).max(30),
     categoryId: Joi.string().required(),
-    shortDescription: Joi.string().required().min(10).max(500),
-    fullReadme: Joi.string().max(10000),
-    deadline: Joi.date().required(),
-    skills: Joi.string().required(),
+    shortDescription: Joi.string().max(500),
+    fullReadme: Joi.string().max(10000).optional(),
+    deadline: Joi.date().optional(),
+    skills: Joi.array().items(Joi.string()).required(),
 })
-
