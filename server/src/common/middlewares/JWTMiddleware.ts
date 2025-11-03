@@ -6,7 +6,7 @@ import { config } from '../../config/config'
 const JWTMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.headers.authorization?.split(" ")[1]
-        if (!token) throw new ErrorWithStatus(401, "No authorization header find")
+        if (!token) throw new ErrorWithStatus(403, "No authorization header find")
         const data = jwt.verify(token, config.JWT_SECRET)
         res.locals.user = data
         next()
