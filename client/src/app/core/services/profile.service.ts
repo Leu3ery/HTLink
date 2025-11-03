@@ -48,6 +48,9 @@ export class ProfileService {
     });
   }
   async getMe(): Promise<void> {
+    if (!this.aService.token()) {
+      return
+    }
     this.http.get('/api/users/me').subscribe((response: any) => {
       this.me$.set(response.user);
     });

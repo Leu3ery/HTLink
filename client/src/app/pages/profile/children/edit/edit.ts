@@ -9,6 +9,7 @@ import {ProfileService} from '@core/services/profile.service';
 import {ImgPipe} from '@shared/utils/img.pipe';
 import {Tag} from '@shared/ui/tag/tag';
 import {MainService} from '@core/services/main.service';
+import {NotificationService} from '@core/services/notification.service';
 
 @Component({
   selector: 'app-edit',
@@ -37,6 +38,7 @@ export class Edit implements OnInit {
   }
 
   private mainService = inject(MainService);
+  private nService = inject(NotificationService);
 
 
   profileForm = new FormGroup({

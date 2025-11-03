@@ -23,7 +23,7 @@ export class MorePagesComponent {
     [
       { label: 'My Projects', path: '/projects/my', icon: 'projects' },
       { label: 'News', path: '/news', icon: 'news' },
-      { label: 'Friends', path: '/friends', icon: 'group' },
+      { label: 'Users', path: '/users', icon: 'group' },
       // { label: 'Chats (comming soon)', path: '/chats', icon: 'chats' },
     ],
     [

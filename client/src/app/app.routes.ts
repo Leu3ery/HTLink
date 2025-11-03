@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import {Layout} from '@app/pages/main/layout/layout';
 import {SearchProjects} from '@app/pages/projects/search-projects/search-projects';
 import {MyProjects} from '@app/pages/projects/my-projects/my-projects';
-import {MorePagesComponent} from '@app/pages/more-pages-component/more-pages-component';
+import {MorePagesComponent} from '@app/pages/main/more-pages-component/more-pages-component';
 import {Marketplace} from '@app/pages/marketplace/marketplace';
 import ProjectRoutes from '@app/pages/projects/project/project.routes';
 import {Profile} from '@app/pages/profile/profile';
@@ -28,11 +28,17 @@ export const routes: Routes = [
           {
             path: "my",
             component: MyProjects,
+            canActivate: [AuthGuard],
             pathMatch: 'full'
           },
           {
             path: "search",
             component: SearchProjects,
+            pathMatch: 'full'
+          },
+          {
+            path: "",
+            redirectTo: "search",
             pathMatch: 'full'
           }
         ]
@@ -43,6 +49,7 @@ export const routes: Routes = [
       },
       {
         path: "news",
+        canActivate: [AuthGuard],
         component: News
       },
       {
@@ -62,6 +69,7 @@ export const routes: Routes = [
       },
       {
         path: "profile/me/edit",
+        canActivate: [AuthGuard],
         component: Edit
       },
       {
