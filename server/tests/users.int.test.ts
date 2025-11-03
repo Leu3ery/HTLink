@@ -158,6 +158,14 @@ describe("PATCH /api/users/me", () => {
 			})
 			.set('Authorization', `Bearer ${token}`)
 			.expect(400)
+		
+		await request(app)
+			.patch('/api/users/me')
+			.send({
+				photo_path: "test.png"
+			})
+			.set('Authorization', `Bearer ${token}`)
+			.expect(400)
 	})
 })
 
