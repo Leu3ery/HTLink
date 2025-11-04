@@ -7,7 +7,24 @@ import { fetchCategoryOrFail, fetchSkillsOrFail, mapProjectToFullDto, parseIdArr
 import { Image } from "./images/image.model";
 import type { Express } from "express";
 import path from "path";
+import fs from "fs";
 import { UpdateProjectDto } from "./dto/update.project.dto";
+import { publicDir } from "../../app";
+
+// Small helper to move file with EXDEV fallback
+async function moveWithFallback(src: string, dest: string) {
+    try {
+        await fs.promises.rename(src, dest);
+    } catch (err: any) {
+        if (err && err.code === 'EXDEV') {
+            // Cross-device link: copy and remove source
+            await fs.promises.copyFile(src, dest);
+            await fs.promises.unlink(src);
+        } else {
+            throw err;
+        }
+    }
+}
 
 // helpers moved to ./utils/project.helpers
 
@@ -46,12 +63,75 @@ export default class ProjectsService {
             throw err as Error;
         }
 
-        const images = await Promise.all(
-            (files || []).map(file => Image.create({
-                image_path: path.join('projects', newProject._id.toString(), file.filename),
-                projectId: newProject._id,
-            }))
-        );
+
+        const projectDir = path.join(publicDir, 'projects', newProject._id.toString());
+        await fs.promises.mkdir(projectDir, { recursive: true });
+
+        // Move files sequentially and rollback on any failure
+        const movedFiles: string[] = []; // absolute dest paths already moved
+        const createdImageIds: mongoose.Types.ObjectId[] = [];
+        const images: any[] = [];
+
+        try {
+            for (const file of (files || [])) {
+                const src = path.join(publicDir, file.filename);
+                const dest = path.join(projectDir, file.filename);
+
+                // Move file into project dir (with EXDEV fallback)
+                await moveWithFallback(src, dest);
+                movedFiles.push(dest);
+
+                // Create Image document
+                const imageDoc = await Image.create({
+                    image_path: path.join('projects', newProject._id.toString(), file.filename),
+                    projectId: newProject._id,
+                });
+                createdImageIds.push(imageDoc._id);
+                images.push(imageDoc);
+            }
+        } catch (e) {
+            try {
+                for (const f of (files || [])) {
+                    const srcPath = path.join(publicDir, f.filename);
+                    try {
+                        if (fs.existsSync(srcPath)) {
+                            await fs.promises.unlink(srcPath);
+                        }
+                    } catch {}
+                }
+            } catch {}
+
+
+            try {
+                if (createdImageIds.length > 0) {
+                    await Image.deleteMany({ _id: { $in: createdImageIds } });
+                }
+            } catch {}
+
+
+            try {
+                for (const p of [...movedFiles].reverse()) {
+                    try {
+                        if (fs.existsSync(p)) {
+                            await fs.promises.unlink(p);
+                        }
+                    } catch {}
+                }
+            } catch {}
+
+
+            try {
+                await fs.promises.rm(projectDir, { recursive: true, force: true });
+            } catch {}
+
+
+            try {
+                await Project.deleteOne({ _id: newProject._id });
+            } catch {}
+
+            const msg = e instanceof Error && e.message ? e.message : 'Failed to store project files';
+            throw new ErrorWithStatus(500, msg);
+        }
 
         return mapProjectToFullDto(newProject, images);
     }

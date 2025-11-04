@@ -1,15 +1,11 @@
 import {Router} from "express";
-import fs from "fs";
 import {ErrorWrapper} from "../../common/utils/utils.wrappers";
 import ProjectsController from "./projects.controller";
-import {upload, uploadDir} from "./utils/storage";
+import { upload } from "../../common/multer/multer.photo";
 import JWTMiddleware from "../../common/middlewares/JWTMiddleware";
 
 const projectsRouter = Router();
 
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
 
 // post request should work with JWT
 projectsRouter.post('/', JWTMiddleware, upload.array('image', 5), ErrorWrapper(ProjectsController.createProject));

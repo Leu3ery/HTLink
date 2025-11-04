@@ -41,20 +41,17 @@ async function prepareProjectPayload(base: ReturnType<typeof makeCreateProjectPa
     return { payload, skillIds, categoryId: category?._id.toString() || '' };
 }
 
-// Helper function to create project via API
 async function createProjectRequest(payload: any, token:string) {
     return request(app)
         .post("/projects")
         .field("data", JSON.stringify(payload))
         .set('Authorization', `Bearer ${token}`)
-        /*
+
         .attach("image", path.join(__dirname, "fixtures/test.jpg"))
         .attach("image", path.join(__dirname, "fixtures/test.jpg"));
 
-         */
 }
 
-// Helper function to ensure project exists
 async function ensureProjectExists(base: ReturnType<typeof makeCreateProjectPayload>) {
     const existingData = await Project.findOne({ title: base.title });
     if (!existingData) {
@@ -153,15 +150,15 @@ describe("Create new project", () => {
         expect(res.body.project.status).toBe(ProjectStatus.PLANNED);
 
         // check images
-        //expect(res.body.project.images).toHaveLength(2);
-        // expect(res.body.project.images[0]).toHaveProperty("image_path");
-        // expect(res.body.project.images[0]).toHaveProperty("projectId");
-        // expect(res.body.project.images[0]).toHaveProperty("createdAt");
-        // expect(res.body.project.images[0]).toHaveProperty("updatedAt");
-        // expect(res.body.project.images[1]).toHaveProperty("image_path");
-        // expect(res.body.project.images[1]).toHaveProperty("projectId");
-        // expect(res.body.project.images[1]).toHaveProperty("createdAt");
-        // expect(res.body.project.images[1]).toHaveProperty("updatedAt");
+        expect(res.body.project.images).toHaveLength(2);
+        expect(res.body.project.images[0]).toHaveProperty("image_path");
+        expect(res.body.project.images[0]).toHaveProperty("projectId");
+        expect(res.body.project.images[0]).toHaveProperty("createdAt");
+        expect(res.body.project.images[0]).toHaveProperty("updatedAt");
+        expect(res.body.project.images[1]).toHaveProperty("image_path");
+        expect(res.body.project.images[1]).toHaveProperty("projectId");
+        expect(res.body.project.images[1]).toHaveProperty("createdAt");
+        expect(res.body.project.images[1]).toHaveProperty("updatedAt");
       })
 
       it("should return 409 if the project already exists", async () => {
@@ -257,27 +254,6 @@ describe("get project by id and by owner id", () => {
     it('should return 400 if id is not valid', async() => {
         const res = await request(app).get('/projects/123').expect(400);
     });
-    /*it("should return project by owner id", async () => {
-       const userRes = await request(app)
-           .post('/login')
-           .send({ login: '20220467', password: 'mypass' });
-       const token = userRes.body.token;
-       const userId = userRes.body.userId;
-        const base = makeCreateProjectPayload();
-        await ensureProjectExists(base);
-        const res = await request(app).get(`/projects/${projectId}`).expect(200);
-        expect(res.body.project._id).toBe(projectId);
-        expect(res.body.project.title).toBe(base.title);
-        expect(res.body.project.shortDescription).toBe(base.shortDescription);
-        expect(res.body.project.fullReadme).toBe(base.fullReadme);
-        expect(new Date(res.body.project.deadline).toISOString()).toBe(base.deadline);
-        expect(res.body.project.ownerId).toBeDefined();
-        expect(res.body.project.status).toBe(ProjectStatus.PLANNED);
-    })
-
-    it('should return 400 if id is not valid', () => {
-        const res = request(app).get('/projects/123').expect(400);
-    });*/
 })
 //
 // describe("update project", () => {
