@@ -4,7 +4,6 @@ import setCategories from "../src/scripts/setCategories";
 import setSkills from "../src/scripts/setSkills";
 import app from "../src/app";
 import request from "supertest";
-import { makeCreateProjectPayload } from "./fixtures/projects";
 import {beforeAll, afterAll, it, expect, describe, beforeEach, afterEach} from "@jest/globals";
 import path from "path";
 import { Project, ProjectStatus } from "../src/modules/projects/projects.model";
@@ -14,6 +13,7 @@ import { fail } from "assert";
 import {User} from "../src/modules/users/users.model";
 import jwt from "jsonwebtoken";
 import {config} from "../src/config/config";
+import { makeCreateProjectPayload } from "./utils/makeCreateProjectPayload";
 
 let projectId: string
 let mongo: MongoMemoryServer;
