@@ -12,8 +12,6 @@ export type FullProjectDto = {
     _id: string;
     image_path: string;
     projectId: string;
-    createdAt: string;
-    updatedAt: string;
   }>;
   createdAt: string;
   updatedAt: string;

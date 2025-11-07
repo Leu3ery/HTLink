@@ -3,13 +3,14 @@ import connectDB from './config/db'
 import {config} from './config/config'
 import http from 'http'
 import setSkills from './scripts/setSkills'
-
+import setCategories from './scripts/setCategories'
 
 const startServer = async () => {
     try {
         await connectDB()
 
 		await new setSkills().set()
+        await new setCategories().set()
 
         const httpServer = http.createServer(app);
 

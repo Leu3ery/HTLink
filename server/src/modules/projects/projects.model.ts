@@ -13,6 +13,7 @@ export interface IProject {
     skills: ISkill[],
     ownerId: Types.ObjectId,
     status: ProjectStatus,
+    images: Types.ObjectId[],
 }
 
 
@@ -30,7 +31,6 @@ export const projectSchema = new Schema<IProject>({
     title: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
         maxlength: 30
     },
@@ -66,7 +66,12 @@ export const projectSchema = new Schema<IProject>({
         type: String,
         enum: Object.values(ProjectStatus),
         default: ProjectStatus.PLANNED
-    }
+    },
+    images: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Image',
+        required: false
+    }], 
 }, {
     timestamps: true
 });

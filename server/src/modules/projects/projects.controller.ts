@@ -10,13 +10,12 @@ import { updateProjectSchema } from "./dto/update.project.dto";
 export default class ProjectsController{
 
     static async createProject(req: Request, res: Response, next: NextFunction) {
-        const raw = typeof req.body?.data === 'string' ? JSON.parse(req.body.data) : req.body;
-        const dto = validationWrapper(createProjectSchema, raw);
+        const dto = validationWrapper(createProjectSchema, req.body || {});
         const userId = res.locals?.user?.userId;
         if (!userId) throw new ErrorWithStatus(400, "User ID is required");
         const files = (req.files as Express.Multer.File[]) || [];
         const project = await  ProjectsService.createProject(dto,userId, files);
-        res.status(201).json({ project });
+        res.status(201).json(project);
         
     }
 

@@ -98,6 +98,19 @@ describe("PATCH /api/users/me", () => {
 		expect(res.body.user.skills[0].name).toBe("Express Js")
 	})
 
+	it("should update user with photo", async () => {
+		const res = await request(app)
+			.patch('/api/users/me')
+			.field('first_name', 'John')
+			.attach('photo', path.resolve(__dirname, 'public/test.png'))
+			.set('Authorization', `Bearer ${token}`)
+			.expect(200)
+		
+		expect(isPhotoExist(res.body.user.photo_path)).toBe(true)
+		await deleteFile(res.body.user.photo_path)
+		expect(isPhotoExist(res.body.user.photo_path)).toBe(false)
+	})
+
 	it("PATCH /api/users/me → 401 without token", async () => {
 		await request(app).patch("/api/users/me").send({ first_name: "X" }).expect(401);
 	});

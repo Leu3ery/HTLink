@@ -1,139 +1,85 @@
 import { CreateProjectDto } from "./dto/create.project.dto";
-import { Project, ProjectStatus } from "./projects.model";
+import { IProject, Project, ProjectStatus } from "./projects.model";
 import { FullProjectDto } from "./dto/full.project.dto";
 import { ErrorWithStatus } from "../../common/middlewares/errorHandlerMiddleware";
-import mongoose from "mongoose";
-import { fetchCategoryOrFail, fetchSkillsOrFail, mapProjectToFullDto, parseIdArray, toObjectId } from "./utils/project.helpers";
-import { Image } from "./images/image.model";
-import type { Express } from "express";
-import path from "path";
-import fs from "fs";
+import mongoose, { HydratedDocument } from "mongoose";
+import { fetchCategoryOrFail, fetchSkillsOrFail, mapProjectToFullDto, toObjectId } from "./utils/project.helpers";
+import { IImage, Image } from "./images/image.model";
 import { UpdateProjectDto } from "./dto/update.project.dto";
-import { publicDir } from "../../app";
-
-// Small helper to move file with EXDEV fallback
-async function moveWithFallback(src: string, dest: string) {
-    try {
-        await fs.promises.rename(src, dest);
-    } catch (err: any) {
-        if (err && err.code === 'EXDEV') {
-            // Cross-device link: copy and remove source
-            await fs.promises.copyFile(src, dest);
-            await fs.promises.unlink(src);
-        } else {
-            throw err;
-        }
-    }
-}
+import { ISkill } from "../skills/skills.model";
+import { Category, ICategory } from "../categories/category.model";
 
 // helpers moved to ./utils/project.helpers
 
+export type PublicProjectDetailed = {
+    id: string;
+    title: string;
+    category: string;
+    shortDescription: string;
+    fullReadme: string;
+    deadline: Date;
+    ownerId: string;
+    status: ProjectStatus;
+    skills: Array<{ id: string, name: string }>;
+    images: Array<{
+        id: string;
+        image_path: string;
+    }>;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
 export default class ProjectsService {
-
-    static async createProject(project: CreateProjectDto,ownerId:string, files: Express.Multer.File[] = []): Promise<FullProjectDto> {
-
-        const projectId = new mongoose.Types.ObjectId();
-
-
+    static async createProject(project: CreateProjectDto, ownerId:string, files: Express.Multer.File[] = []) {
         const categoryObjectId = await fetchCategoryOrFail(project.categoryId);
+        const skillObjectIds = await fetchSkillsOrFail(project.skills);
 
-        const skillIdsInput = parseIdArray(project.skills as unknown as string[] | string);
-        const skillObjectIds = await fetchSkillsOrFail(skillIdsInput);
+        let newProject = await Project.create({
+            title: project.title,
+            categoryId: categoryObjectId.toString(),
+            shortDescription: project.shortDescription,
+            fullReadme: project.fullReadme ?? '',
+            deadline: new Date(project.deadline),
+            ownerId: ownerId.toString(),
+            status: ProjectStatus.PLANNED,
+            skills: skillObjectIds.map(id => id.toString()),
+        });
 
-        let newProject;
-        try {
-            newProject = await Project.create({
-                _id: projectId,
-                title: project.title,
-                categoryId: categoryObjectId.toString(),
-                shortDescription: project.shortDescription,
-                fullReadme: project.fullReadme ?? '',
-                deadline: new Date(project.deadline),
-                ownerId: ownerId.toString(),
-                status: ProjectStatus.PLANNED,
-                skills: skillObjectIds.map(id => id.toString()),
-            });
-        } catch (err: unknown) {
-            const maybeMongoErr = err as { code?: number; keyValue?: Record<string, unknown> };
-            if (maybeMongoErr && maybeMongoErr.code === 11000) {
-                const duplicateField = Object.keys(maybeMongoErr.keyValue || {})[0] || 'field';
-                const duplicateValue = maybeMongoErr.keyValue?.[duplicateField];
-                throw new ErrorWithStatus(409, `Project with ${duplicateField} "${duplicateValue}" already exists`);
-            }
-            throw err as Error;
+        for (const file of (files || [])) {
+            const image = await Image.create({
+                image_path: file.filename,
+                projectId: newProject._id,
+            })
+            newProject.images.push(image._id)
+        }
+        await newProject.save();
+        
+        const finishedProject = await Project.findById(newProject._id).populate<{images: IImage[]}>("images").populate<{skills: ISkill[]}>("skills").populate<{categoryId: ICategory}>("categoryId")
+
+        if (!finishedProject) {
+            throw new ErrorWithStatus(404, "Project not found");
         }
 
-
-        const projectDir = path.join(publicDir, 'projects', newProject._id.toString());
-        await fs.promises.mkdir(projectDir, { recursive: true });
-
-        // Move files sequentially and rollback on any failure
-        const movedFiles: string[] = []; // absolute dest paths already moved
-        const createdImageIds: mongoose.Types.ObjectId[] = [];
-        const images: any[] = [];
-
-        try {
-            for (const file of (files || [])) {
-                const src = path.join(publicDir, file.filename);
-                const dest = path.join(projectDir, file.filename);
-
-                // Move file into project dir (with EXDEV fallback)
-                await moveWithFallback(src, dest);
-                movedFiles.push(dest);
-
-                // Create Image document
-                const imageDoc = await Image.create({
-                    image_path: path.join('projects', newProject._id.toString(), file.filename),
-                    projectId: newProject._id,
-                });
-                createdImageIds.push(imageDoc._id);
-                images.push(imageDoc);
-            }
-        } catch (e) {
-            try {
-                for (const f of (files || [])) {
-                    const srcPath = path.join(publicDir, f.filename);
-                    try {
-                        if (fs.existsSync(srcPath)) {
-                            await fs.promises.unlink(srcPath);
-                        }
-                    } catch {}
-                }
-            } catch {}
-
-
-            try {
-                if (createdImageIds.length > 0) {
-                    await Image.deleteMany({ _id: { $in: createdImageIds } });
-                }
-            } catch {}
-
-
-            try {
-                for (const p of [...movedFiles].reverse()) {
-                    try {
-                        if (fs.existsSync(p)) {
-                            await fs.promises.unlink(p);
-                        }
-                    } catch {}
-                }
-            } catch {}
-
-
-            try {
-                await fs.promises.rm(projectDir, { recursive: true, force: true });
-            } catch {}
-
-
-            try {
-                await Project.deleteOne({ _id: newProject._id });
-            } catch {}
-
-            const msg = e instanceof Error && e.message ? e.message : 'Failed to store project files';
-            throw new ErrorWithStatus(500, msg);
+        return {
+            id: finishedProject._id.toString(),
+            title: finishedProject.title,
+            category: {
+                id: finishedProject.categoryId._id.toString(),
+                name: finishedProject.categoryId.name
+            },
+            shortDescription: finishedProject.shortDescription,
+            fullReadme: finishedProject.fullReadme,
+            deadline: finishedProject.deadline,
+            ownerId: finishedProject.ownerId.toString(),
+            status: finishedProject.status,
+            skills: finishedProject.skills?.map((skill: any) => ({id: skill._id.toString(), name: skill.name})) ?? [],
+            images: finishedProject.images?.map((img: IImage) => ({
+                id: img._id.toString(),
+                image_path: img.image_path,
+            })) ?? [],
+            createdAt: finishedProject.createdAt,
+            updatedAt: finishedProject.updatedAt,
         }
-
-        return mapProjectToFullDto(newProject, images);
     }
 
     static async listProjects(params: {
