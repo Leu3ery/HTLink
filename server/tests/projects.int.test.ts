@@ -347,12 +347,84 @@ describe("List projects", () => {
         await request(app).get("/api/projects").query({ skills: ["ok", "not-an-id"] }).set('Authorization', `Bearer ${token}`).expect(400);
       });
 
-    
+
       it("search is case-insensitive and trims whitespace", async () => {
         await createProjectWith({ title: "Unique Searchable Title" });
         const res = await request(app).get("/api/projects").query({ search: "  SEARCHABLE  " }).set('Authorization', `Bearer ${token}`).expect(200);
         expect(res.body.total).toBe(1);
         expect(res.body.items[0].title).toBe("Unique Searchable Title");
+      });
+
+      it("should return categoryId in project preview items", async () => {
+        await Project.deleteMany({});
+        const category = await Category.findOne({ name: "Web development" });
+        expect(category).toBeTruthy();
+
+        await createProjectWith({ title: "Test Project", categoryId: category?._id.toString() });
+
+        const res = await request(app)
+          .get("/api/projects")
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+
+        expect(res.body.items.length).toBeGreaterThan(0);
+        expect(res.body.items[0]).toHaveProperty("categoryId");
+        expect(res.body.items[0].categoryId).toBe(category?._id.toString());
+      });
+
+      it("should filter by valid status values (case-insensitive)", async () => {
+        await Project.deleteMany({});
+
+        const base1 = makeCreateProjectPayload({ title: "Planned Project" });
+        const base2 = makeCreateProjectPayload({ title: "In Progress Project" });
+
+        const { payload: payload1 } = await prepareProjectPayload(base1);
+        const { payload: payload2 } = await prepareProjectPayload(base2);
+
+        const res1 = await createProjectRequest(payload1, token);
+        const plannedId = res1.body.project.id;
+
+        const res2 = await createProjectRequest(payload2, token);
+        const inProgressId = res2.body.project.id;
+
+        await Project.findByIdAndUpdate(inProgressId, { status: ProjectStatus.IN_PROGRESS });
+
+        const resPlanned = await request(app)
+          .get("/api/projects")
+          .query({ status: "planned" })
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+
+        expect(resPlanned.body.total).toBe(1);
+        expect(resPlanned.body.items[0].id).toBe(plannedId);
+
+        const resInProgress = await request(app)
+          .get("/api/projects")
+          .query({ status: "in progress" })
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+
+        expect(resInProgress.body.total).toBe(1);
+        expect(resInProgress.body.items[0].id).toBe(inProgressId);
+      });
+
+      it("should enforce max limit of 100 and default values", async () => {
+        await Project.deleteMany({});
+        await createProjectWith({ title: "Test Project" });
+
+        const resTooLarge = await request(app)
+          .get("/api/projects")
+          .query({ limit: 200 })
+          .set('Authorization', `Bearer ${token}`)
+          .expect(400);
+
+        const resDefault = await request(app)
+          .get("/api/projects")
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+
+        expect(resDefault.body.page).toBe(1);
+        expect(resDefault.body.limit).toBe(10);
       });
 });
 
