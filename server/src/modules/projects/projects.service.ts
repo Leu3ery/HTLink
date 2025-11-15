@@ -6,8 +6,10 @@ import mongoose, { HydratedDocument } from "mongoose";
 import { fetchCategoryOrFail, fetchSkillsOrFail, mapProjectToFullDto, toObjectId } from "./utils/project.helpers";
 import { IImage, Image } from "./images/image.model";
 import { UpdateProjectDto } from "./dto/patch.project.dto";
+import { ListProjectsQueryDto } from "./dto/list.projects.dto";
 import {ISkill, Skill} from "../skills/skills.model";
 import { Category, ICategory } from "../categories/category.model";
+import * as sea from "node:sea";
 
 
 // helpers moved to ./utils/project.helpers
@@ -66,19 +68,12 @@ export default class ProjectsService {
         }
     }
 
-    static async listProjects(params: {
-        search?: string,
-        category?: string,
-        status?: string,
-        skills?: string[],
-        page?: number,
-        limit?: number,
-    }) {
+    static async listProjects(params: ListProjectsQueryDto) {
         const {
             search = '',
             category,
             status,
-            skills,
+            skills = [],
             page = 1,
             limit = 10,
         } = params;
@@ -96,22 +91,13 @@ export default class ProjectsService {
 
 
         if (status) {
-            const matched = (Object.values(ProjectStatus) as string[])
-                .find(v => v.toLowerCase() === status.toLowerCase());
-            if (!matched) {
-                throw new ErrorWithStatus(400, `Invalid status: ${status}`);
-            }
-            filter.status = matched;
+            filter.status = status;
         }
 
 
-        if (typeof skills !== 'undefined') {
-            const input = Array.isArray(skills) ? skills : [skills];
-
-            const objectIds = input.map(toObjectId);
-            if (objectIds.length > 0) {
-                filter.skills = { $all: objectIds };
-            }
+        if (skills && skills.length > 0) {
+            const objectIds = skills.map(toObjectId);
+            filter.skills = { $all: objectIds };
         }
 
         const safeLimit = Math.max(1, Math.min(100, Number(limit) || 10));
@@ -144,6 +130,8 @@ export default class ProjectsService {
 
         const items = projects.map((p) => {
             if (!p) return null;
+            const category = Category.findById(p.categoryId);
+
 
 
             const images = (p.images || [])
@@ -153,6 +141,7 @@ export default class ProjectsService {
             return {
                 id: p._id.toString(),
                 title: p.title,
+                categoryId: p.categoryId.toString(),
                 shortDescription: p.shortDescription,
                 tags: p.skills,
                 deadline: p.deadline,
@@ -329,17 +318,16 @@ export default class ProjectsService {
     }
 
     static createSearchFilter(search: string) {
-
-        if (search && search.trim()) {
-            const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");  // Example: input node.js (beta)? becomes node\.js \(beta\)\?,
+        if (search) {
+            const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             const regex = new RegExp(escaped, 'i');
             return [
-                    { title: regex },
-                    { shortDescription: regex },
-                    { fullReadme: regex },
-                ];
-            }
-            return undefined;
+                { title: regex },
+                { shortDescription: regex },
+                { fullReadme: regex },
+            ];
         }
+        return undefined;
+    }
 
 }

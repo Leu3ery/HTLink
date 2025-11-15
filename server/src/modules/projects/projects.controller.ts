@@ -6,6 +6,7 @@ import {validationWrapper} from "../../common/utils/utils.wrappers";
 import {statusSchema} from "./dto/status.dto";
 import {ErrorWithStatus} from "../../common/middlewares/errorHandlerMiddleware";
 import { updateProjectSchema } from "./dto/patch.project.dto";
+import { listProjectsQuerySchema, ListProjectsQueryDto } from "./dto/list.projects.dto";
 
 export default class ProjectsController{
 
@@ -27,46 +28,9 @@ export default class ProjectsController{
     }
 
     static async list(req: Request, res: Response, next: NextFunction) {
-        const {
-            search = '',
-            category,
-            status,
-            skills,
-            page = '1',
-            limit = '10',
-        } = req.query as Record<string, string | string[] | undefined>;
+        const dto = validationWrapper(listProjectsQuerySchema, req.query);
 
-        const params: {
-            search?: string;
-            category?: string;
-            status?: string;
-            skills?: string[];
-            page: number;
-            limit: number;
-        } = {
-            page: Number(page || 1),
-            limit: Number(limit || 10),
-        };
-        if (isNaN(params.page) || params.page < 1) {
-            throw new ErrorWithStatus(400, "Invalid page number");
-        }
-        if (isNaN(params.limit) || params.limit < 1 || params.limit > 100) {
-            throw new ErrorWithStatus(400, "Invalid limit number");
-        }
-
-        const s = String(search || '').trim();
-        if (s) params.search = s;
-        if (category) params.category = String(category);
-        if (status) params.status = String(status);
-        if (typeof skills !== 'undefined') {
-            if (Array.isArray(skills)) {
-                params.skills = skills.map(s => String(s));
-            } else {
-                params.skills = [String(skills)];
-            }
-        }
-
-        const response = await ProjectsService.listProjects(params);
+        const response = await ProjectsService.listProjects(dto);
 
         res.status(200).json(response);
     }
