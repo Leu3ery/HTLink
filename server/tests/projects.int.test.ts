@@ -397,7 +397,6 @@ describe("Update project (PATCH /:id/update)", () => {
 
         const updateData = {
             title: "AB", // Too short (min 3)
-            // Missing required fields
         };
 
         await request(app)

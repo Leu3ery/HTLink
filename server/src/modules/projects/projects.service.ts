@@ -5,7 +5,7 @@ import { ErrorWithStatus } from "../../common/middlewares/errorHandlerMiddleware
 import mongoose, { HydratedDocument } from "mongoose";
 import { fetchCategoryOrFail, fetchSkillsOrFail, mapProjectToFullDto, toObjectId } from "./utils/project.helpers";
 import { IImage, Image } from "./images/image.model";
-import { UpdateProjectDto } from "./dto/update.project.dto";
+import { UpdateProjectDto } from "./dto/patch.project.dto";
 import {ISkill, Skill} from "../skills/skills.model";
 import { Category, ICategory } from "../categories/category.model";
 
@@ -261,6 +261,7 @@ export default class ProjectsService {
 
 
         const project = await Project.findById(projectId);
+        console.log(project?.categoryId)
         if (!project) {
             throw new ErrorWithStatus(404, "Project not found");
         }
@@ -273,11 +274,12 @@ export default class ProjectsService {
             { new: true, runValidators: true, context: "query" }
         );
 
-        if (!updatedProject) {
-            throw new ErrorWithStatus(404, "Project not found");
-        }
 
-        const finishedProject = await Project.findById(updatedProject._id).populate<{images: IImage[]}>("images").populate<{skills: ISkill[]}>("skills").populate<{categoryId: ICategory}>("categoryId")
+        const finishedProject = await Project
+                                        .findById(updatedProject?._id)
+                                        .populate<{images: IImage[]}>("images")
+                                        .populate<{skills: ISkill[]}>("skills")
+                                        .populate<{categoryId: ICategory}>("categoryId")
 
         if (!finishedProject) {
             throw new ErrorWithStatus(404, "Project not found");

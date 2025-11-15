@@ -5,7 +5,7 @@ import { createProjectSchema } from "./dto/create.project.dto";
 import {validationWrapper} from "../../common/utils/utils.wrappers";
 import {statusSchema} from "./dto/status.dto";
 import {ErrorWithStatus} from "../../common/middlewares/errorHandlerMiddleware";
-import { updateProjectSchema } from "./dto/update.project.dto";
+import { updateProjectSchema } from "./dto/patch.project.dto";
 
 export default class ProjectsController{
 
