@@ -1,23 +1,40 @@
 version: '3'
+
 services:
   htlink:
     image: leu3ery/htlink-backend:latest
-    # restart: always
-    ports: 
-      - "${PORT}:${PORT}"
     volumes:
       - htlink-public-data:/app/public
-    environment: 
-      PORT: ${PORT}
+    environment:
+      PORT: 3000
       JWT_SECRET: ${JWT_SECRET_COMPOSE}
       MONGO_URI: ${MONGO_URI_COMPOSE}
       PASSWORD_SALT: ${PASSWORD_SALT}
       DOMEN: ${DOMEN}
     depends_on:
       - mongodb
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: leu3ery/htlink-frontend:latest
+    depends_on:
+      - htlink
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "11:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - client
+      - htlink
+      - mongodb
+
   mongodb:
     image: mongodb/mongodb-community-server:latest
-    # restart: always
     environment:
       MONGODB_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGODB_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
