@@ -7,6 +7,8 @@ import { config } from "./config/config";
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // limiter
 const limiter = rateLimit({
 	windowMs: 60 * 1000,

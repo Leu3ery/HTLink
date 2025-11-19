@@ -9,12 +9,9 @@ RUN npm ci
 COPY . .
 RUN npm run build -- --configuration production
 
-# Serve static files with Nginx
-FROM nginx:1.27-alpine AS runtime
-COPY --from=build /app/dist/test/browser /usr/share/nginx/html
 
-EXPOSE 80
-STOPSIGNAL SIGQUIT
-
-CMD ["nginx", "-g", "daemon off;"]
-
+# output only build files
+FROM alpine AS export
+WORKDIR /dist
+COPY --from=build /app/dist/test/browser ./
+CMD ["sleep", "infinity"]
