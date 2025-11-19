@@ -1,17 +1,25 @@
-FROM node:20-alpine AS build
-WORKDIR /app
-
-# Install dependencies
-COPY package*.json ./
-RUN npm ci
-
-# Build production bundle
-COPY . .
-RUN npm run build -- --configuration production
-
-
-# output only build files
-FROM alpine AS export
-WORKDIR /dist
-COPY --from=build /app/dist/test/browser ./
-CMD ["sleep", "infinity"]
+# ---------- BUILD ----------
+    FROM node:20-alpine AS build
+    WORKDIR /app
+    
+    COPY package*.json ./
+    RUN npm ci
+    
+    COPY . .
+    RUN npm run build -- --configuration production
+    
+    # ---------- RUNTIME (NGINX) ----------
+    FROM nginx:1.27-alpine
+    
+    # Remove default config
+    RUN rm /etc/nginx/conf.d/default.conf
+    
+    # Copy custom nginx config
+    COPY nginx/default.conf.template /etc/nginx/conf.d/default.conf
+    
+    # Copy built frontend
+    COPY --from=build /app/dist/*/browser /usr/share/nginx/html
+    
+    EXPOSE 80
+    CMD ["nginx", "-g", "daemon off;"]
+    
