@@ -12,12 +12,12 @@ export function loggingInterceptor(
   const authService = inject(AuthService);
 
   // Prefix relative URLs with API_URL, avoiding double slashes
-  if (!req.url.startsWith('http')) {
-    const path = req.url.startsWith('/') ? req.url : `/${req.url}`;
-    req = req.clone({
-      url: `${API_URL}${path}`,
-    });
-  }
+  // if (!req.url.startsWith('http')) {
+  //   const path = req.url.startsWith('/') ? req.url : `/${req.url}`;
+  //   req = req.clone({
+  //     url: `${API_URL}${path}`,
+  //   });
+  // }
 
   // Read token from signal and set header only if present
   const token = authService.token();
