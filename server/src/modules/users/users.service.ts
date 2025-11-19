@@ -6,18 +6,42 @@ import { config } from "../../config/config";
 import UserMapper from "./users.mappers";
 import deleteFile from "../../common/utils/utils.deleteFile";
 import { Skill } from "../skills/skills.model";
+import LDAPService from "./authenticate";
+
+
 
 class UsersService {
 	static async isUserValid(dto: LoginDTO) {
-		return true
+		try {
+			const userInfo = await LDAPService.getInfo(dto.login.toString());
+			if (!userInfo) return false
+			return userInfo;
+		} catch (error) {
+			return false;
+		}
 	}
 
 	static async login(dto: LoginDTO) {
-		if (!await this.isUserValid(dto)) throw new ErrorWithStatus(400, "Login or password is false")
+		const userInfo = await LDAPService.getInfo(dto.login.toString());
+		if (typeof userInfo === 'number' || !userInfo) {
+			throw new ErrorWithStatus(400, "User not found");
+		}
+
 		const user = await User.findOne({ pc_number: dto.login })
 		if (user) return jwt.sign({ userId: user._id }, config.JWT_SECRET, { expiresIn: '14d' })
+		
 		const newuser = new User()
 		newuser.pc_number = dto.login
+		newuser.class = userInfo.description
+		newuser.first_name = userInfo.givenName
+		newuser.last_name = userInfo.sn
+		// Determine role: check if objectClass contains 'person' or use department info
+		const isPerson = Array.isArray(userInfo.objectClass) && userInfo.objectClass.includes('person')
+		const departmentStr = userInfo.department || ''
+		const isStudent = departmentStr.toLowerCase().includes('student')
+		newuser.role = isPerson || isStudent ? 'student' : 'teacher'
+		newuser.department = userInfo.department ? userInfo.department.split('-')[0] : undefined
+		
 		await newuser.save()
 		return jwt.sign({ userId: newuser._id }, config.JWT_SECRET, { expiresIn: '14d' })
 	}
