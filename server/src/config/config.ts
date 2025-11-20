@@ -25,6 +25,6 @@ export const config: Config = {
         url: process.env.LDAP_URL ?? "",
         bindDN: process.env.LDAP_BIND_DN ?? "",
         bindPW: process.env.LDAP_BIND_PW ?? "",
-        searchBases: process.env.LDAP_SEARCH_BASES ? process.env.LDAP_SEARCH_BASES.split(',') : []
+        searchBases: process.env.LDAP_SEARCH_BASES ? process.env.LDAP_SEARCH_BASES.split(";"): []
     }
 }

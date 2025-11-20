@@ -54,6 +54,8 @@ export default class LDAPService {
       await client.bind(userDN);
       return 200;
     } catch (err: any) {
+      console.log("getInfo error")
+      console.log(err)
       return 500;
     } finally {
       try {
@@ -95,6 +97,8 @@ export default class LDAPService {
       await client.bind(userDN, password);
       return 200;
     } catch (err: any) {
+      console.log("login error")
+      console.log(err)
       return 401;
     } finally {
       try {
