@@ -40,7 +40,6 @@ export class Edit implements OnInit {
   }
 
   private mainService = inject(MainService);
-  private nService = inject(NotificationService);
 
 
   profileForm = new FormGroup({
@@ -53,6 +52,7 @@ export class Edit implements OnInit {
     skills: new FormControl<TagType[]>([]),
   })
   skills: TagType[] = [];
+  isPending = false;
 
 
   async ngOnInit(): Promise<void> {
@@ -65,9 +65,11 @@ export class Edit implements OnInit {
       this.profileForm.patchValue({photo_path: URL.createObjectURL(file)});
     }
   }
-  submitEdit(){
+  async submitEdit(){
     if (this.profileForm.valid) {
-      this.profileService.updateProfile(this.profileForm.value)
+      this.isPending = true;
+      await this.profileService.updateProfile(this.profileForm.value)
+      this.isPending = false;
     }
   }
 

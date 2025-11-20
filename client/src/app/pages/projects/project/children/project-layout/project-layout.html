@@ -3,7 +3,6 @@
   @for (page of pages; track page) {
     <div
       class="btn svg"
-      (click)="page?.click()"
        [routerLink]="page.path"
        [ngClass]="{
         active: isActive(page.path)
@@ -15,6 +14,20 @@
     </div>
   }
 </app-block>
+
+<div class="headerBtns">
+  @for (page of headerBtns; track page) {
+  <app-block class="btn svg"
+    (click)="page?.click()"
+    [routerLink]="page.path"
+    [ngClass]="{
+            active: isActive(page.path)
+          }">
+      <svg icon="{{page.icon}}"></svg>
+  </app-block>
+  }
+</div>
+
 <div class="holder">
   <app-notifications></app-notifications>
   <div class="content">

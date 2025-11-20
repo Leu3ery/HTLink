@@ -57,9 +57,29 @@
   :host {
     flex-direction: column-reverse;
   }
+  .headerBtns {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+
+    position: fixed;
+    top: 10px;
+    left: 10px;
+
+    width: calc(100% - 20px);
+
+    z-index: 100;
+
+    .btn.svg {
+      width: 50px;
+      height: 50px;
+      padding: .5rem;
+      box-shadow: 0 2px 20px color-mix(in srgb, #0f172A, white 88%);
+    }
+  }
   .nav {
     position: fixed;
-    bottom: 10px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
 
@@ -70,7 +90,7 @@
 
     overflow: hidden;
 
-    width: 85%;
+    width: 80%;
     height: 4rem;
     background-color: color-mix(in srgb, var(--primary-color), transparent 20%);
     backdrop-filter: blur(10px);

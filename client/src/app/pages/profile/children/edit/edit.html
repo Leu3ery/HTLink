@@ -4,7 +4,7 @@
     <svg icon="arrowBack"></svg>
   </div>
   <h2>Profile</h2>
-  <div class="btn save" *ngIf="profileForm.valid" (click)="submitEdit()">
+  <div class="btn save" [class.disabled]="isPending" *ngIf="profileForm.valid" (click)="submitEdit()">
     <svg icon="check"></svg>
   </div>
 </div>

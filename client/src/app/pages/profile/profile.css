@@ -78,14 +78,15 @@ app-block .header {
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
+
       .block-item {
-        width: 100%;
+        flex: 1 1 50%;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 0.2rem;
         background-color: var(--bg-color);
-        padding: 1rem;
+        padding: min(2vw, 1rem);
         border-radius: 1rem;
 
         .number {
