@@ -55,7 +55,8 @@ class UsersService {
 		const departmentStr = userInfo.department || ''
 		const isStudent = departmentStr.toLowerCase().includes('student')
 		newuser.role = isPerson || isStudent ? 'student' : 'teacher'
-		newuser.department = userInfo.department ? userInfo.department.split('-')[0] : undefined
+		// newuser.department = userInfo.department ? userInfo.department.split('-')[0] : undefined
+		newuser.department = "IF"
 		
 		await newuser.save()
 		return jwt.sign({ userId: newuser._id }, config.JWT_SECRET, { expiresIn: '14d' })
