@@ -13,29 +13,40 @@ import LDAPService from "./authenticate";
 class UsersService {
 	static async isUserValid(dto: LoginDTO) {
 		try {
+			const login = await LDAPService.login(dto.login.toString(), dto.password);
+			if (login === 200) return true
+			return false
+		} catch (error) {
+			return false
+		}
+	}
+
+	static async getUserInfo(dto: LoginDTO) {
+		try {
 			const userInfo = await LDAPService.getInfo(dto.login.toString());
-			if (!userInfo) return false
+			if (typeof userInfo === 'number' || !userInfo) {
+				throw new ErrorWithStatus(400, "User not found");
+			}
 			return userInfo;
 		} catch (error) {
-			return false;
+			throw new ErrorWithStatus(400, "User not found");
 		}
 	}
 
 	static async login(dto: LoginDTO) {
-		const userInfo = await LDAPService.getInfo(dto.login.toString());
-		if (typeof userInfo === 'number' || !userInfo) {
-			throw new ErrorWithStatus(400, "User not found");
-		}
+		const isUserValid = await this.isUserValid(dto);
+		if (!isUserValid) throw new ErrorWithStatus(400, "Login or password is false");
+		const userInfo = await this.getUserInfo(dto);
 
 		const user = await User.findOne({ pc_number: dto.login })
 		if (user) return jwt.sign({ userId: user._id }, config.JWT_SECRET, { expiresIn: '14d' })
 		
 		const newuser = new User()
 		newuser.pc_number = dto.login
+
 		newuser.class = userInfo.description
 		newuser.first_name = userInfo.givenName
 		newuser.last_name = userInfo.sn
-		// Determine role: check if objectClass contains 'person' or use department info
 		const isPerson = Array.isArray(userInfo.objectClass) && userInfo.objectClass.includes('person')
 		const departmentStr = userInfo.department || ''
 		const isStudent = departmentStr.toLowerCase().includes('student')
