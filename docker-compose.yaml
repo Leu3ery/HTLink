@@ -11,6 +11,10 @@ services:
       MONGO_URI: ${MONGO_URI_COMPOSE}
       PASSWORD_SALT: ${PASSWORD_SALT}
       DOMEN: ${DOMEN}
+      LDAP_URL: ${LDAP_URL}
+      LDAP_BIND_DN: ${LDAP_BIND_DN}
+      LDAP_BIND_PW: ${LDAP_BIND_PW}
+      LDAP_SEARCH_BASES: ${LDAP_SEARCH_BASES}
     depends_on:
       - mongodb
 
