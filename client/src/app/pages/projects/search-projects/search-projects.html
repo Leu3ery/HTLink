@@ -1,1 +1,8 @@
-<app-search-bar></app-search-bar>
+<app-search-bar [filters]="availableFilters" (submit)="onSubmitSearch($event)"></app-search-bar>
+
+
+<div class="projects-holder">
+  @for (project of searchResults; track project.id) {
+    <app-project-preview [data]="project"></app-project-preview>
+  }
+</div>

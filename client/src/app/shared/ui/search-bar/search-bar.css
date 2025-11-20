@@ -4,16 +4,23 @@
   gap: .5rem;
 
   .input-holder {
-    width: 70%;
+    width: 80%;
   }
   .btn {
-    width: 30%;
+    width: 20%;
+    min-width: 50px;
   }
 }
 
 .filters-holder {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   gap: .5rem;
   align-items: center;
+}
+@media (max-width: 800px) {
+  .btn.main p {
+    display: none;
+  }
 }

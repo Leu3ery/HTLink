@@ -55,3 +55,10 @@ app-block {
 app-block {
   padding: 0 0 1rem 0;
 }
+
+
+@media (min-width: 801px) {
+  :host {
+    max-width: 300px;
+  }
+}

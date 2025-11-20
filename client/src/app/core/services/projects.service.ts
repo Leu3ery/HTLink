@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
-import {ProjectType} from '@core/types/types.constans';
+import {ProfileType, ProjectType} from '@core/types/types.constans';
+import {cleanObject} from '@shared/utils/cleanObject';
+import {firstValueFrom} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectsService {
+  constructor(private http: HttpClient) {}
 
 
   async getProject(id: string | null): Promise<ProjectType> {
@@ -24,7 +28,6 @@ export class ProjectsService {
       likes: 42
     };
   }
-
   async getMyProjects(): Promise<ProjectType[]> {
     return [
       {
@@ -63,5 +66,17 @@ export class ProjectsService {
         likes: 20
       }
     ]
+  }
+
+  async getProjects(search: {value: string, filters:{[key: string]: any}}): Promise<ProjectType[]> {
+    const data = cleanObject({
+      nameContains: search.value,
+      ...search.filters,
+    })
+    const res = await firstValueFrom(
+      this.http.get<{ projects: ProjectType[] }>('/api/users/', { params: data })
+    );
+    return res.projects;
+
   }
 }

@@ -8,3 +8,18 @@
 
   gap: 1rem;
 }
+.users-holder {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+@media (min-width: 801px) {
+  .users-holder {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}

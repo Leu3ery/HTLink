@@ -55,3 +55,16 @@ app-project-preview {
   gap: 1rem;
   padding-top: 1rem;
 }
+
+
+@media (min-width: 801px) {
+  .holder {
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    padding: 1rem;
+  }
+}

@@ -6,7 +6,7 @@
 <div class="holder">
 @if (projects) {
   @for (project of projects; track project.id) {
-  <app-project-preview [data] = "project"></app-project-preview>
+    <app-project-preview [data] = "project"></app-project-preview>
   }
 }
 </div>

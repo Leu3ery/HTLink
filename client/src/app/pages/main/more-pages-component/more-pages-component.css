@@ -75,3 +75,10 @@ app-block {
     color: var(--contrast-color);
   }
 }
+
+
+@media (min-width: 801px) {
+  :host {
+    padding: 2.5% 25% 0 25%;
+  }
+}
