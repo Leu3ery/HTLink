@@ -6,7 +6,7 @@
     RUN npm ci
     
     COPY . .
-    RUN npm run build -- --configuration production
+    RUN npm run build
     
     # ---------- RUNTIME (NGINX) ----------
     FROM nginx:1.27-alpine
