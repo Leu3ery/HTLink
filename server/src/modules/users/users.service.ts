@@ -14,6 +14,7 @@ class UsersService {
 	static async isUserValid(dto: LoginDTO) {
 		try {
 			const login = await LDAPService.login(dto.login.toString(), dto.password);
+			console.log(login)
 			if (login === 200) return true
 			return false
 		} catch (error) {
@@ -24,6 +25,7 @@ class UsersService {
 	static async getUserInfo(dto: LoginDTO) {
 		try {
 			const userInfo = await LDAPService.getInfo(dto.login.toString());
+			console.log(userInfo)
 			if (typeof userInfo === 'number' || !userInfo) {
 				throw new ErrorWithStatus(400, "User not found");
 			}
