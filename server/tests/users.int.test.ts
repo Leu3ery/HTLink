@@ -18,12 +18,61 @@ let token: string;
 let id: string;
 let pc_number = 20220467;
 
+const mockLDAPUser = {
+  dn: "CN=20229999,CN=Users,DC=htl-stp,DC=if",
+  objectClass: ["top", "person", "organizationalPerson", "user"],
+  cn: "20229999",
+  sn: "Mustermann",
+  description: "3AHIF",
+  givenName: "Max",
+  distinguishedName: "CN=20229999,CN=Users,DC=htl-stp,DC=if",
+  instanceType: "4",
+  whenCreated: "20220907080825.0Z",
+  whenChanged: "20251117064443.0Z",
+  displayName: "Max Mustermann",
+  uSNCreated: "13016",
+  memberOf: [
+    "CN=Jg3,CN=Users,DC=htl-stp,DC=if",
+    "CN=ifts2,CN=Users,DC=htl-stp,DC=if",
+  ],
+  uSNChanged: "15167355",
+  department: "IF-Student",
+  name: "20229999",
+  objectGUID: {
+    type: "Buffer",
+    data: [34, 7, 217, 164, 151, 120, 159, 71, 144, 102, 110, 124, 202, 78, 194, 117],
+  },
+  userAccountControl: "512",
+  badPwdCount: "0",
+  codePage: "0",
+  countryCode: "0",
+  badPasswordTime: "134072502820028129",
+  lastLogoff: "0",
+  lastLogon: "134080497484200676",
+  pwdLastSet: "134012720129203130",
+  primaryGroupID: "513",
+  objectSid: {
+    type: "Buffer",
+    data: [1, 5, 0, 0, 0, 0, 0, 5, 21, 0, 0, 0, 216, 210, 249, 31, 148, 42, 105, 80, 142, 107, 2, 118, 222, 22, 0, 0],
+  },
+  accountExpires: "0",
+  logonCount: "187",
+  sAMAccountName: "20229999",
+  sAMAccountType: "805306368",
+  objectCategory: "CN=Person,CN=Schema,CN=Configuration,DC=htl-stp,DC=if",
+  dSCorePropagationData: "16010101000000.0Z",
+  lastLogonTimestamp: "134078354686493124",
+  mail: "20229999@htlstp.at",
+  "*": [],
+};
+
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
   const uri = mongo.getUri();
   await mongoose.connect(uri);
 
   jest.spyOn(UsersService, "isUserValid").mockResolvedValue(true);
+  jest.spyOn(UsersService, "getUserInfo").mockResolvedValue(mockLDAPUser as any);
 
   await new setSkills(["Express Js", "Angular", "Python"]).set();
 });
