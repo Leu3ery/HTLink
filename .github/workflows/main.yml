@@ -58,21 +58,67 @@ jobs:
             push: true
             tags: ${{ secrets.DOCKERHUB_USERNAME }}/htlink-backend:latest
             platforms: linux/amd64,linux/arm64
-  deploy:
+  docker-frontend:
     runs-on: ubuntu-latest
-    needs: docker
+    needs: build-and-test
+
     steps:
-      - name: Deploy to VPS via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd /root/HTLink
-            git fetch origin
-            git checkout dev
-            git pull origin dev
-            docker compose pull
-            docker compose up -d
-            docker image prune -f
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push frontend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/htlink-frontend:latest
+          platforms: linux/amd64,linux/arm64
+  notify:
+    needs: [docker, docker-frontend]
+    runs-on: ubuntu-latest
+    if: always()  # чтобы сработало и при успехе, и при провале
+    steps:
+      - name: Send Telegram result
+        run: |
+          if [ "${{ needs.build.result }}" = "success" ]; then
+            STATUS="✅ Build succeeded"
+          else
+            STATUS="❌ Build failed"
+          fi
+
+          TEXT="$STATUS в репо $GITHUB_REPOSITORY, ветка $GITHUB_REF_SHORT, коммит $GITHUB_SHA"
+
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TG_CHAT_ID }} \
+            --data-urlencode text="$TEXT"
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: docker
+  #   steps:
+  #     - name: Deploy to VPS via SSH
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ secrets.SSH_HOST }}
+  #         username: ${{ secrets.SSH_USER }}
+  #         key: ${{ secrets.SSH_KEY }}
+  #         script: |
+  #           cd /root/HTLink
+  #           git fetch origin
+  #           git checkout dev
+  #           git pull origin dev
+  #           docker compose pull
+  #           docker compose up -d
+  #           docker image prune -f
+
+
+Как мне объединить builds
