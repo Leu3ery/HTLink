@@ -4,9 +4,9 @@
   gap: 1.5rem;
 
   display: grid;
-  grid-template-areas: "a b" "a c" "a ." "d d";
+  grid-template-areas: "a b" "a c" "a d";
 
-  padding: 5% 20% 0 20%;
+  padding: 5% 10% 0 10%;
 }
 app-block .header {
   width: 100%;

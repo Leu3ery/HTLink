@@ -44,8 +44,6 @@ export class Edit implements OnInit {
 
   profileForm = new FormGroup({
     photo_path: new FormControl<string | null>(null),
-    first_name: new FormControl('', [Validators.required]),
-    last_name: new FormControl('', [Validators.required]),
     description: new FormControl('', [Validators.maxLength(160)]),
     github_link: new FormControl('', [Validators.pattern('https://github.com/.+')]),
     linkedin_link: new FormControl('', [Validators.pattern('https://linkedin.com/.+')]),
