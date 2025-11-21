@@ -89,6 +89,9 @@ jobs:
     needs: [docker, docker-frontend]
     runs-on: ubuntu-latest
     if: always()
+    env:
+      COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+      BRANCH_NAME: ${{ github.ref_name }}
     steps:
       - name: Send Telegram result
         run: |
@@ -99,7 +102,7 @@ jobs:
             STATUS="❌ Ошибка в одном из Docker-билдов (backend или frontend)"
           fi
 
-          TEXT="$STATUS в репо $GITHUB_REPOSITORY, ветка $GITHUB_REF, коммит $GITHUB_SHA"
+          TEXT="$STATUS в репо $GITHUB_REPOSITORY, ветка $GITHUB_REF, коммит $GITHUB_SHA, сообщение=$COMMIT_MESSAGE"
 
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TG_CHAT_ID }} \
