@@ -13,7 +13,7 @@ import LDAPService from "./authenticate";
 class UsersService {
 	static async isUserValid(dto: LoginDTO) {
 		try {
-			const login = await LDAPService.login(dto.login.toString(), dto.password);
+			const login = await LDAPService.login(dto.login, dto.password);
 			console.log(login)
 			if (login === 200) return true
 			return false
@@ -25,7 +25,7 @@ class UsersService {
 
 	static async getUserInfo(dto: LoginDTO) {
 		try {
-			const userInfo = await LDAPService.getInfo(dto.login.toString());
+			const userInfo = await LDAPService.getInfo(dto.login);
 			console.log(userInfo)
 			if (typeof userInfo === 'number' || !userInfo) {
 				throw new ErrorWithStatus(400, "User not found");
@@ -48,17 +48,25 @@ class UsersService {
 		const newuser = new User()
 		newuser.pc_number = dto.login
 
-		newuser.class = userInfo.description
+		let userClass = null;
+		let role = null;
+		if (userInfo.description && /^\d/.test(userInfo.description.trim())) {
+			userClass = userInfo.description.trim();
+			role = "Student"
+		} else {
+			role = userInfo.description?.trim() || null
+		}
+
+
+		newuser.class = userClass
 		newuser.first_name = userInfo.givenName
 		newuser.last_name = userInfo.sn
-		const isPerson = Array.isArray(userInfo.objectClass) && userInfo.objectClass.includes('person')
-		const departmentStr = userInfo.department || ''
-		const isStudent = departmentStr.toLowerCase().includes('student')
-		newuser.role = isPerson || isStudent ? 'student' : 'teacher'
-		// newuser.department = userInfo.department ? userInfo.department.split('-')[0] : undefined
+		newuser.role = role
+		// newuser.department = userInfo.department ? userInfo.department.split('-')[0] : undefined 
 		newuser.department = "IF"
-		
+		newuser.mail = userInfo.mail
 		await newuser.save()
+
 		return jwt.sign({ userId: newuser._id }, config.JWT_SECRET, { expiresIn: '14d' })
 	}
 
@@ -87,7 +95,7 @@ class UsersService {
 	static async getUsers(dto: GetUsersDTO) {
 		const query: any = {}
 		if (dto.department) query.department = dto.department
-		if (dto.class) query.class = dto.class
+		if (dto.class) query.class = { $regex: '^' + dto.class, $options: 'i' }
 		if (dto.pc_id) query.pc_number = dto.pc_id
 		
 		// Build the search query for nameContains using $or to search in first_name or last_name

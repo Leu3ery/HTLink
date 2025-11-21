@@ -5,15 +5,15 @@ export const departmentsList = ['IF', 'WI', 'MB', 'EL', "ETI"] as const
 export type Department = (typeof departmentsList)[number]
 
 
-export const rolesList = [
-  "student",
-  "teacher",
-  "dep president",
-  "school president",
-  "director",
-  "admin",
-] as const
-export type Role = (typeof rolesList)[number]
+// export const rolesList = [
+//   "student",
+//   "Lehrer",
+//   "Abteilungsvorstand",
+//   "school president",
+//   "director",
+//   "admin",
+// ] as const
+// export type Role = (typeof rolesList)[number]
 
 
 export interface IUser {
@@ -24,13 +24,14 @@ export interface IUser {
   department?: Department | null;
   class?: string | null;
   photo_path?: string | null;
-  role?: Role | null;
+  role?: string | null;
   github_link?: string | null;
   linkedin_link?: string | null;
   banner_link?: string | null;
   created_at?: Date;
-  pc_number: number;
-  skills?: Types.ObjectId[]
+  pc_number: string;
+  skills?: Types.ObjectId[];
+  mail?: string | null;
 }
 
 export const userSchema = new Schema<IUser>(
@@ -75,9 +76,8 @@ export const userSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: rolesList,
       required: false,
-      default: "student",
+      default: null,
     },
     github_link: {
       type: String,
@@ -102,7 +102,7 @@ export const userSchema = new Schema<IUser>(
       default: Date.now,
     },
     pc_number: {
-      type: Number,
+      type: String,
       unique: true,
       required: true
     },
@@ -110,6 +110,11 @@ export const userSchema = new Schema<IUser>(
       type: [Schema.Types.ObjectId],
       ref: "Skill",
       default: [],
+    },
+    mail: {
+      type: String,
+      required: false,
+      default: null,
     }
   },
   { versionKey: false }
