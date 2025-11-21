@@ -97,5 +97,9 @@ app-block {
     display: flex;
     flex-direction: column;
     padding: 1rem 5% 0 5%;
+
+    app-block {
+      width: 100%;
+    }
   }
 }
