@@ -1,7 +1,8 @@
 :host {
   display: flex;
   flex-direction: column;
-
+  justify-content: flex-start;
+  align-items: center;
 
   padding: 1rem;
 
@@ -10,6 +11,13 @@
 
   gap: 1rem;
 }
+.wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
 .users-holder {
   display: flex;
   flex-direction: column;
@@ -17,21 +25,17 @@
 
   height: fit-content;
   padding-bottom: 6rem;
-
-  app-user-preview {
-    min-width: 450px;
-  }
 }
 
 
 @media (min-width: 801px) {
-  :host {
-    padding: 0 15%;
+  .wrapper {
+    width: fit-content;
+    min-width: 816px;
   }
   .users-holder {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 1rem;
+    display: grid;
+    width: min-content;
+    grid-template-columns: repeat(2, 1fr);
   }
 }

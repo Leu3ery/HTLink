@@ -1,0 +1,171 @@
+@if (step === 1) {
+<div class="step">
+  <div class="header">
+    Create New Project - Step {{step}}
+  </div>
+  <div class="content" style=" display: flex; justify-content: center; align-items: center;">
+    <svg icon="media" class="svg">
+    </svg>
+    <div class="select">
+      <label for="project-name">Select From Device</label>
+      <input (change)="onSelectFiles($event)" id="project-name" type="file" multiple accept="image/*" hidden />
+    </div>
+  </div>
+</div>
+} @else if (step == 1.1) {
+<div class="step add-more-photos">
+  <div class="header">
+    Add More Photos - Step {{step}}
+
+    <div *ngIf="selectedFiles.length" class="btn"
+      style="position: absolute; height: 3rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%);"
+      (click)="step=2"><svg icon="arrowRight"></svg></div>
+  </div>
+  <div class="content">
+    <div class="item btn add more">
+      <svg icon="media" class="svg">
+      </svg>
+      <div class="select">
+        <label for="project-name">Select More</label>
+        <input (change)="onSelectFiles($event)" id="project-name" type="file" multiple accept="image/*" hidden />
+      </div>
+    </div>
+    @for (file of selectedFiles; let i = $index; track i) {
+    <div class="item">
+      <div class="btn delete" (click)="selectedFiles.splice(i, 1)"><svg icon="trashcan"></svg></div>
+      <img [src]="file | fileToDataUrl" alt="Selected Image" />
+    </div>
+    }
+  </div>
+</div>
+} @else if (step == 2) {
+<div class="step">
+  <div class="header">
+    About This Project - Step {{step}}
+    <div class="btn"
+      style="position: absolute; height: 3rem; width: 3rem; top: 50%; left: 10px; transform: translateY(-50%) rotate(180deg);"
+      (click)="step=1.1"><svg icon="arrowRight"></svg></div>
+
+    <div *ngIf="createForm.valid" class="btn"
+      style="position: absolute; height: 3rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%);"
+      (click)="step=2.1"><svg icon="arrowRight"></svg></div>
+  </div>
+  <form class="content" [formGroup]="createForm"
+    style="display: flex; flex-direction: column; gap: 1rem; justify-content: flex-start;">
+    <app-block style="z-index: 100;">
+      <div class="header">
+        <h3>Category</h3>
+      </div>
+      <div class="content">
+        <app-select [value]="createForm.value.category ?? '' " class="add-skill" (change)="changeCategory($event)"
+          [options]="toOptions(categories)">
+        </app-select>
+      </div>
+    </app-block>
+
+    <app-block>
+      <div class="header">
+        Info
+      </div>
+      <div class="input-holder">
+        <label for="project-title">Project Title</label>
+        <input id="project-title" formControlName="title" type="text" placeholder="" />
+      </div>
+      <div class="input-holder">
+        <label for="project-short-description">Project Short Description</label>
+        <input id="project-short-description" formControlName="shortDescription" type="text" placeholder="" />
+      </div>
+    </app-block>
+    <app-block style="z-index: 99;">
+      <div class="header">
+        <h3>Skills</h3>
+      </div>
+      <div class="content">
+        <app-select value="" class="add-skill" (change)="addSkill($event)" [options]="toOptions(skills)">
+        </app-select>
+        <div class="tags-holder">
+          @for (skill of createForm.value.skills; track skill.id) {
+          <app-tag [removable]="true" (remove)="removeSkill(skill)">{{skill.name}}</app-tag>
+          }
+        </div>
+      </div>
+    </app-block>
+
+    <app-block>
+      <div class="header">
+        Deadline
+      </div>
+      <div class="input-holder">
+        <label for="project-deadline">Project Deadline</label>
+        <input id="project-deadline" formControlName="deadline" type="date" placeholder="" />
+      </div>
+    </app-block>
+
+  </form>
+</div>
+} @else if (step == 2.1) {
+<div class="step">
+  <div class="header">
+    Addition Readme - Step {{step}}
+    <div class="btn"
+      style="position: absolute; height: 3rem; width: 3rem; top: 50%; left: 10px; transform: translateY(-50%) rotate(180deg);"
+      (click)="step=2"><svg icon="arrowRight"></svg></div>
+  
+    <div *ngIf="createForm.valid" class="btn"
+      style="position: absolute; height: 3rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%); color: var(--main-color);"
+      (click)="createProject()">Finish</div>
+  </div>
+
+  <div class="content" [formGroup]="createForm">
+    <app-block class="way">
+      <div class="header">
+        Repo Link (GitHub / GitLab)
+      </div>
+      <div class="body">
+        <div class="input-holder">
+          <label>Paste repo URL (GitHub or GitLab)</label>
+          <input type="text" formControlName="repoUrl" />
+        </div>
+        <div class="btn main search" (click)="uploadFromRepo()">
+          <svg icon="download" style="rotate: 180deg;"></svg>
+          <span *ngIf="!isLoading">Upload ReadMe</span>
+          <span *ngIf="isLoading">Loading...</span>
+        </div>
+      </div>
+      <div class="error" *ngIf="loadError">{{ loadError }}</div>
+    </app-block>
+    <app-block class="way">
+      <div class="header">
+        Upload ReadMe File
+      </div>
+
+      <div class="select">
+        <label for="readMeFile" class="btn main">
+          Select File
+        </label>
+
+        <input id="readMeFile" type="file" hidden accept=".md,.markdown,.txt" (change)="onReadmeFileSelected($event)" />
+      </div>
+
+      <div class="error" *ngIf="fileError">{{ fileError }}</div>
+    </app-block>
+    <app-block class="way">
+      <div class="header">
+        Edit Manually
+      </div>
+      <div class="body" style="flex-direction: column;">
+        <ngx-editor-menu [editor]="editor"></ngx-editor-menu>
+        <ngx-editor [editor]="editor" [placeholder]="'Type here...'" formControlName="editorHTML">
+        </ngx-editor>
+      </div>
+    </app-block>
+
+    <app-block class="way">
+      <div class="header">Preview</div>
+      <div class="body" style="flex-direction: column;">
+        <markdown [data]="createForm.value.fullReadme"></markdown>
+      </div>
+    </app-block>
+  </div>
+</div>
+}

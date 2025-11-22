@@ -1,16 +1,31 @@
 export type ProjectType = {
-  id: string;
-  title: string;
-  description: string;
-  text?: string;
+  id: string,
+  title: string,
+  category: {
+      id: string,
+      name: string
+  },
+  shortDescription: string,
+  fullReadme: string,
+  deadline: string,
+  ownerId: string,
+  status: string,
+  skills: TagType[],
   images: ImageType[],
-  authorId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  tags: TagType[];
-  likes: number;
-  members?: ProfileType[];
+  createdAt: string,
+  updatedAt: string
 }
+
+export type ProjectCreateData = {
+  title: string;
+  shortDescription: string;
+  repoUrl: string;
+  categoryId: string;
+  skills: string[];
+  fullReadme: string;
+  images: File[];
+  deadline?: string;
+};
 
 export type ProfileType = {
   id: string,
@@ -30,8 +45,8 @@ export type ProfileType = {
 }
 
 export type ImageType = {
-  url: string;
-  size: number;
+  id: string;
+  image_path: string;
 }
 export type TagType = {
   id: string;

@@ -13,6 +13,7 @@ import {AuthGuard} from '@core/gruards/auth.guard';
 import {NotAuthGuard} from '@core/gruards/notauth.guard';
 import {Edit} from '@app/pages/profile/children/edit/edit';
 import {Users} from '@app/pages/users/users';
+import { CreateProject } from './pages/projects/create-project/create-project';
 
 export const routes: Routes = [
   {

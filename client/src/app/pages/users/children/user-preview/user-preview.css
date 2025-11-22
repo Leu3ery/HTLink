@@ -1,3 +1,6 @@
+:host {
+  width: 100%;
+}
 .UserPreview {
   display: flex;
   align-items: center;
@@ -39,5 +42,6 @@
   :host {
     display: block;
     width: fit-content;
+    min-width: 400px;
   }
 }
