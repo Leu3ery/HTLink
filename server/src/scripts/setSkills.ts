@@ -1,7 +1,32 @@
 import { Skill } from "../modules/skills/skills.model"
 
 class SetSkills {
-	static skills = ["Express Js", "Angular", "Python"]
+	static skills = [
+		"Java",
+		"JavaScript",
+		"TypeScript",
+		"HTML",
+		"CSS",
+		"PHP",
+		"Ruby",
+		"Swift",
+		"Kotlin",
+		"Go",
+		"Rust",
+		"C",
+		"C++",
+		"C#",
+		"Python",
+		"React",
+		"Node.js",
+		"MongoDB",
+		"PostgreSQL",
+		"MySQL",
+		"Docker",
+		"Kubernetes",
+		"Git",
+		
+	]
 
 	constructor(skills: string[] = []) {
 		if (skills.length > 1) {
