@@ -25,7 +25,14 @@ class SetSkills {
 		"Docker",
 		"Kubernetes",
 		"Git",
-		
+		"Express Js",
+		"Angular",
+		"Vue.js",
+		"Next.js",
+		"Flask",
+		"Django",
+		"FastAPI",
+		"Flutter",
 	]
 
 	constructor(skills: string[] = []) {
