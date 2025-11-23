@@ -2,7 +2,7 @@ import {Component, input, model, output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Block} from '@shared/ui/block/block';
 import {SvgIconComponent} from '@shared/utils/svg.component';
-import {CommonModule, NgIf} from '@angular/common';
+
 import {AppSelectComponent} from '@shared/ui/select/select';
 
 @Component({
@@ -11,9 +11,8 @@ import {AppSelectComponent} from '@shared/ui/select/select';
     FormsModule,
     Block,
     SvgIconComponent,
-    CommonModule,
     AppSelectComponent
-  ],
+],
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.css'
 })

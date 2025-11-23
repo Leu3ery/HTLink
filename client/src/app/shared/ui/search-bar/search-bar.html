@@ -9,11 +9,13 @@
     </div>
   </div>
   @if (filters()) {
-  <div class="filters-holder">
-    <div class="filter" *ngFor="let filter of filters()">
-      <app-select [placeholder]="filter.label" [options]="filter.options" (valueChange)="onChangeValueFilter(filter.label, $event)"></app-select>
+    <div class="filters-holder">
+      @for (filter of filters(); track filter) {
+        <div class="filter">
+          <app-select [placeholder]="filter.label" [options]="filter.options" (valueChange)="onChangeValueFilter(filter.label, $event)"></app-select>
+        </div>
+      }
     </div>
-  </div>
 
-}
+  }
 </app-block>

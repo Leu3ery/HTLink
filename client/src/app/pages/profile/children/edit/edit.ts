@@ -3,7 +3,7 @@ import {SvgIconComponent} from '@shared/utils/svg.component';
 import {Block} from '@shared/ui/block/block';
 import {RouterLink} from '@angular/router';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+
 import {TagType} from '@core/types/types.constans';
 import {ProfileService} from '@core/services/profile.service';
 import {ImgPipe} from '@shared/utils/img.pipe';
@@ -19,10 +19,9 @@ import {AppSelectComponent} from '@shared/ui/select/select';
     Block,
     RouterLink,
     ReactiveFormsModule,
-    CommonModule,
     Tag,
     AppSelectComponent
-  ],
+],
   templateUrl: './edit.html',
   styleUrl: './edit.css'
 })

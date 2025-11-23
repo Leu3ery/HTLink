@@ -1,5 +1,5 @@
 import {Component, EventEmitter, HostListener, Input, Output, ElementRef, OnInit} from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 export interface SelectOption {
   label: string;
@@ -10,7 +10,7 @@ export interface SelectOption {
 @Component({
   selector: 'app-select',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './select.html',
   styleUrls: ['./select.css'],
 })

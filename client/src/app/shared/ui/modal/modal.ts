@@ -1,9 +1,9 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, HostBinding, Input} from '@angular/core';
 
 @Component({
   selector: 'app-modal',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './modal.html',
   styleUrl: './modal.css',
 })

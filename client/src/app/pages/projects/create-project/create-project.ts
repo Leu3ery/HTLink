@@ -7,7 +7,7 @@ import { AppSelectComponent } from "@shared/ui/select/select";
 import { ProjectCreateData, TagType } from '@core/types/types.constans';
 import { Tag } from '@shared/ui/tag/tag';
 import { MainService } from '@core/services/main.service';
-import { CommonModule } from '@angular/common';
+
 import { Editor, NgxEditorMenuComponent, NgxEditorComponent, NgxEditorFloatingMenuComponent } from 'ngx-editor';
 import { MarkdownComponent, MarkdownService } from "ngx-markdown";
 import { ReadmeService } from '@core/services/readme.service';
@@ -23,12 +23,11 @@ import { ProjectsService } from '@core/services/projects.service';
     ReactiveFormsModule,
     AppSelectComponent,
     Tag,
-    CommonModule,
     NgxEditorMenuComponent,
     NgxEditorComponent,
     MarkdownComponent,
-    FormsModule,
-  ],
+    FormsModule
+],
   templateUrl: './create-project.html',
   styleUrl: './create-project.css',
 })
