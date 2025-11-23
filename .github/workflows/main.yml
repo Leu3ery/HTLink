@@ -164,9 +164,9 @@ jobs:
           elif [ "$BACKEND_STATUS" = "skipped" ] && [ "$FRONTEND_STATUS" = "success" ]; then
             STATUS_ICON="✅"
             STATUS_TEXT="Собран только frontend (изменений в backend не было)"
-          elif [ "$BACKEND_STATUS" = "skipped" ] && [ "$FRONTEND_STATUS" = "success" ]; then
+          elif [ "$BACKEND_STATUS" = "skipped" ] && [ "$FRONTEND_STATUS" = "skipped" ]; then
             STATUS_ICON="✅"
-            STATUS_TEXT="Изменений в коде не было, сборка пропущена"; then
+            STATUS_TEXT="Изменений в коде не было, сборка пропущена"
           else
             STATUS_ICON="❌"
             STATUS_TEXT="Ошибка в одном из Docker-билдов"
