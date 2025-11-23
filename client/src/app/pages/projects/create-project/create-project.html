@@ -43,6 +43,10 @@
   } @else if (step == 2) {
     <div class="step">
       <div class="header">
+        <div class="btn"
+          style="position: absolute; height: 2rem; width: 3rem; top: 50%; left: 10px; transform: translateY(-50%);"
+          (click)="step=1.1"><ng-icon [name]="Icons.ArrowLeft"></ng-icon></div>
+
         About This Project - Step {{step}}
           @if (createForm.valid) {
             <div class="btn"
