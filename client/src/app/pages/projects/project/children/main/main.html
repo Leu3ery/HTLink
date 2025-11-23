@@ -1,12 +1,12 @@
 @if (data) {
-<div class="item" style="grid-area: a; display: flex; gap: 10px; height: 30vh">
+<div class="item" style="grid-area: a; display: flex; gap: 10px; height: 40vh">
   <app-image-gallery [images]="data.images"></app-image-gallery>
 </div>
 
 <div class="header">
   <div class="action-buttons">
-    <app-block class="btn like"><ng-icon [name]="Icons.Likes"></ng-icon></app-block>
-    <app-block class="btn save"><ng-icon [name]="Icons.Star"></ng-icon></app-block>
+    <app-block class="btn like"><ng-icon size="3rem" [name]="Icons.Likes"></ng-icon></app-block>
+    <app-block class="btn save"><ng-icon size="3rem" [name]="Icons.Star"></ng-icon></app-block>
   </div>
   <app-block class="members" style="flex-direction: row; width: fit-content">
     <div class="avatar"></div>
@@ -39,7 +39,7 @@
     <h3>ReadMe</h3>
   </div>
   <div class="body">
-
+    <markdown [data]="data.fullReadme"></markdown>
   </div>
 </app-block>
 }

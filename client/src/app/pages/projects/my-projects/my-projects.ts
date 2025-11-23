@@ -26,7 +26,8 @@ export class MyProjects implements OnInit {
 
   ngOnInit() {
     this.projectService.getMyProjects().then((projects) => {
-      this.projects = projects;
+      this.projects = projects.items;
+      console.log(this.projects);
     });
   }
   eventPreventDefault($event: PointerEvent) {

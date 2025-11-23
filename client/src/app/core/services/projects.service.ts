@@ -1,30 +1,31 @@
 import { Injectable } from '@angular/core';
-import {ProfileType, ProjectCreateData, ProjectType} from '@core/types/types.constans';
-import {cleanObject} from '@shared/utils/utils';
-import {catchError, firstValueFrom} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import { ProfileType, ProjectCreateData, ProjectType } from '@core/types/types.constans';
+import { cleanObject } from '@shared/utils/utils';
+import { catchError, firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { ProfileService } from './profile.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProjectsService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private profileService: ProfileService) {}
 
-  async getProject(id: string | null): Promise<ProjectType> {
-    return firstValueFrom(this.http.get<ProjectType>(`/api/projects/${id}/`));
+  async getProject(id: string | null): Promise<{ project: ProjectType }> {
+    return firstValueFrom(this.http.get<{ project: ProjectType }>(`/api/projects/${id}/`));
   }
-  async getMyProjects(): Promise<ProjectType[]> {
-    return firstValueFrom(this.http.get<{ projects: ProjectType[] }>('/api/users/me/projects')).then(
-      (res) => res.projects
-    );
-  }
-  async getProjectsByUserId(userId: string): Promise<ProjectType[]> {
-    if (userId === '') {
-      userId = 'me';
-    }
+  async getMyProjects(limit?: number): Promise<{ items: ProjectType[] }> {
     return firstValueFrom(
-      this.http.get<{ projects: ProjectType[] }>(`/api/users/${userId}/projects/`)
+      this.http.get<{ projects: { items: ProjectType[] } }>('/api/projects/me', {params: limit ? { limit } : {} })
     ).then((res) => res.projects);
+  }
+  async getProjectsByUserId(userId: string, limit: number): Promise<{ items: ProjectType[] }> {
+    return firstValueFrom(
+      this.http
+        .get<{ items: ProjectType[] }>(`/api/projects`, {
+          params: { ownerId: userId, limit },
+        })
+    );
   }
   async getProjects(search: {
     value: string;
@@ -41,9 +42,13 @@ export class ProjectsService {
   }
 
   async checkProjectIdAvailability(arg: string) {
-    return await firstValueFrom(this.http.get<{ isAvailable: boolean }>(`/api/projects/${arg}/check`).pipe(
-      catchError(() => { return [{ isAvailable: false }]; })
-    )).then(res => res.isAvailable);
+    return await firstValueFrom(
+      this.http.get<{ isAvailable: boolean }>(`/api/projects/${arg}/check`).pipe(
+        catchError(() => {
+          return [{ isAvailable: false }];
+        })
+      )
+    ).then((res) => res.isAvailable);
   }
 
   async createProject(data: ProjectCreateData): Promise<ProjectType> {
@@ -64,5 +69,3 @@ export class ProjectsService {
     return firstValueFrom(this.http.post<ProjectType>('/api/projects/', formData));
   }
 }
-
-

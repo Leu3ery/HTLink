@@ -19,7 +19,7 @@ export class ProjectLayout implements OnInit {
   constructor(private location: Location) {}
 
   readonly headerBtns = [
-    { label: 'Back', path: '.', icon: 'arrowBack', click: () => this.goBack() },
+    { label: 'Back', path: '.', icon: Icons.ArrowLeft, click: () => this.goBack() },
   ];
   readonly pages = [
     { label: 'About', path: './home', icon: Icons.Home },

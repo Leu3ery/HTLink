@@ -44,7 +44,7 @@ export class Profile implements OnInit {
       const _id = params.get('id');
       if (_id === 'me' || (!_id && this.profileService.me$()) || _id === this.profileService.me$()?.id) {
         this.isMy = true;
-        this.data = {user:this.profileService.me$, projects:[]};
+        this.data = {user:this.profileService.me$, projects:await this.projectsService.getMyProjects(3).then(res=>res.items)};
       } else {
         this.isMy = false;
         this.data = {
@@ -58,10 +58,9 @@ export class Profile implements OnInit {
                 }
                   return signal<ProfileType>(res.user);
                 }
-        ), projects: []
+        ), projects: await this.projectsService.getProjectsByUserId(_id || '', 3).then(res=>res.items)
         }
       }
-    console.log(this.isMy)  
     })
   }
 }

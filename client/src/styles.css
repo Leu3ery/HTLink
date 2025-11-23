@@ -244,15 +244,3 @@ a {
 h1,h2,h3,h4,h5,h6 {
   color: var(--hover-gray-color);
 }
-
-
-ng-icon {
-  svg {
-    max-width: 2rem;
-    max-height: 2rem;
-  }
-}
-app-create-project svg {
-  max-width: none;
-  max-height: none;
-}

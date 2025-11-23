@@ -63,6 +63,7 @@
       </div>
     </app-block>
   }
+  @if (data.user().skills.length > 0) {
   <app-block class="Skill-Set" style="grid-area: c">
     <div class="header">
       <ng-icon [name]="Icons.Code"></ng-icon>
@@ -76,6 +77,7 @@
       </div>
     </div>
   </app-block>
+  }
   <app-block class="Projects-List" style="grid-area: d">
     <div class="header">
       <ng-icon [name]="Icons.Projects"></ng-icon>
