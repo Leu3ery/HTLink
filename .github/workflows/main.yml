@@ -9,56 +9,58 @@ on:
 
 jobs:
   changes:
-      runs-on: ubuntu-latest
-      outputs:
-        backend: ${{ steps.filter.outputs.backend }}
-        frontend: ${{ steps.filter.outputs.frontend }}
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-        - name: Detect changed paths
-          id: filter
-          uses: dorny/paths-filter@v3
-          with:
-            filters: |
-              backend:
-                - 'server/**'
-              frontend:
-                - 'client/**'
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend:
+              - 'server/**'
+            frontend:
+              - 'client/**'
 
   notifyStart:
-      runs-on: ubuntu-latest
-      if: always()
-      env:
-        COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-        BRANCH_NAME: ${{ github.ref_name }}
-        COMMITED_BY: ${{ github.event.head_commit.author.username }}
-      steps:
-        - name: Send Telegram result
-          run: |
-            SHORT_SHA=${GITHUB_SHA::7}
-            TEXT="🚀 Старт CI/CD
+    runs-on: ubuntu-latest
+    if: always()
+    env:
+      COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+      BRANCH_NAME: ${{ github.ref_name }}
+      COMMITED_BY: ${{ github.event.head_commit.author.username || github.actor }}
+    steps:
+      - name: Send Telegram start notification
+        run: |
+          SHORT_SHA=${GITHUB_SHA::7}
+          TEXT="🚀 Старт CI/CD
 
-            📦 Репозиторий: $GITHUB_REPOSITORY
-            🌿 Ветка: $BRANCH_NAME
-            🔢 Коммит: $SHORT_SHA
-            👤 Автор: $COMMITED_BY
-            
-            💬 Сообщение:
-            $COMMIT_MESSAGE
-            
-            🔗 Запуск: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          📦 Репозиторий: $GITHUB_REPOSITORY
+          🌿 Ветка: $BRANCH_NAME
+          🔢 Коммит: $SHORT_SHA
+          👤 Автор: $COMMITED_BY
 
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMessage \
-              -d chat_id=${{ secrets.TG_CHAT_ID }} \
-              --data-urlencode text="$TEXT"
-              
+          💬 Сообщение:
+          $COMMIT_MESSAGE
+
+          🔗 Запуск: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TG_CHAT_ID }}" \
+            --data-urlencode "text=$TEXT"
+
   build-and-test:
     runs-on: ubuntu-latest
-
+    needs: changes
+    # тестим backend только если были изменения в server/**
+    if: needs.changes.outputs.backend == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -87,7 +89,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, build-and-test]
     if: needs.changes.outputs.backend == 'true'
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -111,9 +112,8 @@ jobs:
 
   docker-frontend:
     runs-on: ubuntu-latest
-    needs: [changes, build-and-test]
+    needs: changes
     if: needs.changes.outputs.frontend == 'true'
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -146,7 +146,7 @@ jobs:
     steps:
       - name: Send Telegram result
         run: |
-          BACKEND_STATUS="${{ needs.docker.result }}"
+          BACKEND_STATUS="${{ needs['docker-backend'].result }}"
           FRONTEND_STATUS="${{ needs['docker-frontend'].result }}"
 
           if [ "$BACKEND_STATUS" = "success" ] && [ "$FRONTEND_STATUS" = "success" ]; then
@@ -168,40 +168,21 @@ jobs:
           TEXT="$STATUS_ICON Результат CI/CD
 
           $STATUS_TEXT
-          
+
           📦 Репозиторий: $GITHUB_REPOSITORY
           🌿 Ветка: $BRANCH_NAME
           🔢 Коммит: $SHORT_SHA
           👤 Автор: $COMMITED_BY
-          
+
           💬 Сообщение:
           $COMMIT_MESSAGE
-          
+
           ⚙️ Статусы Docker:
           - backend: $BACKEND_STATUS
           - frontend: $FRONTEND_STATUS
-          
+
           🔗 Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMessage" \
             -d "chat_id=${{ secrets.TG_CHAT_ID }}" \
             --data-urlencode "text=$TEXT"
-
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: docker
-  #   steps:
-  #     - name: Deploy to VPS via SSH
-  #       uses: appleboy/ssh-action@v1.0.3
-  #       with:
-  #         host: ${{ secrets.SSH_HOST }}
-  #         username: ${{ secrets.SSH_USER }}
-  #         key: ${{ secrets.SSH_KEY }}
-  #         script: |
-  #           cd /root/HTLink
-  #           git fetch origin
-  #           git checkout dev
-  #           git pull origin dev
-  #           docker compose pull
-  #           docker compose up -d
-  #           docker image prune -f
