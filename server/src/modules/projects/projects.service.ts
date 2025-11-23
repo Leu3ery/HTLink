@@ -9,7 +9,6 @@ import { UpdateProjectDto } from "./dto/patch.project.dto";
 import { ListProjectsQueryDto } from "./dto/list.projects.dto";
 import {ISkill, Skill} from "../skills/skills.model";
 import { Category, ICategory } from "../categories/category.model";
-import * as sea from "node:sea";
 
 
 // helpers moved to ./utils/project.helpers
@@ -25,7 +24,7 @@ export default class ProjectsService {
             categoryId: categoryObjectId.toString(),
             shortDescription: project.shortDescription,
             fullReadme: project.fullReadme ?? '',
-            deadline: new Date(project.deadline),
+            deadline: project.deadline ? new Date(project.deadline) : undefined,
             ownerId: ownerId.toString(),
             status: ProjectStatus.PLANNED,
             skills: skillObjectIds.map(id => id.toString()),
@@ -76,6 +75,7 @@ export default class ProjectsService {
             skills = [],
             page = 1,
             limit = 10,
+            ownerId,
         } = params;
 
         const filter: Record<string, unknown> = {};
@@ -92,6 +92,10 @@ export default class ProjectsService {
 
         if (status) {
             filter.status = status;
+        }
+
+        if (ownerId) {
+            filter.ownerId = toObjectId(ownerId);
         }
 
 
@@ -140,6 +144,7 @@ export default class ProjectsService {
 
             return {
                 id: p._id.toString(),
+                ownerId: p.ownerId.toString(),
                 title: p.title,
                 categoryId: p.categoryId.toString(),
                 shortDescription: p.shortDescription,
@@ -207,39 +212,7 @@ export default class ProjectsService {
             throw new ErrorWithStatus(400, "Invalid owner id");
         }
 
-        const projects = await Project.find({ ownerId: ownerId })
-            .populate<{images: IImage[]}>("images")
-            .populate<{skills: ISkill[]}>("skills")
-            .populate<{categoryId: ICategory}>("categoryId")
-            .sort({ createdAt: -1 });
-
-        if (!projects || projects.length === 0) {
-            return [];
-        }
-
-        return projects.map((project) => ({
-            id: project.id.toString(),
-            title: project.title,
-            category: {
-                id: project.categoryId._id.toString(),
-                name: project.categoryId.name
-            },
-            shortDescription: project.shortDescription,
-            fullReadme: project.fullReadme,
-            deadline: project.deadline,
-            ownerId: project.ownerId.toString(),
-            status: project.status,
-            skills: project.skills?.map((skill: ISkill) => ({
-                id: skill._id.toString(),
-                name: skill.name
-            })) ?? [],
-            images: project.images?.map((img: IImage) => ({
-                id: img._id.toString(),
-                image_path: img.image_path,
-            })) ?? [],
-            createdAt: project.createdAt,
-            updatedAt: project.updatedAt,
-        }));
+        return await this.listProjects({ ownerId });
     }
 
     static async updateProject(projectId: string, updateProjectDto: UpdateProjectDto, userId: string) {
@@ -273,6 +246,7 @@ export default class ProjectsService {
         if (!finishedProject) {
             throw new ErrorWithStatus(404, "Project not found");
         }
+
 
         return {
             id: finishedProject.id.toString(),
@@ -318,16 +292,17 @@ export default class ProjectsService {
     }
 
     static createSearchFilter(search: string) {
-        if (search) {
-            const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        if (search && search.trim()) {
+            const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");  // Example: input node.js (beta)? becomes node\.js \(beta\)\?,
             const regex = new RegExp(escaped, 'i');
             return [
-                { title: regex },
-                { shortDescription: regex },
-                { fullReadme: regex },
-            ];
+                    { title: regex },
+                    { shortDescription: regex },
+                    { fullReadme: regex },
+                ];
+            }
+            return undefined;
         }
-        return undefined;
-    }
 
 }

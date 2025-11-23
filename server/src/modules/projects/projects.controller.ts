@@ -47,8 +47,9 @@ export default class ProjectsController{
 
             const ownerId = res.locals.user.userId;
             if (!ownerId) throw new ErrorWithStatus(400, "Owner ID is required");
-            const project = await ProjectsService.getProjectByOwnerId(ownerId);
-            res.status(200).json({ project });
+            const dto = validationWrapper(listProjectsQuerySchema, req.query);
+            const projects = await ProjectsService.listProjects({ ownerId, ...dto });
+            res.status(200).json({ projects });
 
     }
 

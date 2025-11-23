@@ -391,7 +391,7 @@ describe("List projects", () => {
 
         const resPlanned = await request(app)
           .get("/api/projects")
-          .query({ status: "planned" })
+          .query({ status: "Planned" })
           .set('Authorization', `Bearer ${token}`)
           .expect(200);
 
@@ -400,7 +400,7 @@ describe("List projects", () => {
 
         const resInProgress = await request(app)
           .get("/api/projects")
-          .query({ status: "in progress" })
+          .query({ status: "In progress" })
           .set('Authorization', `Bearer ${token}`)
           .expect(200);
 
@@ -520,25 +520,25 @@ describe("Get my projects (GET /my_projects)", () => {
         await createProjectRequest(payload3, token);
 
         const res = await request(app)
-            .get("/api/projects/my_projects")
+            .get("/api/projects/me")
             .set('Authorization', `Bearer ${token}`)
             .expect(200);
 
-        expect(res.body.project).toBeDefined();
-        expect(Array.isArray(res.body.project)).toBe(true);
-        expect(res.body.project.length).toBe(3);
+        expect(res.body.projects).toBeDefined();
+        expect(Array.isArray(res.body.projects.items)).toBe(true);
+        expect(res.body.projects.items.length).toBe(3);
 
-        res.body.project.forEach((proj: any) => {
+        res.body.projects.items.forEach((proj: any) => {
             expect(proj.ownerId).toBe(id);
             expect(proj).toHaveProperty('id');
             expect(proj).toHaveProperty('title');
-            expect(proj).toHaveProperty('category');
-            expect(proj).toHaveProperty('skills');
+            expect(proj).toHaveProperty('categoryId');
+            expect(proj).toHaveProperty('tags');
             expect(proj).toHaveProperty('images');
         });
 
         // Check titles are present
-        const titles = res.body.project.map((p: any) => p.title);
+        const titles = res.body.projects.items.map((p: any) => p.title);
         expect(titles).toContain(base1.title);
         expect(titles).toContain(base2.title);
         expect(titles).toContain(base3.title);
@@ -548,18 +548,18 @@ describe("Get my projects (GET /my_projects)", () => {
         await Project.deleteMany({});
 
         const res = await request(app)
-            .get("/api/projects/my_projects")
+            .get("/api/projects/me")
             .set('Authorization', `Bearer ${token}`)
             .expect(200);
 
-        expect(res.body.project).toBeDefined();
-        expect(Array.isArray(res.body.project)).toBe(true);
-        expect(res.body.project.length).toBe(0);
+        expect(res.body.projects).toBeDefined();
+        expect(Array.isArray(res.body.projects.items)).toBe(true);
+        expect(res.body.projects.items.length).toBe(0);
     });
 
     it("should return 401 if user is not authenticated", async () => {
         await request(app)
-            .get("/api/projects/my_projects")
+            .get("/api/projects/me")
             .expect(401);
     });
 });
