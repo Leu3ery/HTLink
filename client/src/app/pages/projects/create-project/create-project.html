@@ -52,6 +52,19 @@
   </div>
   <form class="content" [formGroup]="createForm"
     style="display: flex; flex-direction: column; gap: 1rem; justify-content: flex-start;">
+    <app-block>
+      <div class="header">
+        Link
+      </div>
+      <div class="input-holder">
+        <label for="project-id">Project Id</label>
+        <input id="project-id" formControlName="id" type="text" placeholder="" />
+      </div>
+      <div class="err-message">
+        {{ getProjectIdErrorMessage() }}
+      </div>
+    </app-block>
+    
     <app-block style="z-index: 100;">
       <div class="header">
         <h3>Category</h3>

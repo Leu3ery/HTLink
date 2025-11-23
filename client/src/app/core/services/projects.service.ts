@@ -1,25 +1,22 @@
 import { Injectable } from '@angular/core';
 import {ProfileType, ProjectCreateData, ProjectType} from '@core/types/types.constans';
-import {cleanObject} from '@shared/utils/cleanObject';
-import {firstValueFrom} from 'rxjs';
+import {cleanObject} from '@shared/utils/utils';
+import {catchError, firstValueFrom} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProjectsService {
   constructor(private http: HttpClient) {}
 
-
   async getProject(id: string | null): Promise<ProjectType> {
-    return firstValueFrom(
-      this.http.get<ProjectType>(`/api/projects/${id}/`)
-    );
+    return firstValueFrom(this.http.get<ProjectType>(`/api/projects/${id}/`));
   }
   async getMyProjects(): Promise<ProjectType[]> {
-    return firstValueFrom(
-      this.http.get<{ projects: ProjectType[] }>('/api/users/me/projects/')
-    ).then(res => res.projects);
+    return firstValueFrom(this.http.get<{ projects: ProjectType[] }>('/api/users/me/projects')).then(
+      (res) => res.projects
+    );
   }
   async getProjectsByUserId(userId: string): Promise<ProjectType[]> {
     if (userId === '') {
@@ -29,16 +26,24 @@ export class ProjectsService {
       this.http.get<{ projects: ProjectType[] }>(`/api/users/${userId}/projects/`)
     ).then((res) => res.projects);
   }
-  async getProjects(search: {value: string, filters:{[key: string]: any}}): Promise<ProjectType[]> {
+  async getProjects(search: {
+    value: string;
+    filters: { [key: string]: any };
+  }): Promise<ProjectType[]> {
     const data = cleanObject({
       nameContains: search.value,
       ...search.filters,
-    })
+    });
     const res = await firstValueFrom(
       this.http.get<{ projects: ProjectType[] }>('/api/users/', { params: data })
     );
     return res.projects;
+  }
 
+  async checkProjectIdAvailability(arg: string) {
+    return await firstValueFrom(this.http.get<{ isAvailable: boolean }>(`/api/projects/${arg}/check`).pipe(
+      catchError(() => { return [{ isAvailable: false }]; })
+    )).then(res => res.isAvailable);
   }
 
   async createProject(data: ProjectCreateData): Promise<ProjectType> {
@@ -53,12 +58,10 @@ export class ProjectsService {
       formData.append('deadline', data.deadline);
     }
 
-    data.skills.forEach(skill => formData.append('skills', skill));
-    data.images.forEach(image => formData.append('image', image));
+    data.skills.forEach((skill) => formData.append('skills', skill));
+    data.images.forEach((image) => formData.append('image', image));
 
-    return firstValueFrom(
-      this.http.post<ProjectType>('/api/projects/', formData)
-    );
+    return firstValueFrom(this.http.post<ProjectType>('/api/projects/', formData));
   }
 }
 

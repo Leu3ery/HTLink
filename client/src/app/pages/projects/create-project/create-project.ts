@@ -37,6 +37,10 @@ export class CreateProject implements OnInit {
 
   selectedFiles: File[] = [];
   createForm = new FormGroup({
+    id: new FormControl('', [
+      Validators.minLength(3),
+      Validators.maxLength(12),
+    ]),
     title: new FormControl('', [
       Validators.required,
       Validators.minLength(3),
@@ -67,7 +71,12 @@ export class CreateProject implements OnInit {
   fileError = '';
   loadError = '';
 
-  constructor(private fb: FormBuilder, private readmeService: ReadmeService, private markdown: MarkdownService, private projectsService: ProjectsService) {}
+  constructor(
+    private fb: FormBuilder,
+    private readmeService: ReadmeService,
+    private markdown: MarkdownService,
+    private projectsService: ProjectsService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.skills = (await this.mainService.getSkills()) ?? [];
@@ -75,6 +84,23 @@ export class CreateProject implements OnInit {
 
     this.createForm.get('editorHTML')?.valueChanges.subscribe((html: string | null) => {
       this.createForm.patchValue({ fullReadme: this.turndown.turndown(html || '') });
+    });
+    this.createForm.get('id')?.valueChanges.subscribe((id: string | null) => {
+      this.projectsService.checkProjectIdAvailability(id || '').then((isAvailable: any) => {
+        if (!isAvailable) {
+          this.createForm.get('id')?.setErrors({ notAvailable: true });
+        } else {
+          const errors = this.createForm.get('id')?.errors;
+          if (errors) {
+            delete errors['notAvailable'];
+            if (Object.keys(errors).length === 0) {
+              this.createForm.get('id')?.setErrors(null);
+            } else {
+              this.createForm.get('id')?.setErrors(errors);
+            }
+          }
+        }
+      });
     });
   }
   onSelectFiles(event: Event) {
@@ -112,27 +138,39 @@ export class CreateProject implements OnInit {
   toOptions(skills: TagType[]) {
     return skills.map((i) => ({ label: i.name, value: i.id }));
   }
+  getProjectIdErrorMessage() {
+    const control = this.createForm.get('id');
+    if (control?.hasError('minlength')) {
+      return 'Project Id must be at least 3 characters long';
+    }
+    if (control?.hasError('maxlength')) {
+      return 'Project Id cannot be more than 12 characters long';
+    }
+    if (control?.hasError('maxlength')) {
+      return 'Project Id cannot be more than 12 characters long';
+    }
+    if (control?.hasError('notAvailable')) {
+      return 'Project Id is not available';
+    }
+    return '';
+  }
   async createProject() {
     if (this.createForm.invalid) {
       return;
     }
-
     const formValue = this.createForm.value;
-
     const data: ProjectCreateData = {
       title: formValue.title!,
       shortDescription: formValue.shortDescription!,
       repoUrl: formValue.repoUrl!,
       categoryId: formValue.category!,
-      skills: (formValue.skills || []).map(s => s.id),
+      skills: (formValue.skills || []).map((s) => s.id),
       fullReadme: formValue.fullReadme!,
       images: this.selectedFiles,
       deadline: formValue.deadline ? formValue.deadline : undefined,
     };
-
     try {
       const result = await this.projectsService.createProject(data);
-      console.log(result)
     } catch (error) {
       console.error('Error creating project:', error);
     }

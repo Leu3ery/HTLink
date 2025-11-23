@@ -3,7 +3,7 @@ import {ProfileType, TagType} from '@core/types/types.constans';
 import {HttpClient} from '@angular/common/http';
 import {NotificationService} from '@core/services/notification.service';
 import {AuthService} from '@core/services/auth.service';
-import {cleanObject} from '@shared/utils/cleanObject';
+import {cleanObject} from '@shared/utils/utils';
 import {firstValueFrom} from 'rxjs';
 
 @Injectable({
