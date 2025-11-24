@@ -8,7 +8,7 @@ const projectsRouter = Router();
 
 projectsRouter.post('/', JWTMiddleware, upload.array('image', 10), ErrorWrapper(ProjectsController.createProject));
 projectsRouter.get('/', JWTMiddleware, ErrorWrapper(ProjectsController.list));
-projectsRouter.get("/me", JWTMiddleware, ErrorWrapper(ProjectsController.getMyProjects));
+//projectsRouter.get("/me", JWTMiddleware, ErrorWrapper(ProjectsController.getMyProjects));
 projectsRouter.get("/:id", JWTMiddleware, ErrorWrapper(ProjectsController.getProjectById));
 projectsRouter.patch("/:id/update", JWTMiddleware, upload.array('image', 10), ErrorWrapper(ProjectsController.updateProject))
 projectsRouter.delete("/:id", JWTMiddleware, ErrorWrapper(ProjectsController.deleteProject));

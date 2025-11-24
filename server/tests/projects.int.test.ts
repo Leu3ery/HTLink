@@ -503,67 +503,6 @@ describe("Update project (PATCH /:id/update)", () => {
     });
 });
 
-describe("Get my projects (GET /my_projects)", () => {
-    it("should return all projects owned by the authenticated user", async () => {
-        await Project.deleteMany({});
-
-        const base1 = makeCreateProjectPayload({ title: "My Project 1" });
-        const base2 = makeCreateProjectPayload({ title: "My Project 2" });
-        const base3 = makeCreateProjectPayload({ title: "My Project 3" });
-
-        const { payload: payload1 } = await prepareProjectPayload(base1);
-        const { payload: payload2 } = await prepareProjectPayload(base2);
-        const { payload: payload3 } = await prepareProjectPayload(base3);
-
-        await createProjectRequest(payload1, token);
-        await createProjectRequest(payload2, token);
-        await createProjectRequest(payload3, token);
-
-        const res = await request(app)
-            .get("/api/projects/me")
-            .set('Authorization', `Bearer ${token}`)
-            .expect(200);
-
-        expect(res.body.projects).toBeDefined();
-        expect(Array.isArray(res.body.projects.items)).toBe(true);
-        expect(res.body.projects.items.length).toBe(3);
-
-        res.body.projects.items.forEach((proj: any) => {
-            expect(proj.ownerId).toBe(id);
-            expect(proj).toHaveProperty('id');
-            expect(proj).toHaveProperty('title');
-            expect(proj).toHaveProperty('categoryId');
-            expect(proj).toHaveProperty('tags');
-            expect(proj).toHaveProperty('images');
-        });
-
-        // Check titles are present
-        const titles = res.body.projects.items.map((p: any) => p.title);
-        expect(titles).toContain(base1.title);
-        expect(titles).toContain(base2.title);
-        expect(titles).toContain(base3.title);
-    });
-
-    it("should return empty array when user has no projects", async () => {
-        await Project.deleteMany({});
-
-        const res = await request(app)
-            .get("/api/projects/me")
-            .set('Authorization', `Bearer ${token}`)
-            .expect(200);
-
-        expect(res.body.projects).toBeDefined();
-        expect(Array.isArray(res.body.projects.items)).toBe(true);
-        expect(res.body.projects.items.length).toBe(0);
-    });
-
-    it("should return 401 if user is not authenticated", async () => {
-        await request(app)
-            .get("/api/projects/me")
-            .expect(401);
-    });
-});
-
 describe("Delete project (DELETE /:id)", () => {
     it("should successfully delete a project owned by the user", async () => {
         const base = makeCreateProjectPayload();
@@ -632,3 +571,204 @@ describe("Delete project (DELETE /:id)", () => {
             .expect(401);
     });
 });
+
+describe("Get projects by owner ID (GET /api/users/:id/projects)", () => {
+    async function createProjectWith(overrides: Record<string, any> = {}) {
+        const base = makeCreateProjectPayload(overrides.title ? { title: overrides.title } : {});
+        const { payload } = await prepareProjectPayload(base, overrides);
+        const res = await createProjectRequest(payload, token);
+        expect(res.status).toBe(201);
+        return res.body.project;
+    }
+
+    it("should return all projects owned by the authenticated user using 'me' parameter", async () => {
+        await Project.deleteMany({});
+
+        await createProjectWith({ title: "My Project 1" });
+        await createProjectWith({ title: "My Project 2" });
+        await createProjectWith({ title: "My Project 3" });
+
+        const res = await request(app)
+            .get("/api/users/me/projects")
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200);
+
+        expect(res.body.projects).toBeDefined();
+        expect(Array.isArray(res.body.projects.items)).toBe(true);
+        expect(res.body.projects.items.length).toBe(3);
+
+        res.body.projects.items.forEach((proj: any) => {
+            expect(proj.ownerId).toBe(id);
+            expect(proj).toHaveProperty('id');
+            expect(proj).toHaveProperty('title');
+            expect(proj).toHaveProperty('categoryId');
+            expect(proj).toHaveProperty('tags');
+            expect(proj).toHaveProperty('images');
+        });
+
+        const titles = res.body.projects.items.map((p: any) => p.title);
+        expect(titles).toContain("My Project 1");
+        expect(titles).toContain("My Project 2");
+        expect(titles).toContain("My Project 3");
+    });
+
+    it("should return projects owned by specific user ID", async () => {
+        await Project.deleteMany({});
+
+        await createProjectWith({ title: "User's Project 1" });
+        await createProjectWith({ title: "User's Project 2" });
+
+        const res = await request(app)
+            .get(`/api/users/${id}/projects`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200);
+
+        expect(res.body.projects).toBeDefined();
+        expect(Array.isArray(res.body.projects.items)).toBe(true);
+        expect(res.body.projects.items.length).toBe(2);
+
+        res.body.projects.items.forEach((proj: any) => {
+            expect(proj.ownerId).toBe(id);
+        });
+    });
+
+    it("should return empty array when user has no projects", async () => {
+        await Project.deleteMany({});
+
+        const res = await request(app)
+            .get("/api/users/me/projects")
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200);
+
+        expect(res.body.projects).toBeDefined();
+        expect(Array.isArray(res.body.projects.items)).toBe(true);
+        expect(res.body.projects.items.length).toBe(0);
+    });
+
+    it("should return 401 if user is not authenticated when using 'me' parameter", async () => {
+        await request(app)
+            .get("/api/users/me/projects")
+            .expect(401);
+    });
+
+    it("should return 401 if user is not authenticated", async () => {
+        await request(app)
+            .get(`/api/users/${id}/projects`)
+            .expect(401);
+    });
+
+    it("should return 400 if owner ID is invalid", async () => {
+        await request(app)
+            .get("/api/users/invalid-id/projects")
+            .set('Authorization', `Bearer ${token}`)
+            .expect(400);
+    });
+
+    it("should return empty list for non-existent valid user ID", async () => {
+        await Project.deleteMany({});
+
+        const nonExistentUserId = new mongoose.Types.ObjectId().toString();
+
+        const res = await request(app)
+            .get(`/api/users/${nonExistentUserId}/projects`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200);
+
+        expect(res.body.projects.items).toHaveLength(0);
+    });
+
+    it("should support query filters (search, category, status) when fetching owner's projects", async () => {
+        await Project.deleteMany({});
+
+        const webCategory = await Category.findOne({ name: "Web development" });
+        await createProjectWith({
+            title: "Searchable Web Project",
+            categoryId: webCategory?._id.toString()
+        });
+        await createProjectWith({
+            title: "Another Project",
+            categoryId: webCategory?._id.toString()
+        });
+
+        const resSearch = await request(app)
+            .get("/api/users/me/projects")
+            .query({ search: "searchable" })
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200);
+
+        expect(resSearch.body.projects.items.length).toBe(1);
+        expect(resSearch.body.projects.items[0].title).toBe("Searchable Web Project");
+
+        const resCategory = await request(app)
+            .get(`/api/users/${id}/projects`)
+            .query({ category: webCategory?._id.toString() })
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200);
+
+        expect(resCategory.body.projects.items.length).toBe(2);
+    });
+
+    it("should support pagination when fetching owner's projects", async () => {
+        await Project.deleteMany({});
+
+        await createProjectWith({ title: "Project 1" });
+        await createProjectWith({ title: "Project 2" });
+        await createProjectWith({ title: "Project 3" });
+
+        const res = await request(app)
+            .get("/api/users/me/projects")
+            .query({ page: 1, limit: 2 })
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200);
+
+        expect(res.body.projects.page).toBe(1);
+        expect(res.body.projects.limit).toBe(2);
+        expect(res.body.projects.total).toBe(3);
+        expect(res.body.projects.items.length).toBe(2);
+    });
+
+    it("should only return projects owned by the specified user, not all projects", async () => {
+        await Project.deleteMany({});
+
+        // Create another user
+        const anotherUser = await User.create({
+            pc_number: "20220888",
+            first_name: "Another",
+            last_name: "User",
+        });
+        const anotherUserId = anotherUser._id.toString();
+        const anotherToken = jwt.sign({ userId: anotherUserId }, config.JWT_SECRET, {
+            expiresIn: "14d",
+        });
+
+        // Create projects for both users
+        await createProjectWith({ title: "User 1 Project" }); // owned by original user
+
+        // Create project for another user
+        const base2 = makeCreateProjectPayload({ title: "User 2 Project" });
+        const { payload: payload2 } = await prepareProjectPayload(base2);
+        await createProjectRequest(payload2, anotherToken);
+
+        // Fetch projects for original user
+        const res = await request(app)
+            .get(`/api/users/${id}/projects`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200);
+
+        expect(res.body.projects.items.length).toBe(1);
+        expect(res.body.projects.items[0].title).toBe("User 1 Project");
+        expect(res.body.projects.items[0].ownerId).toBe(id);
+
+        // Fetch projects for another user
+        const res2 = await request(app)
+            .get(`/api/users/${anotherUserId}/projects`)
+            .set('Authorization', `Bearer ${anotherToken}`)
+            .expect(200);
+
+        expect(res2.body.projects.items.length).toBe(1);
+        expect(res2.body.projects.items[0].title).toBe("User 2 Project");
+        expect(res2.body.projects.items[0].ownerId).toBe(anotherUserId);
+    });
+});
+
+
