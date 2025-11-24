@@ -449,7 +449,7 @@ describe("Update project (PATCH /:id/update)", () => {
         };
 
         const res = await request(app)
-            .patch(`/api/projects/${projectId}/update`)
+            .patch(`/api/projects/${projectId}`)
             .send(updateData)
             .set('Authorization', `Bearer ${token}`)
             .expect(200);
@@ -472,7 +472,7 @@ describe("Update project (PATCH /:id/update)", () => {
         };
 
         await request(app)
-            .patch(`/api/projects/${projectId}/update`)
+            .patch(`/api/projects/${projectId}`)
             .send(updateData)
             .set('Authorization', `Bearer ${token}`)
             .expect(400);
@@ -496,7 +496,7 @@ describe("Update project (PATCH /:id/update)", () => {
         };
 
         await request(app)
-            .patch(`/api/projects/${nonExistentId}/update`)
+            .patch(`/api/projects/${nonExistentId}`)
             .send(updateData)
             .set('Authorization', `Bearer ${token}`)
             .expect(404);
