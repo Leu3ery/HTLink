@@ -90,7 +90,7 @@
 
     overflow: hidden;
 
-    width: 80%;
+    width: 75%;
     height: 4rem;
     background-color: color-mix(in srgb, var(--primary-color), transparent 20%);
     backdrop-filter: blur(15px);
