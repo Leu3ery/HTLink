@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FileToDataUrlPipe } from "../../../shared/utils/fileToDataUrl.pipe";
+import { FileToDataUrlPipe } from "@shared/utils/fileToDataUrl.pipe";
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Block } from "@shared/ui/block/block";
 import { AppSelectComponent } from "@shared/ui/select/select";

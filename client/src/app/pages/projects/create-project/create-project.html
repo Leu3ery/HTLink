@@ -28,7 +28,7 @@
           <ng-icon [name]="Icons.Photo" class="svg">
           </ng-icon>
           <div class="select">
-            <label for="project-name">Select More</label>
+            <label for="project-name"><ng-icon [name]="Icons.Plus"></ng-icon> More</label>
             <input (change)="onSelectFiles($event)" id="project-name" type="file" multiple accept="image/*" hidden />
           </div>
         </div>
