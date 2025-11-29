@@ -35,7 +35,11 @@ export function makeCreateProjectPayload(overrides: Record<string, any> = {}) {
         shortDescription: "A short description for the test project.",
         fullReadme: "# Readme\n\nDetailed info about the test project.",
         deadline: oneWeekFromNowIso,
-        skills: ["Express Js", "Angular"]
+        skills: ["Express Js", "Angular"],
+        images: [
+            "public/test.png",
+            "public/test_copy.png",
+        ]
     };
 
     return { ...base, ...overrides };
@@ -53,7 +57,6 @@ async function prepareProjectPayload(base: ReturnType<typeof makeCreateProjectPa
         skills: skillIds,
         ...overrides,
     };
-
 
 
     return { payload, skillIds, categoryId: category?._id.toString() || '' };
@@ -77,10 +80,12 @@ async function createProjectRequest(payload: any, token:string) {
     } else {
         req.field("skills", payload.skills);
     }
+
+    for (const image of payload.images) {
+        req.attach("image", path.join(__dirname, image));
+    }
     
-    return req
-        .attach("image", path.join(__dirname, "public/test.png"))
-        .attach("image", path.join(__dirname, "public/test_copy.png"));
+    return req;
 
 }
 
@@ -159,6 +164,13 @@ describe("Create new project", () => {
         expect(isPhotoExist(res.body.project.images[1].image_path)).toBe(true);
         await deleteFile(res.body.project.images[1].image_path)
       })
+
+    it("should return 400 if the number of images is greater than 10", async () => {
+        const base = makeCreateProjectPayload();
+        const { payload } = await prepareProjectPayload(base, { images: Array.from({ length: 11 }, () => ("public/test.png")) });
+        const res = await createProjectRequest(payload, token);
+        expect(res.status).toBe(400);
+    })
 
       
       it("should return 400 if the payload is invalid", async () => {
