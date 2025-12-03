@@ -49,6 +49,14 @@ export class ProjectsService {
         })
     );
   }
+  async getProjectsByUserId(userId: string, limit: number): Promise<{ items: ProjectType[] }> {
+    return firstValueFrom(
+      this.http
+        .get<{ items: ProjectType[] }>(`/api/projects`, {
+          params: { ownerId: userId, limit },
+        })
+    );
+  }
   async getProjects(search: {
     value: string;
     filters: { [key: string]: any };

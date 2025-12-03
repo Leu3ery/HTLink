@@ -70,7 +70,8 @@ export const projectSchema = new Schema<IProject>({
     images: [{
         type: Schema.Types.ObjectId,
         ref: 'Image',
-        required: false
+        required: false,
+        maxlength: 10
     }], 
 }, {
     timestamps: true
