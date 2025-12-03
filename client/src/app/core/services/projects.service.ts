@@ -1,43 +1,49 @@
-import { Injectable } from '@angular/core';
-import { ProfileType, ProjectCreateData, ProjectType } from '@core/types/types.constans';
-import { cleanObject } from '@shared/utils/utils';
-import { catchError, firstValueFrom } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { ProfileService } from './profile.service';
-import {isDevMode} from "@core/eviroments/config.constants";
+import {Injectable} from '@angular/core';
+import {ProfileType, ProjectCreateData, ProjectType} from '@core/types/types.constans';
+import {cleanObject} from '@shared/utils/utils';
+import {catchError, firstValueFrom} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {ProfileService} from './profile.service';
+import {isDevMode} from "@core/environment/config.constants";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProjectsService {
-  constructor(private http: HttpClient, private profileService: ProfileService) {}
+  constructor(private http: HttpClient, private profileService: ProfileService) {
+  }
 
   async getProject(id: string | null): Promise<{ project: ProjectType }> {
-      if (isDevMode) {
-          return {
-                project: {
-                    id: '1',
-                    title: 'Sample Project',
-                    shortDescription: 'This is a sample project description.',
-                    fullReadme: 'Detailed README content goes here.',
-                    category: { id: 'cat1', name: 'Web Development' },
-                    ownerId: 'user1',
-                    tags: [{ id: 'tag1', name: 'Angular' }, { id: 'tag2', name: 'TypeScript' }],
-                    images: [],
-                    deadline: '2024-12-31',
-                    createdAt: '2024-01-01T00:00:00Z',
-                    updatedAt: '2024-01-01T00:00:00Z',
-                    status: 'draft',
-                }
-          }
+    if (isDevMode) {
+      return {
+        project: {
+          id: '1',
+          title: 'Sample Project',
+          shortDescription: 'This is a sample project description.',
+          fullReadme: 'Detailed README content goes here.',
+          category: {id: 'cat1', name: 'Web Development'},
+          ownerId: 'user1',
+          tags: [{id: 'tag1', name: 'Angular'}, {id: 'tag2', name: 'TypeScript'}],
+          images: [{
+            image_path: 'https://via.placeholder.com/150',
+            id: "piauhsdla"
+          }, {image_path: 'https://via.placeholder.com/150', id: "piauhsdla"}],
+          deadline: '2024-12-31',
+          createdAt: '2024-01-01T00:00:00Z',
+          updatedAt: '2024-01-01T00:00:00Z',
+          status: 'draft',
+        }
       }
+    }
     return firstValueFrom(this.http.get<{ project: ProjectType }>(`/api/projects/${id}/`));
   }
+
   async getMyProjects(limit?: number): Promise<{ items: ProjectType[] }> {
     return firstValueFrom(
-      this.http.get<{ projects: { items: ProjectType[] } }>('/api/users/me/projects', {params: limit ? { limit } : {} })
+      this.http.get<{ projects: { items: ProjectType[] } }>('/api/users/me/projects', {params: limit ? {limit} : {}})
     ).then((res) => res.projects);
   }
+
   async getProjectsByUserId(userId: string, limit: number): Promise<{ items: ProjectType[] }> {
     if (userId === 'me') {
       return await this.getMyProjects(limit);
@@ -45,18 +51,11 @@ export class ProjectsService {
     return firstValueFrom(
       this.http
         .get<{ items: ProjectType[] }>(`/api/projects`, {
-          params: { ownerId: userId, limit },
+          params: {ownerId: userId, limit},
         })
     );
   }
-  async getProjectsByUserId(userId: string, limit: number): Promise<{ items: ProjectType[] }> {
-    return firstValueFrom(
-      this.http
-        .get<{ items: ProjectType[] }>(`/api/projects`, {
-          params: { ownerId: userId, limit },
-        })
-    );
-  }
+
   async getProjects(search: {
     value: string;
     filters: { [key: string]: any };
@@ -66,7 +65,7 @@ export class ProjectsService {
       ...search.filters,
     });
     const res = await firstValueFrom(
-      this.http.get<{ projects: ProjectType[] }>('/api/users/', { params: data })
+      this.http.get<{ projects: ProjectType[] }>('/api/users/', {params: data})
     );
     return res.projects;
   }
@@ -75,7 +74,7 @@ export class ProjectsService {
     return await firstValueFrom(
       this.http.get<{ isAvailable: boolean }>(`/api/projects/${arg}/check`).pipe(
         catchError(() => {
-          return [{ isAvailable: false }];
+          return [{isAvailable: false}];
         })
       )
     ).then((res) => res.isAvailable);

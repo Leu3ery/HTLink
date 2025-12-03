@@ -1,36 +1,35 @@
-
 <app-block class="nav">
-  @for (page of pages; track page) {
-    <div
-      class="btn svg"
-       [routerLink]="page.path"
-       [ngClass]="{
+    @for (page of pages; track page) {
+        <div
+                class="btn svg"
+                [routerLink]="page.path"
+                [ngClass]="{
         active: isActive(page.path)
        }">
-      <ng-icon [name]="page.icon"></ng-icon>
-      <div class="label">
-        {{page.label}}
-      </div>
-    </div>
-  }
+            <ng-icon [name]="page.icon"></ng-icon>
+            <div class="label">
+                {{ page.label }}
+            </div>
+        </div>
+    }
 </app-block>
 
 <div class="headerBtns">
-  @for (page of headerBtns; track page) {
-  <app-block class="btn svg"
-    (click)="page?.click()"
-    [routerLink]="page.path"
-    [ngClass]="{
+    @for (page of headerBtns; track page) {
+        <app-block class="btn svg"
+                   (click)="page?.click()"
+                   [routerLink]="page.path"
+                   [ngClass]="{
             active: isActive(page.path)
           }">
-      <ng-icon size="2rem" [name]="page.icon"></ng-icon>
-  </app-block>
-  }
+            <ng-icon size="2rem" [name]="page.icon"></ng-icon>
+        </app-block>
+    }
 </div>
 
 <div class="holder">
-  <app-notifications></app-notifications>
-  <div class="content">
-    <router-outlet></router-outlet>
-  </div>
+    <app-notifications></app-notifications>
+    <div class="content">
+        <router-outlet></router-outlet>
+    </div>
 </div>

@@ -20,6 +20,7 @@ export enum Icons {
   GitHub = 'heroLogoGithub',
   Home = 'heroHome',
   Inbox = 'heroInboxArrowDown',
+  Info = 'heroInformationCircle',
   Likes = 'heroHeart',
   Link = 'heroLink',
   LinkedIn = 'heroLogoLinkedin',

@@ -9,11 +9,10 @@ import {Profile} from '@app/pages/profile/profile';
 import {Feed} from '@app/pages/feed/feed';
 import {News} from '@app/pages/news/news';
 import {Login} from '@app/pages/login/login';
-import {AuthGuard} from '@core/gruards/auth.guard';
-import {NotAuthGuard} from '@core/gruards/notauth.guard';
+import {AuthGuard} from '@core/guards/auth.guard';
+import {NotAuthGuard} from '@core/guards/notauth.guard';
 import {Edit} from '@app/pages/profile/children/edit/edit';
 import {Users} from '@app/pages/users/users';
-import { CreateProject } from './pages/projects/create-project/create-project';
 
 export const routes: Routes = [
   {

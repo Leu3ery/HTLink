@@ -21,7 +21,7 @@ export class Settings {
       { label: 'Photos & Media', path: './media', icon: Icons.Camera },
     ],
     [
-      { label: 'General Info', path: './general', icon: Icons.User },
+      { label: 'General Info', path: './general', icon: Icons.Info },
       { label: 'Read Me', path: './readme', icon: Icons.Book },
       { label: 'Links', path: './links', icon: Icons.Link },
     ],

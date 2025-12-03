@@ -1,198 +1,201 @@
 @if (step === 1) {
-  <div class="step">
-    <div class="header">
-      Create New Project - Step {{step}}
+<div class="step">
+  <div class="header">
+    Create New Project - Step {{step}}
+  </div>
+  <div class="content" style=" display: flex; justify-content: center; align-items: center;">
+    <ng-icon [name]="Icons.Photo" class="svg" size="15rem">
+    </ng-icon>
+    <div class="select">
+      <label for="project-name">Select From Device</label>
+      <input (change)="onSelectFiles($event)" id="project-name" type="file" multiple accept="image/*" hidden />
     </div>
-    <div class="content" style=" display: flex; justify-content: center; align-items: center;">
-      <ng-icon [name]="Icons.Photo" class="svg" size="15rem">
+  </div>
+</div>
+}
+@else if (step == 1.1) {
+<div class="step add-more-photos">
+  <div class="header">
+    Add More Photos - Step {{step}}
+
+    @if (selectedFiles.length) {
+    <div class="btn"
+      style="position: absolute; height: 2rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%);"
+      (click)="step=2"><ng-icon [name]="Icons.ArrowRight"></ng-icon></div>
+    }
+  </div>
+  <div class="content">
+    <div class="item btn add more">
+      <ng-icon [name]="Icons.Photo" class="svg">
       </ng-icon>
       <div class="select">
-        <label for="project-name">Select From Device</label>
+        <label for="project-name"><ng-icon [name]="Icons.Plus"></ng-icon> More</label>
         <input (change)="onSelectFiles($event)" id="project-name" type="file" multiple accept="image/*" hidden />
       </div>
     </div>
+    @for (file of selectedFiles; let i = $index; track i) {
+    <div class="item">
+      <div class="btn delete" (click)="selectedFiles.splice(i, 1)"><ng-icon [name]="Icons.Trash" size="1.5rem"
+          color="red"></ng-icon></div>
+      <img [src]="file | fileToDataUrl" alt="Selected Image" />
+    </div>
+    }
   </div>
-} @else if (step == 1.1) {
-  <div class="step add-more-photos">
-    <div class="header">
-      Add More Photos - Step {{step}}
+</div>
+}
+@else if (step == 2) {
+<div class="step">
+  <div class="header">
+    <div class="btn"
+      style="position: absolute; height: 2rem; width: 3rem; top: 50%; left: 10px; transform: translateY(-50%);"
+      (click)="step=1.1"><ng-icon [name]="Icons.ArrowLeft"></ng-icon></div>
 
-      @if (selectedFiles.length) {
-        <div class="btn"
-          style="position: absolute; height: 2rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%);"
-          (click)="step=2"><ng-icon [name]="Icons.ArrowRight"></ng-icon></div>
-        }
+    About This Project - Step {{step}}
+    @if (createForm.valid) {
+    <div class="btn"
+      style="position: absolute; height: 2rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%);"
+      (click)="step=2.1"><ng-icon [name]="Icons.ArrowRight"></ng-icon></div>
+    }
+  </div>
+  <form class="content" [formGroup]="createForm"
+    style="display: flex; flex-direction: column; gap: 1rem; justify-content: flex-start;">
+    <app-block>
+      <div class="header">
+        Link
+      </div>
+      <div class="input-holder">
+        <label for="project-id">Project Id</label>
+        <input id="project-id" formControlName="id" type="text" placeholder="" />
+      </div>
+      <div class="err-message">
+        {{ getProjectIdErrorMessage() }}
+      </div>
+    </app-block>
+
+    <app-block style="z-index: 100;">
+      <div class="header">
+        <h3>Category</h3>
       </div>
       <div class="content">
-        <div class="item btn add more">
-          <ng-icon [name]="Icons.Photo" class="svg">
-          </ng-icon>
-          <div class="select">
-            <label for="project-name"><ng-icon [name]="Icons.Plus"></ng-icon> More</label>
-            <input (change)="onSelectFiles($event)" id="project-name" type="file" multiple accept="image/*" hidden />
-          </div>
-        </div>
-        @for (file of selectedFiles; let i = $index; track i) {
-          <div class="item">
-            <div class="btn delete" (click)="selectedFiles.splice(i, 1)"><ng-icon [name]="Icons.Trash" size="1.5rem" color="red"></ng-icon></div>
-            <img [src]="file | fileToDataUrl" alt="Selected Image" />
-          </div>
-        }
+        <app-select [value]="createForm.value.category ?? '' " class="add-skill" (change)="changeCategory($event)"
+          [options]="toOptions(categories)">
+        </app-select>
       </div>
-    </div>
-  } @else if (step == 2) {
-    <div class="step">
+    </app-block>
+
+    <app-block>
       <div class="header">
-        <div class="btn"
-          style="position: absolute; height: 2rem; width: 3rem; top: 50%; left: 10px; transform: translateY(-50%);"
-          (click)="step=1.1"><ng-icon [name]="Icons.ArrowLeft"></ng-icon></div>
-
-        About This Project - Step {{step}}
-          @if (createForm.valid) {
-            <div class="btn"
-              style="position: absolute; height: 2rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%);"
-              (click)="step=2.1"><ng-icon [name]="Icons.ArrowRight"></ng-icon></div>
-            }
-          </div>
-          <form class="content" [formGroup]="createForm"
-            style="display: flex; flex-direction: column; gap: 1rem; justify-content: flex-start;">
-            <app-block>
-              <div class="header">
-                Link
-              </div>
-              <div class="input-holder">
-                <label for="project-id">Project Id</label>
-                <input id="project-id" formControlName="id" type="text" placeholder="" />
-              </div>
-              <div class="err-message">
-                {{ getProjectIdErrorMessage() }}
-              </div>
-            </app-block>
-
-            <app-block style="z-index: 100;">
-              <div class="header">
-                <h3>Category</h3>
-              </div>
-              <div class="content">
-                <app-select [value]="createForm.value.category ?? '' " class="add-skill" (change)="changeCategory($event)"
-                  [options]="toOptions(categories)">
-                </app-select>
-              </div>
-            </app-block>
-
-            <app-block>
-              <div class="header">
-                Info
-              </div>
-              <div class="input-holder">
-                <label for="project-title">Project Title</label>
-                <input id="project-title" formControlName="title" type="text" placeholder="" />
-              </div>
-              <div class="input-holder">
-                <label for="project-short-description">Project Short Description</label>
-                <input id="project-short-description" formControlName="shortDescription" type="text" placeholder="" />
-              </div>
-            </app-block>
-            <app-block style="z-index: 99;">
-              <div class="header">
-                <h3>Skills</h3>
-              </div>
-              <div class="content">
-                <app-select value="" class="add-skill" (change)="addSkill($event)" [options]="toOptions(skills)">
-                </app-select>
-                <div class="tags-holder">
-                  @for (skill of createForm.value.skills; track skill.id) {
-                    <app-tag [removable]="true" (remove)="removeSkill(skill)">{{skill.name}}</app-tag>
-                  }
-                </div>
-              </div>
-            </app-block>
-
-            <app-block>
-              <div class="header">
-                Deadline
-              </div>
-              <div class="input-holder">
-                <label for="project-deadline">Project Deadline</label>
-                <input id="project-deadline" formControlName="deadline" type="date" placeholder="" />
-              </div>
-            </app-block>
-
-          </form>
+        Info
+      </div>
+      <div class="input-holder">
+        <label for="project-title">Project Title</label>
+        <input id="project-title" formControlName="title" type="text" placeholder="" />
+      </div>
+      <div class="input-holder">
+        <label for="project-short-description">Project Short Description</label>
+        <input id="project-short-description" formControlName="shortDescription" type="text" placeholder="" />
+      </div>
+    </app-block>
+    <app-block style="z-index: 99;">
+      <div class="header">
+        <h3>Skills</h3>
+      </div>
+      <div class="content">
+        <app-select value="" class="add-skill" (change)="addSkill($event)" [options]="toOptions(skills)">
+        </app-select>
+        <div class="tags-holder">
+          @for (skill of createForm.value.skills; track skill.id) {
+          <app-tag [removable]="true" (remove)="removeSkill(skill)">{{skill.name}}</app-tag>
+          }
         </div>
-      } @else if (step == 2.1) {
-        <div class="step">
-          <div class="header">
-            Addition Readme - Step {{step}}
-            <div class="btn"
-              style="position: absolute; height: 2rem; width: 3rem; top: 50%; left: 10px; transform: translateY(-50%) rotate(180deg);"
-              (click)="step=2"><ng-icon [name]="Icons.ArrowRight"></ng-icon></div>
+      </div>
+    </app-block>
 
-              @if (createForm.valid) {
-                <div class="btn"
-                  style="position: absolute; height: 2rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%); color: var(--main-color);"
-                (click)="createProject()">Finish</div>
-              }
-            </div>
+    <app-block>
+      <div class="header">
+        Deadline
+      </div>
+      <div class="input-holder">
+        <label for="project-deadline">Project Deadline</label>
+        <input id="project-deadline" formControlName="deadline" type="date" placeholder="" />
+      </div>
+    </app-block>
 
-            <div class="content" [formGroup]="createForm">
-              <app-block class="way">
-                <div class="header">
-                  Repo Link (GitHub / GitLab)
-                </div>
-                <div class="body">
-                  <div class="input-holder">
-                    <label>Paste repo URL (GitHub or GitLab)</label>
-                    <input type="text" formControlName="repoUrl" />
-                  </div>
-                  <div class="btn main search" (click)="uploadFromRepo()" style="width: 10rem;">
-                    <ng-icon [name]="Icons.Upload" size="1rem"></ng-icon>
-                    @if (!isLoading) {
-                      <span>Upload ReadMe</span>
-                    }
-                    @if (isLoading) {
-                      <span>Loading...</span>
-                    }
-                  </div>
-                </div>
-                @if (loadError) {
-                  <div class="error">{{ loadError }}</div>
-                }
-              </app-block>
-              <app-block class="way">
-                <div class="header">
-                  Upload ReadMe File
-                </div>
+  </form>
+</div>
+} @else if (step == 2.1) {
+<div class="step">
+  <div class="header">
+    Addition Readme - Step {{step}}
+    <div class="btn"
+      style="position: absolute; height: 2rem; width: 3rem; top: 50%; left: 10px; transform: translateY(-50%) rotate(180deg);"
+      (click)="step=2"><ng-icon [name]="Icons.ArrowRight"></ng-icon></div>
 
-                <div class="select">
-                  <label for="readMeFile" class="btn main">
-                    Select File
-                  </label>
+    @if (createForm.valid) {
+    <div class="btn"
+      style="position: absolute; height: 2rem; width: 3rem; top: 50%; right: 10px; transform: translateY(-50%); color: var(--main-color);"
+      (click)="createProject()">Finish</div>
+    }
+  </div>
 
-                  <input id="readMeFile" type="file" hidden accept=".md,.markdown,.txt" (change)="onReadmeFileSelected($event)" />
-                </div>
+  <div class="content" [formGroup]="createForm">
+    <app-block class="way">
+      <div class="header">
+        Repo Link (GitHub / GitLab)
+      </div>
+      <div class="body">
+        <div class="input-holder">
+          <label>Paste repo URL (GitHub or GitLab)</label>
+          <input type="text" formControlName="repoUrl" />
+        </div>
+        <div class="btn main search" (click)="uploadFromRepo()" style="width: 10rem;">
+          <ng-icon [name]="Icons.Upload" size="1rem"></ng-icon>
+          @if (!isLoading) {
+          <span>Upload ReadMe</span>
+          }
+          @if (isLoading) {
+          <span>Loading...</span>
+          }
+        </div>
+      </div>
+      @if (loadError) {
+      <div class="error">{{ loadError }}</div>
+      }
+    </app-block>
+    <app-block class="way">
+      <div class="header">
+        Upload ReadMe File
+      </div>
 
-                @if (fileError) {
-                  <div class="error">{{ fileError }}</div>
-                }
-              </app-block>
-              <app-block class="way">
-                <div class="header">
-                  Edit Manually
-                </div>
-                <div class="body" style="flex-direction: column;">
-                  <ngx-editor-menu [editor]="editor"></ngx-editor-menu>
-                  <ngx-editor [editor]="editor" [placeholder]="'Type here...'" formControlName="editorHTML">
-                  </ngx-editor>
-                </div>
-              </app-block>
+      <div class="select">
+        <label for="readMeFile" class="btn main">
+          Select File
+        </label>
 
-              <app-block class="way">
-                <div class="header">Preview</div>
-                <div class="body" style="flex-direction: column;">
-                  <markdown [data]="createForm.value.fullReadme"></markdown>
-                </div>
-              </app-block>
-            </div>
-          </div>
-        }
+        <input id="readMeFile" type="file" hidden accept=".md,.markdown,.txt" (change)="onReadmeFileSelected($event)" />
+      </div>
+
+      @if (fileError) {
+      <div class="error">{{ fileError }}</div>
+      }
+    </app-block>
+    <app-block class="way">
+      <div class="header">
+        Edit Manually
+      </div>
+      <div class="body" style="flex-direction: column;">
+        <ngx-editor-menu [editor]="editor"></ngx-editor-menu>
+        <ngx-editor [editor]="editor" [placeholder]="'Type here...'" formControlName="editorHTML">
+        </ngx-editor>
+      </div>
+    </app-block>
+
+    <app-block class="way">
+      <div class="header">Preview</div>
+      <div class="body" style="flex-direction: column;">
+        <markdown [data]="createForm.value.fullReadme"></markdown>
+      </div>
+    </app-block>
+  </div>
+</div>
+}

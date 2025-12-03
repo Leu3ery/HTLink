@@ -1,1 +1,66 @@
-<p>read-me works!</p>
+<div class="header">
+    <h2>Edit Readme</h2>
+
+    <div class="btn main" style="width: 100px"> <ng-icon [name]="Icons.Check"></ng-icon> Save</div>
+</div>
+
+<div class="content">
+    <app-block class="way">
+        <div class="header">
+            Repo Link (GitHub / GitLab)
+        </div>
+        <div class="body">
+            <div class="input-holder">
+                <label>Paste repo URL (GitHub or GitLab)</label>
+                <input type="text" [(ngModel)]="repoURl" />
+            </div>
+            <div class="btn main search" (click)="uploadFromRepo()" style="width: 10rem;">
+                <ng-icon [name]="Icons.Upload" size="1rem"></ng-icon>
+                @if (!isLoading) {
+                <span>Upload ReadMe</span>
+                }
+                @if (isLoading) {
+                <span>Loading...</span>
+                }
+            </div>
+        </div>
+        @if (loadError) {
+        <div class="error">{{ loadError }}</div>
+        }
+    </app-block>
+    <app-block class="way">
+        <div class="header">
+            Upload ReadMe File
+        </div>
+
+        <div class="select">
+            <label for="readMeFile" class="btn main">
+                Select File
+            </label>
+
+            <input id="readMeFile" type="file" hidden accept=".md,.markdown,.txt"
+                (change)="onReadmeFileSelected($event)" />
+        </div>
+
+        @if (fileError) {
+        <div class="error">{{ fileError }}</div>
+        }
+    </app-block>
+    <app-block class="way">
+        <div class="header">
+            Edit Manually
+        </div>
+        <div class="body" style="flex-direction: column;">
+            <ngx-editor-menu [editor]="editor"></ngx-editor-menu>
+            <ngx-editor [editor]="editor" [placeholder]="'Type here...'" [(ngModel)]="editorHTML">
+            </ngx-editor>
+        </div>
+    </app-block>
+
+    <app-block class="way">
+        <div class="header">Preview</div>
+        <div class="body" style="flex-direction: column;">
+            <markdown [data]="fullReadme()"></markdown>
+        </div>
+    </app-block>
+</div>
