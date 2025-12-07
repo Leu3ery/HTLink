@@ -67,11 +67,14 @@ Create a `.env` file in the `server` root directory with the following variables
 
 ```env
 PORT=3000
-JWT_SECRET=your_jwt_secret
+JWT_SECRET_COMPOSE=2690b22d6349b352e8d517e3434f78d5
+
 
 # MongoDB Configuration
-MONGO_URI=mongodb://127.0.0.1:27017/htlgram
 PASSWORD_SALT=10
+MONGO_URI_COMPOSE=mongodb://username:pass@mongodb:27017/dbname?authSource=admin
+MONGO_INITDB_ROOT_USERNAME=username
+MONGO_INITDB_ROOT_PASSWORD=pass
 
 # LDAP Configuration (for student authentication)
 LDAP_URL=your_ldap_server_url
