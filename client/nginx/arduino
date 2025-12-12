@@ -1,0 +1,1184 @@
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+Adafruit_PWMServoDriver pwm0 = Adafruit_PWMServoDriver(&Wire , 0x40);
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(A15, 3); // RX, TX
+SoftwareSerial mySerial2(A15, 12); // RX, TX
+#include <Servo.h>
+Servo myservo1;
+Servo myservo2;
+const uint8_t PIN_direction_TX_RX = 2;  // указываем номер вывода arduino, к которому подключены выводы RE и DE конвертирующего модуля
+#define stilSensor1   40 // вхід датчика хола стола
+#define stilSensor2   42 // вхід датчика хола стола
+#define stilSensor3   44 // вхід датчика хола стола
+#define stilSensor4   46 // вхід датчика хола стола
+#define stilSensor0   48 // вхід датчика хола стола
+#define sensorUp      26 // вхід датчика верхнього положення кришки стола
+#define sensorDown    28 // вхід датчика нижнього положення кришки стола
+#define cs            A0 // Вхід датчика струму драйвера електродвигуна
+#define pwm           33 // Вихід ШІМ сигналу на драйвер
+#define up            24 // Вихід на ввімкнення підйому стола
+#define down          22 // Вихід на ввімкнення опускання стола
+#define kontyrR       4 // Вихід на управління контура R
+#define kontyrG       5 // Вихід на управління контура G
+#define kontyrB       6 // Вихід на управління контура B
+#define ljystraR      9 // Вихід на управління люстри R
+#define ljystraG      10 // Вихід на управління люстри G
+#define ljystraB      11 // Вихід на управління люстри B
+#define ljystraW      13 // Вихід на управління люстри W
+#define ljystraUV      8 // Вихід на управління люстри UV
+#define pjatnashku    A1 // Вхід датчиків хола пятнашок
+#define stypaSensor   52 // Вхід фототранзисторів ступи
+#define tarilka1aSensor   39 // Вхід датчика хола обертання тарілки 1
+#define tarilka1bSensor   41 // Вхід датчика хола правильного положення тарілки 1
+#define tarilka2aSensor   43 // Вхід датчика хола обертання тарілки 2
+#define tarilka2bSensor   45 // Вхід датчика хола правильного положення тарілки 2
+#define tarilka3aSensor   47 // Вхід датчика хола обертання тарілки 3
+#define tarilka3bSensor   49 // Вхід датчика хола правильного положення тарілки 3
+#define tarilka4aSensor   51 // Вхід датчика хола обертання тарілки 4
+#define tarilka4bSensor   53 // Вхід датчика хола правильного положення тарілки 4
+#define parogen           30 // Вихід на управління парогенератора
+#define pichkaLight       7 // Вихід на управління підсвіткою пічки
+#define pichkaMove        32 // Вихід на реле приводу каміна
+#define motyzka           50 // Вхід кінцевика мотузки голови ведмедя
+#define ankhAktyator1     35 // Вихід на драйвер ввімкнення живлення сервоприводів анкха
+#define gorloAktyator     23 // Вихід на драйвер ввімкнення актуатора в голові ведмедя
+#define irSensor          A3 // Вхід інфрачервоного датчика відстані в голові
+#define maskaGerkon       A2 // Вхід геркона маски
+#define vedmidjGerkon     A4 // Вхід геркона зуба ведмедя
+#define pashchaSensor     A5 // Вхід фототранзисторів пащі ведмедя
+#define stil              A6 // Вхід контактів замка у столі
+#define strt              A15 //Вхід кнопки старт
+
+unsigned long zirkaTime;
+unsigned long ss0time;
+unsigned long ss1time;
+unsigned long ss2time;
+unsigned long ss3time;
+unsigned long ss4time;
+unsigned long krushkaTime;
+unsigned long OKlightTime;
+unsigned long stypaTime;
+unsigned long pjatnashkuTime;
+unsigned long RlightTime;
+unsigned long bluskavkaTime;
+unsigned long tarilka1Time;
+unsigned long tarilka2Time;
+unsigned long tarilka3Time;
+unsigned long tarilka4Time;
+unsigned long motyzkaTime;
+unsigned long mtzkTime;
+unsigned long mskTime;
+unsigned long mskLightTime;
+unsigned long stlTime;
+unsigned long rotTime;
+unsigned long rtTime;
+unsigned long irTime;
+unsigned long lightTime;
+
+byte zirka;
+int bright0;
+int bright1;
+int bright2;
+int bright3;
+int bright4;
+byte w;
+byte ss0;
+byte ss1;
+byte ss2;
+byte ss3;
+byte ss4;
+byte krushka;
+byte brightLR;
+byte brightLG;
+byte brightLB;
+byte brightLW;
+byte brightLUV;
+byte OKlight;
+byte ptnshk;
+byte stypa;
+byte onRlight;
+byte bluskavka;
+int del1;
+int del2;
+int i1;
+byte tarilkuPlay;
+byte tarilka1move;
+byte tarilka2move;
+byte tarilka3move;
+byte tarilka4move;
+byte trlk1;
+byte trlk2;
+byte trlk3;
+byte trlk4;
+byte pichkaBright;
+byte mtzk;
+byte mt;
+byte msk;
+byte mskL;
+byte a;
+byte ankh;
+byte stl;
+byte rot;
+byte rt;
+byte ir;
+
+void setup() {
+  pinMode(PIN_direction_TX_RX, OUTPUT);      // устанавливаем режим работы вывода PIN_direction_TX_RX, как "выход"
+  digitalWrite(PIN_direction_TX_RX, LOW);    // устанавливаем уровень логического «0» на выводе PIN_direction_TX_RX (переводим модуль в режим приёма данных)
+  pwm0.begin();
+  pwm0.setPWMFreq(1600);  // Set to whatever you like, we don't use it in this demo!
+  //Wire.setClock(400000);
+  pinMode(pwm, OUTPUT);
+  pinMode(up, OUTPUT);
+  digitalWrite(up, LOW);
+  pinMode(down, OUTPUT);
+  digitalWrite(down, LOW);
+  pinMode(ljystraR, OUTPUT);
+  digitalWrite(ljystraR, LOW);
+  pinMode(ljystraG, OUTPUT);
+  digitalWrite(ljystraG, LOW);
+  pinMode(ljystraB, OUTPUT);
+  digitalWrite(ljystraB, LOW);
+  pinMode(ljystraW, OUTPUT);
+  brightLW = 200;
+  analogWrite(ljystraW, 50);
+  digitalWrite(ljystraB, LOW);
+  pinMode(parogen, OUTPUT);
+  digitalWrite(parogen, LOW);
+  pinMode(pichkaLight, OUTPUT);
+  digitalWrite(pichkaLight, LOW);
+  pinMode(kontyrR, OUTPUT);
+  analogWrite(kontyrR, 0);
+  pinMode(kontyrG, OUTPUT);
+  digitalWrite(kontyrG, LOW);
+  pinMode(kontyrB, OUTPUT);
+  digitalWrite(kontyrB, LOW);
+  pinMode(pichkaMove, OUTPUT);
+  digitalWrite(pichkaMove, HIGH);
+  pinMode(ankhAktyator1, OUTPUT);
+  digitalWrite(ankhAktyator1, LOW);
+  pinMode(ljystraUV, OUTPUT);
+  digitalWrite(ljystraUV, LOW);
+  pinMode(gorloAktyator, OUTPUT);
+  digitalWrite(gorloAktyator, LOW);
+  digitalWrite(stilSensor0, HIGH); // підтягуючі резистори
+  digitalWrite(stilSensor1, HIGH);
+  digitalWrite(stilSensor2, HIGH);
+  digitalWrite(stilSensor3, HIGH);
+  digitalWrite(stilSensor4, HIGH);
+  digitalWrite(stypaSensor, HIGH);
+  digitalWrite(tarilka1aSensor, HIGH);
+  digitalWrite(tarilka1bSensor, HIGH);
+  digitalWrite(tarilka2aSensor, HIGH);
+  digitalWrite(tarilka2bSensor, HIGH);
+  digitalWrite(tarilka3aSensor, HIGH);
+  digitalWrite(tarilka3bSensor, HIGH);
+  digitalWrite(tarilka4aSensor, HIGH);
+  digitalWrite(tarilka4bSensor, HIGH);
+  digitalWrite(motyzka, HIGH);
+  digitalWrite(maskaGerkon, HIGH);
+  digitalWrite(pashchaSensor, HIGH);
+  digitalWrite(stil, HIGH);
+  digitalWrite(vedmidjGerkon, HIGH);
+  digitalWrite(strt, HIGH);
+
+  Serial.begin(9600);
+  Serial1.begin(9600);
+  Serial2.begin(9600);
+  Serial3.begin(9600);
+  mySerial.begin(9600);
+  mySerial2.begin(9600);
+  zirka = 0;
+  bright0 = 0;
+  bright1 = 0;
+  bright2 = 0;
+  bright3 = 0;
+  bright4 = 0;
+  w = 0;
+  ss0 = 0;
+  ss1 = 0;
+  ss2 = 0;
+  ss3 = 0;
+  ss4 = 0;
+  krushka = 0;
+  OKlight = 0;
+  ptnshk = 0;
+  stypa = 0;
+  onRlight = 0;
+  bluskavka = 0;
+  tarilkuPlay = 1;
+  tarilka1move = 0;
+  tarilka2move = 0;
+  tarilka3move = 0;
+  tarilka4move = 0;
+  trlk1 = 0;
+  trlk2 = 0;
+  trlk3 = 0;
+  trlk4 = 0;
+  mtzk = 0;
+  mt = 0;
+  msk = 0;
+  mskL = 0;
+  a = 0;
+  pichkaBright = 0;
+  stl = 0;
+  rot = 0;
+  rt = 0;
+  ir = 0;
+  execute_CMD(0x06, 0, 0x20,1); // Set the volume (0x00~0x30)
+  execute_CMD(0x06, 0, 0x30,2);  // Set the volume (0x00~0x30)
+  execute_CMD(0x06, 0, 0x30,3);  // Set the volume (0x00~0x30)
+  delay(100);
+  krushka = 11;  //Закриваємо кришку
+  pwm0.setPWM(5, 0, 4095);  //Вмикаєм магніт скрині
+  pwm0.setPWM(13, 0, 4095); //Вмикаєм магніт ніжки стола
+  myservo1.attach(34);
+  myservo2.attach(36);
+  digitalWrite(ankhAktyator1, HIGH);
+  myservo1.write(19);
+  myservo2.write(163);
+  ankh = 0;
+  delay(2000);
+  digitalWrite(ankhAktyator1, LOW);
+  digitalWrite(PIN_direction_TX_RX, HIGH);
+  delay(2);
+  Serial.write('B');
+  delay(2);
+  digitalWrite(PIN_direction_TX_RX, LOW);
+}
+
+void(* resetFunc) (void) = 0; // оголошуємо функцію reset
+
+void loop() {
+  if (Serial.available() > 0){
+    char bu = Serial.read();
+    Serial.println(bu);
+    if(bu == 'A'){     // Якщо прийшла команда "A" (старт)
+      digitalWrite(PIN_direction_TX_RX, HIGH);
+        delay(2);
+        Serial.write('A');
+        delay(2);
+        digitalWrite(PIN_direction_TX_RX, LOW);
+      if(a == 0){
+        a = 1;
+        execute_CMD(0x0F,1,1,1);  //Фон 1
+        pwm0.setPWM(8, 0, 1024);  //Вмикаєм зелену підсвітку тумби з анкхами
+        pwm0.setPWM(10, 0, 100);  //Вмикаєм червону підсвітку очей маски
+        //analogWrite(kontyrR, 100); //Вмикаєм червону підсвітку контура кімнати
+        analogWrite(ljystraW, brightLW);
+        digitalWrite(PIN_direction_TX_RX, HIGH);
+        delay(2);
+        Serial.write('A');
+        delay(2);
+        digitalWrite(PIN_direction_TX_RX, LOW);
+      }
+    }
+    if(bu == 'B'){ //Команда reset
+      //resetFunc();
+      zirka = 0;
+      bright0 = 0;
+      bright1 = 0;
+      bright2 = 0;
+      bright3 = 0;
+      bright4 = 0;
+      w = 0;
+      ss0 = 0;
+      ss1 = 0;
+      ss2 = 0;
+      ss3 = 0;
+      ss4 = 0;
+      krushka = 0;
+      OKlight = 0;
+      ptnshk = 0;
+      stypa = 0;
+      onRlight = 0;
+      bluskavka = 0;
+      tarilkuPlay = 1;
+      tarilka1move = 0;
+      tarilka2move = 0;
+      tarilka3move = 0;
+      tarilka4move = 0;
+      trlk1 = 0;
+      trlk2 = 0;
+      trlk3 = 0;
+      trlk4 = 0;
+      mtzk = 0;
+      mt = 0;
+      msk = 0;
+      mskL = 0;
+      a = 0;
+      pichkaBright = 0;
+      stl = 0;
+      rot = 0;
+      rt = 0;
+      ir = 0;
+      execute_CMD(0x0E,0,0,1);  //Стоп фонова музика
+      pwm0.setPWM(0, 0, 0);  //Вимикаєм зірку
+      pwm0.setPWM(1, 0, 0);
+      pwm0.setPWM(2, 0, 0);
+      pwm0.setPWM(3, 0, 0);
+      pwm0.setPWM(4, 0, 0);
+      pwm0.setPWM(5, 0, 4095);  //Вмикаєм магніт скрині
+      pwm0.setPWM(7, 0, 0);  //Вимикаєм червону підсвітку тумби з анкхами
+      pwm0.setPWM(8, 0, 0);  //Вимикаєм зелену підсвітку тумби з анкхами
+      pwm0.setPWM(9, 0, 0);  //Вимикаєм синю підсвітку тумби з анкхами
+      pwm0.setPWM(10, 0, 0);  //Вимикаєм червону підсвітку очей маски
+      pwm0.setPWM(13, 0, 4095);  //Вмикаєм магніт ніжки стола
+      pwm0.setPWM(14, 0, 0);  //Вимикаєм червону підсвітку ніши ножа
+      analogWrite(kontyrR, 0);  //Вимикаєм червону підсвітку контура кімнати
+      analogWrite(kontyrG, 0);  //Вимикаєм зелену підсвітку контура кімнати
+      analogWrite(kontyrB, 0);  //Вимикаєм синю підсвітку контура кімнати
+      digitalWrite(ljystraUV, LOW);
+      digitalWrite(ljystraR, LOW);
+      digitalWrite(ljystraG, LOW);
+      digitalWrite(ljystraB, LOW);
+      analogWrite(ljystraW, 50);
+      digitalWrite(PIN_direction_TX_RX, HIGH);
+      delay(2);
+      Serial.write('B');
+      delay(2);
+      digitalWrite(PIN_direction_TX_RX, LOW);
+    }
+  }
+  //________________________________________Режим ресет____________________________________________
+
+  if(a == 0){
+    if(ankh == 0 && mtzk == 0 && digitalRead(motyzka) == LOW){
+      mtzk = 1;
+      motyzkaTime = millis();
+    }
+    if(mtzk == 1 && millis() - motyzkaTime > 5){
+      if(digitalRead(motyzka) == LOW){
+        mtzk = 2;
+        motyzkaTime = millis();
+        mtzkTime = millis();
+        pwm0.setPWM(8, 0, 1000);  //Вмикаєм зелену підсвітку тумби з анкхами
+        pwm0.setPWM(7, 0, 1000);  //Вмикаєм червонну підсвітку тумби з анкхами
+      }
+      else mtzk = 0;
+    }
+    if(mtzk == 2){
+      if(mt == 0 && millis() - mtzkTime > 500){
+        pwm0.setPWM(8, 0, 0);  //Вимикаєм зелену підсвітку тумби з анкхами
+        pwm0.setPWM(7, 0, 0);  //Вимикаєм червонну підсвітку тумби з анкхами
+        mtzkTime = millis();
+        mt = 1;
+      }
+      if(mt == 1 && millis() - mtzkTime > 500){
+        pwm0.setPWM(8, 0, 1000);  //Вмикаєм зелену підсвітку тумби з анкхами
+        pwm0.setPWM(7, 0, 1000);  //Вмикаєм червонну підсвітку тумби з анкхами
+        mtzkTime = millis();
+        mt = 0;
+      }
+      if(millis() - motyzkaTime > 5000){
+        pwm0.setPWM(8, 0, 0);  //Вимикаєм зелену підсвітку тумби з анкхами
+        pwm0.setPWM(7, 0, 0);  //Вимикаєм червонну підсвітку тумби з анкхами
+        digitalWrite(ankhAktyator1, HIGH);
+        myservo1.write(180);
+        myservo2.write(0);
+        ankh = 1;
+        mt = 0;
+        mtzk = 3;
+        motyzkaTime = millis();
+      }
+    }
+    if(mtzk == 3 && millis() - motyzkaTime > 2000){
+      mtzk = 0;
+      digitalWrite(ankhAktyator1, LOW);
+    }
+    if(krushka == 0 && digitalRead(stilSensor0) == HIGH && digitalRead(stilSensor1) == HIGH && digitalRead(stilSensor2) == HIGH && digitalRead(stilSensor3) == HIGH && digitalRead(stilSensor4) == HIGH){
+      krushka = 11;  //Закриваємо кришку
+    }
+    if(krushka == 11){   //_________________Закриття кришки стола__________________________
+      if(digitalRead(sensorDown) == LOW){
+        krushka = 12;
+        digitalWrite(pwm, HIGH);
+        //analogWrite(pwm, 100);
+        digitalWrite(down, HIGH);
+        krushkaTime = millis();
+      } else krushka = 0;
+    }
+    if(krushka == 12 && digitalRead(sensorDown) == HIGH){
+      krushkaTime = millis();
+      krushka = 13;
+    }
+    if(krushka == 12 && millis() - krushkaTime > 7000){ //якщо кришка не піднялася за відведений час
+      krushka = 0;
+      digitalWrite(down, LOW);
+    }
+    if(krushka == 13 && millis() - krushkaTime > 1 && digitalRead(sensorDown) == HIGH){
+      krushka = 0;
+      digitalWrite(down, LOW);
+    }
+  }
+
+if(a == 0 && digitalRead(strt) == LOW){
+  delay(5);
+  if(digitalRead(strt) == LOW){
+    a = 1;
+    execute_CMD(0x0F,1,1,1);  //Фон 1
+    pwm0.setPWM(8, 0, 1024);  //Вмикаєм зелену підсвітку тумби з анкхами
+    pwm0.setPWM(10, 0, 100);  //Вмикаєм червону підсвітку очей маски
+    //analogWrite(kontyrR, 100); //Вмикаєм червону підсвітку контура кімнати
+    analogWrite(ljystraW, brightLW);
+    digitalWrite(PIN_direction_TX_RX, HIGH);
+    delay(2);
+    Serial.write('A');
+    delay(2);
+    digitalWrite(PIN_direction_TX_RX, LOW);
+  }
+}
+
+  //________________________________________Режим гри______________________________________________
+
+  if(a == 1){
+    if(rot == 0 && analogRead(A5) > 200){ //_____Голова ведмедя____________________________________
+      rot = 1;
+      rotTime = millis();
+    }
+    if(rot == 1 && millis() - rotTime > 5){
+      if(analogRead(A5) > 200){
+        rot = 2;
+        execute_CMD(0x0F,1,2,3);  //Тихе ричання
+        rtTime = millis();
+      } else rot = 0;
+    }
+    if(rot == 2 && millis() - rtTime > 25){
+      rt = rt + 1;
+      pwm0.setPWM(8, 0, 4000 - rt*100);  //Яскравість зеленої підсвітки тумби з анкхами
+      pwm0.setPWM(7, 0, 100*rt);         //Яскравість червоної підсвітки тумби з анкхами
+      rtTime = millis();
+      if(rt == 40) rot = 3;
+    }
+    if(rot == 3 && analogRead(A5) < 100){ //Якщо руку витягли
+      rot = 4;
+      rotTime = millis();
+    }
+    if(rot == 4 && millis() - rotTime > 5){
+      if(analogRead(A5) < 100){
+        rot = 5;
+      } else rot = 3;
+    }
+    if(rot == 5 && millis() - rtTime > 10){
+      rt = rt - 1;
+      pwm0.setPWM(8, 0, 4000 - rt*100);  //Яскравість зеленої підсвітки тумби з анкхами
+      pwm0.setPWM(7, 0, 100*rt);         //Яскравість червоної підсвітки тумби з анкхами
+      rtTime = millis();
+      if(rt == 0) rot = 0;
+    }
+    if(ir == 0 && rot != 0 && digitalRead(irSensor) == LOW){
+      execute_CMD(0x0F,1,3,3);  //Гучне ричання
+      irTime = millis();
+      digitalWrite(gorloAktyator, HIGH);
+      ir = 1;
+    }
+    if(ir == 1 && millis() - irTime > 400){
+      ir = 2;
+      irTime = millis();
+      digitalWrite(gorloAktyator, LOW);
+    }
+    if(ir == 2){
+      if(rot == 0) ir = 0;
+    }
+    if(stl == 0 && digitalRead(vedmidjGerkon) == LOW){
+      stl = 1;
+      stlTime = millis();
+    }
+    if(stl == 1 && millis() - stlTime > 5){
+      if(digitalRead(vedmidjGerkon) == LOW){
+        stl = 2;
+        pwm0.setPWM(13, 0, 0);  //Вимикаєм магніт ніжки стола
+        pwm0.setPWM(14, 0, 4095);  //Вмикаєм червону підсвітку ніши ножа
+        execute_CMD(0x0F,1,14,2);  //Звуковий ефект 14
+        OKlight = 1;
+      } else stl = 0;
+    }
+    if(msk == 0 && digitalRead(maskaGerkon) == LOW){
+      msk = 1;
+      mskTime = millis();
+    }
+    if(msk == 1 && millis() - mskTime > 5){
+      if(digitalRead(maskaGerkon) == LOW){
+        msk = 2;
+        mskTime = millis();
+        mskLightTime = millis();
+        execute_CMD(0x0F,1,1,4);  //Звуковий фект 1
+      } else msk = 0;
+    }
+    if(msk == 2){
+      if(mskL < 25 && millis() - mskLightTime > 75 && millis() - mskTime < 5000){
+        mskL = mskL + 1;
+        pwm0.setPWM(10, 0, 100 + mskL * 150);
+        mskLightTime = millis();
+      }
+      if(mskL > 0 && millis() - mskLightTime > 40 && millis() - mskTime > 5000){
+        mskL = mskL - 1;
+        pwm0.setPWM(10, 0, 100 + mskL * 150);
+        mskLightTime = millis();
+      }
+      if(millis() - mskTime > 6500){
+        msk = 0;
+      }
+    }
+    if(trlk2 == 0 && trlk3 == 0 && trlk4 == 0){ //_________________________ТАРІЛКИ_______________________
+      if(tarilka1move == 0 && digitalRead(tarilka1aSensor) == LOW){ // Вода
+        tarilka1move = 1;
+        tarilka1Time = millis();
+      }
+      if(tarilka1move == 1 && digitalRead(tarilka1aSensor) == HIGH){
+        tarilka1move = 2;
+      }
+      if(tarilka1move == 2 && digitalRead(tarilka1aSensor) == LOW){
+        tarilka1move = 1;
+        if(millis() - tarilka1Time < 1000){ //якщо між імпульсами малий проміжок часу
+          if(tarilkuPlay == 1){
+            execute_CMD(0x0F,1,9,2);  //Звуковий ефект 9
+            trlk1 = 1;
+            tarilkuPlay = 2;
+            lightTime = millis();
+          }
+        }
+        tarilka1Time = millis();
+      }
+      if(trlk1 == 1 && millis() - lightTime < 1000){
+        analogWrite(kontyrG, (millis() - lightTime)/4);
+      }
+      if(tarilkuPlay == 2 && millis() - tarilka1Time > 1000){
+        execute_CMD(0x0E,0,0,2);  //Стоп звуковий ефект
+        tarilkuPlay = 1;
+        //trlk11 = 2;
+        trlk1 = 2;
+        lightTime = millis();
+      }
+      if(trlk1 >= 2 && millis() - lightTime > 3){
+        lightTime = millis();
+        trlk1 = trlk1 + 1;
+        analogWrite(kontyrG, 255 - trlk1);
+        if(trlk1 == 255) trlk1 = 0;
+      }
+    }
+
+    if(trlk1 == 0 && trlk3 == 0 && trlk4 == 0){
+      if(tarilka2move == 0 && digitalRead(tarilka2aSensor) == LOW){
+        tarilka2move = 1;
+        tarilka2Time = millis();
+      }
+      if(tarilka2move == 1 && digitalRead(tarilka2aSensor) == HIGH){
+        tarilka2move = 2;
+      }
+      if(tarilka2move == 2 && digitalRead(tarilka2aSensor) == LOW){
+        tarilka2move = 1;
+        if(millis() - tarilka2Time < 1000){ //якщо між імпульсами малий проміжок часу
+          if(tarilkuPlay == 1){
+            execute_CMD(0x0F,1,10,2);  //Звуковий фект 10
+            trlk2 = 1;
+            tarilkuPlay = 2;
+            analogWrite(kontyrR, 0);
+            analogWrite(kontyrG, 0);
+            analogWrite(kontyrB, 100);
+          }
+        }
+        tarilka2Time = millis();
+      }
+      if(tarilkuPlay == 2 && millis() - tarilka2Time > 1000){
+        execute_CMD(0x0E,0,0,2);  //Стоп звуковий ефект
+        trlk2 = 0;
+        tarilkuPlay = 1;
+        analogWrite(kontyrR, 0);
+        analogWrite(kontyrG, 0);
+        analogWrite(kontyrB, 0);
+      }
+    }
+    if(trlk1 == 0 && trlk2 == 0 && trlk4 == 0){
+      if(tarilka3move == 0 && digitalRead(tarilka3aSensor) == LOW){
+        tarilka3move = 1;
+        tarilka3Time = millis();
+      }
+      if(tarilka3move == 1 && digitalRead(tarilka3aSensor) == HIGH){
+        tarilka3move = 2;
+      }
+      if(tarilka3move == 2 && digitalRead(tarilka3aSensor) == LOW){
+        tarilka3move = 1;
+        if(millis() - tarilka3Time < 1000){ //якщо між імпульсами малий проміжок часу
+          if(tarilkuPlay == 1){
+            execute_CMD(0x0F,1,11,2);  //Звуковий фект 10
+            trlk3 = 1;
+            tarilkuPlay = 2;
+            analogWrite(kontyrR, 100);
+            analogWrite(kontyrG, 0);
+            analogWrite(kontyrB, 0);
+          }
+        }
+        tarilka3Time = millis();
+      }
+      if(tarilkuPlay == 2 && millis() - tarilka3Time > 1000){
+        execute_CMD(0x0E,0,0,2);  //Стоп звуковий ефект
+        trlk3 = 0;
+        tarilkuPlay = 1;
+        analogWrite(kontyrR, 0);
+        analogWrite(kontyrG, 0);
+        analogWrite(kontyrB, 0);
+      }
+    }
+
+    if(trlk1 == 0 && trlk2 == 0 && trlk3 == 0){
+      if(tarilka4move == 0 && digitalRead(tarilka4aSensor) == LOW){
+        tarilka4move = 1;
+        tarilka4Time = millis();
+      }
+      if(tarilka4move == 1 && digitalRead(tarilka4aSensor) == HIGH){
+        tarilka4move = 2;
+      }
+      if(tarilka4move == 2 && digitalRead(tarilka4aSensor) == LOW){
+        tarilka4move = 1;
+        if(millis() - tarilka4Time < 1000){ //якщо між імпульсами малий проміжок часу
+          if(tarilkuPlay == 1){
+            execute_CMD(0x0F,1,12,2);  //Звуковий фект 12
+            trlk4 = 1;
+            tarilkuPlay = 2;
+            analogWrite(kontyrR, 0);
+            analogWrite(kontyrG, 50);
+            analogWrite(kontyrB, 50);
+          }
+        }
+        tarilka4Time = millis();
+      }
+      if(tarilkuPlay == 2 && millis() - tarilka4Time > 1000){
+        execute_CMD(0x0E,0,0,2);  //Стоп звуковий ефект
+        trlk4 = 0;
+        tarilkuPlay = 1;
+        analogWrite(kontyrR, 0);
+        analogWrite(kontyrG, 0);
+        analogWrite(kontyrB, 0);
+      }
+    }
+    if(digitalRead(tarilka1bSensor) == LOW && digitalRead(tarilka2bSensor) == LOW && digitalRead(tarilka3bSensor) == LOW && digitalRead(tarilka4bSensor) == LOW){
+      if(tarilkuPlay < 3){
+        tarilkuPlay = 3;
+        trlk1 = 0;
+        trlk2 = 0;
+        trlk3 = 0;
+        trlk4 = 0;
+        tarilka4Time = millis();
+      }
+    }
+    else{
+      if(tarilkuPlay == 5){
+        tarilkuPlay = 1;
+        analogWrite(ljystraW, brightLW);
+        analogWrite(ljystraUV, 0);
+      }
+    }
+    if(tarilkuPlay == 3 && millis() - tarilka4Time > 100){
+      tarilkuPlay = 4;
+      tarilka4Time = millis();
+      execute_CMD(0x0F,1,13,2);  //Звуковий ефект 13
+      analogWrite(ljystraR, 0);
+      analogWrite(ljystraG, 0);
+      analogWrite(ljystraB, 0);
+      analogWrite(ljystraW, 0);
+      analogWrite(ljystraUV, 192);
+    }
+    if(tarilkuPlay == 4 && millis() - tarilka4Time > 1000){
+      tarilkuPlay = 5;
+    }
+
+
+    if(mtzk == 0 && digitalRead(motyzka) == LOW){
+      mtzk = 1;
+      motyzkaTime = millis();
+    }
+    if(mtzk == 1 && millis() - motyzkaTime > 5){
+      if(digitalRead(motyzka) == LOW){
+        mtzk = 2;
+        motyzkaTime = millis();
+        execute_CMD(0x0F,1,1,3);  //Крик ведмедя
+        pwm0.setPWM(8, 0, 0);  //Вимикаєм зелену підсвітку тумби з анкхами
+        pwm0.setPWM(7, 0, 1024);  //Вмикаєм червонну підсвітку тумби з анкхами
+        digitalWrite(ankhAktyator1, HIGH);  // активуєм сервоприводи кріплення анкха
+        myservo1.write(19);
+        myservo2.write(163);
+        ankh = 0;
+      }
+      else mtzk = 0;
+    }
+    if(mtzk == 2 && millis() - motyzkaTime > 5000){
+      mtzk = 0;
+      pwm0.setPWM(8, 0, 1024);  //Вмикаєм зелену підсвітку тумби з анкхами
+      pwm0.setPWM(7, 0, 0);  //Вмикаєм червону підсвітку тумби з анкхами
+      digitalWrite(ankhAktyator1, LOW);
+    }
+
+    if(stypa == 0 && digitalRead(stypaSensor) == HIGH){
+      stypa = 1;
+      stypaTime = millis();
+    }
+    if(stypa == 1 && millis() - stypaTime > 5){
+      if(digitalRead(stypaSensor) == HIGH){
+        stypa = 2;
+        stypaTime = millis();
+        //OKlight = 1;
+        execute_CMD(0x0F,1,8,2);  //Звуковий фект 8
+        digitalWrite(parogen, HIGH);
+        pwm0.setPWM(6, 0, 2000);  //Вмикаєм вентилятор котелка
+        digitalWrite(pichkaMove, LOW);
+      }
+      else stypa = 0;
+    }
+    if(stypa == 2 && millis() - stypaTime > 30){
+      pichkaBright = pichkaBright + 1;
+      analogWrite(pichkaLight, pichkaBright);
+      if(pichkaBright == 255){
+        stypa = 3;
+      }
+      if(digitalRead(stypaSensor) == LOW){
+        stypa = 4;
+      }
+      stypaTime = millis();
+    }
+    if(stypa == 3 && digitalRead(stypaSensor) == LOW){
+      stypa = 4;
+      stypaTime = millis();
+    }
+    if(stypa == 4 && millis() - stypaTime > 5){
+      if(digitalRead(stypaSensor) == LOW){
+        stypa = 0;
+        digitalWrite(pichkaLight, LOW);
+        digitalWrite(parogen, LOW);
+        digitalWrite(pichkaMove, HIGH);
+        pwm0.setPWM(6, 0, 0);  //Вимикаєм вентилятор котелка
+      }
+      else stypa = 3;
+    }
+
+    if(ptnshk == 0 && analogRead(pjatnashku) < 398){
+      ptnshk = 1;
+      pjatnashkuTime = millis();
+    }
+    if(ptnshk == 1 && millis() - pjatnashkuTime > 5){
+      if(analogRead(pjatnashku) < 398){
+        ptnshk = 2;
+        OKlight = 1;
+        execute_CMD(0x0F,1,7,2);  //Звуковий фект 7
+        pwm0.setPWM(5, 0, 0);  //Вимикаєм магніт скрині
+      }
+      else ptnshk = 0;
+    }
+    if(krushka == 0){
+      if(ss0 == 0 && digitalRead(stilSensor0) == LOW){
+        delay(1);
+        if(digitalRead(stilSensor0) == LOW){
+          execute_CMD(0x0F,1,2,2);  //Звуковий фект 1
+          OKlight = 1;
+          pwm0.setPWM(0, 0, 1000);  //Вмикаєм сегмент зірки
+          ss0 = 1;
+          ss0time = millis();
+        }
+      }
+      if(ss0 == 1 && millis() - ss0time > 7000){
+        ss0 = 2;
+      }
+      if(ss0 == 2 && digitalRead(stilSensor0) == HIGH){
+        delay(1);
+        if(digitalRead(stilSensor0) == HIGH){
+          pwm0.setPWM(0, 0, 0);  //Вимикаєм сегмент зірки
+          ss0 = 0;
+        }
+      }
+
+      if(ss1 == 0 && digitalRead(stilSensor1) == LOW){
+        delay(1);
+        if(digitalRead(stilSensor1) == LOW){
+          execute_CMD(0x0F,1,1,2);  //Звуковий фект 2
+          OKlight = 1;
+          pwm0.setPWM(1, 0, 1000);  //Вмикаєм сегмент зірки
+          ss1 = 1;
+          ss1time = millis();
+        }
+      }
+      if(ss1 == 1 && millis() - ss1time > 7000){
+        ss1 = 2;
+      }
+      if(ss1 == 2 && digitalRead(stilSensor1) == HIGH){
+        delay(1);
+        if(digitalRead(stilSensor1) == HIGH){
+          pwm0.setPWM(1, 0, 0);  //Вимикаєм сегмент зірки
+          ss1 = 0;
+        }
+      }
+      if(ss2 == 0 && digitalRead(stilSensor2) == LOW){
+        delay(1);
+        if(digitalRead(stilSensor2) == LOW){
+          execute_CMD(0x0F,1,3,2);  //Звуковий фект 3
+          OKlight = 1;
+          pwm0.setPWM(2, 0, 1000);  //Вмикаєм сегмент зірки
+          ss2 = 1;
+          ss2time = millis();
+        }
+      }
+      if(ss2 == 1 && millis() - ss2time > 7000){
+        ss2 = 2;
+      }
+      if(ss2 == 2 && digitalRead(stilSensor2) == HIGH){
+        delay(1);
+        if(digitalRead(stilSensor2) == HIGH){
+          pwm0.setPWM(2, 0, 0);  //Вимикаєм сегмент зірки
+          ss2 = 0;
+        }
+      }
+      if(ss3 == 0 && digitalRead(stilSensor3) == LOW){
+        delay(1);
+        if(digitalRead(stilSensor3) == LOW){
+          execute_CMD(0x0F,1,4,2);  //Звуковий фект 1
+          OKlight = 1;
+          pwm0.setPWM(3, 0, 1000);  //Вмикаєм сегмент зірки
+          ss3 = 1;
+          ss3time = millis();
+        }
+      }
+      if(ss3 == 1 && millis() - ss3time > 7000){
+        ss3 = 2;
+      }
+      if(ss3 == 2 && digitalRead(stilSensor3) == HIGH){
+        delay(1);
+        if(digitalRead(stilSensor3) == HIGH){
+          pwm0.setPWM(3, 0, 0);  //Вимикаєм сегмент зірки
+          ss3 = 0;
+        }
+      }
+      if(ss4 == 0 && digitalRead(stilSensor4) == LOW){
+        delay(1);
+        if(digitalRead(stilSensor4) == LOW){
+          execute_CMD(0x0F,1,5,2);  //Звуковий фект 1
+          OKlight = 1;
+          pwm0.setPWM(4, 0, 1000);  //Вмикаєм сегмент зірки
+          ss4 = 1;
+          ss4time = millis();
+        }
+      }
+      if(ss4 == 1 && millis() - ss4time > 7000){
+        ss4 = 2;
+      }
+      if(ss4 == 2 && digitalRead(stilSensor4) == HIGH){
+        delay(1);
+        if(digitalRead(stilSensor4) == HIGH){
+          pwm0.setPWM(4, 0, 0);  //Вимикаєм сегмент зірки
+          ss4 = 0;
+        }
+      }
+
+      if(krushka == 0 && ss0 == 2 && ss1 == 2 && ss2 == 2 && ss3 == 2 && ss4 == 2){
+        execute_CMD(0x0F,1,6,2);
+        krushka = 1;
+        zirka = 11;
+      }
+    }
+    if(krushka > 0){
+      if(krushka == 1){
+        krushka = 2;
+        onRlight = 1; //повільно змінюєм світло на червоне
+        krushkaTime = millis();
+      }
+      if(krushka == 2 && millis() - krushkaTime > 8000){
+        krushka = 3;
+        bluskavka = 1;
+        zirka = 0;
+        digitalWrite(pwm, HIGH);
+        //analogWrite(pwm, 130);
+        digitalWrite(up, HIGH);
+        krushkaTime = millis();
+      }
+      if(krushka == 3 && digitalRead(sensorUp) == HIGH){
+        krushkaTime = millis();
+        krushka = 4;
+
+      }
+      if(krushka == 3 && millis() - krushkaTime > 8000){ //якщо кришка не піднялася за відведений час (аварія)
+        krushka = 100;
+        digitalWrite(up, LOW);
+        krushka = 5;
+        krushkaTime = millis();
+      }
+      if(krushka == 4 && millis() - krushkaTime > 1 && digitalRead(sensorUp) == HIGH){
+        krushka = 5;
+        digitalWrite(up, LOW);
+        krushkaTime = millis();
+      }
+      if(krushka == 5 && millis() - krushkaTime > 100){
+        krushka = 6;
+        bluskavka = 0;
+        analogWrite(ljystraR, 0);
+        analogWrite(ljystraG, 0);
+        analogWrite(ljystraB, 0);
+        pwm0.setPWM(0, 0, 0);
+        pwm0.setPWM(1, 0, 0);
+        pwm0.setPWM(2, 0, 0);
+        pwm0.setPWM(3, 0, 0);
+        pwm0.setPWM(4, 0, 0);
+        brightLW = 1;
+        analogWrite(ljystraW, brightLW);
+        krushkaTime = millis();
+      }
+      if(krushka == 6 && millis() - krushkaTime > 40){
+        brightLW = brightLW + 1;
+        analogWrite(ljystraW, brightLW);
+        pwm0.setPWM(0, 0, brightLW*7);
+        pwm0.setPWM(1, 0, brightLW*7);
+        pwm0.setPWM(2, 0, brightLW*7);
+        pwm0.setPWM(3, 0, brightLW*7);
+        pwm0.setPWM(4, 0, brightLW*7);
+        if(brightLW == 150){
+          krushka = 7;
+          zirka = 1;
+        }
+        krushkaTime = millis();
+      }
+    }
+    if(OKlight > 0){
+      if(OKlight == 1){
+        OKlight = 2;
+        OKlightTime = millis();
+      }
+      if(OKlight == 2 && millis() - OKlightTime > 10){
+        brightLW = brightLW - 1;
+        analogWrite(ljystraW, brightLW);
+        brightLG = brightLG + 1;
+        analogWrite(ljystraG, brightLG);
+        if(brightLW == 0){
+          OKlight = 3;
+        }
+        OKlightTime = millis();
+      }
+      if(OKlight == 3 && millis() - OKlightTime > 1000){
+        OKlight = 4;
+        OKlightTime = millis();
+      }
+      if(OKlight == 4 && millis() - OKlightTime > 10){
+        brightLW = brightLW + 1;
+        analogWrite(ljystraW, brightLW);
+        brightLG = brightLG - 1;
+        analogWrite(ljystraG, brightLG);
+        if(brightLG == 0){
+          OKlight = 0;
+        }
+        OKlightTime = millis();
+      }
+    }
+    if(onRlight > 0){
+      if(onRlight == 1){
+        onRlight = 2;
+        RlightTime = millis();
+      }
+      if(onRlight == 2 && millis() - RlightTime > 30){
+        brightLW = brightLW - 1;
+        analogWrite(ljystraW, brightLW);
+        brightLR = brightLR + 1;
+        analogWrite(ljystraR, brightLR);
+        if(brightLW == 0){
+          onRlight = 0;
+        }
+        RlightTime = millis();
+      }
+    }
+    if(bluskavka > 0){ //функція мерехтіння світла
+      if(bluskavka == 1){
+        del1 = random(10, 15);
+        del2 = random(15, 40);
+        i1 = random(1,3);
+        bluskavka = 2;
+        bluskavkaTime = millis();
+      }
+      if(bluskavka == 2 && millis() - bluskavkaTime > del2){
+        analogWrite(ljystraR, 255);
+        analogWrite(ljystraG, 255);
+        analogWrite(ljystraB, 255);
+        analogWrite(ljystraW, 255);
+        pwm0.setPWM(0, 0, 4095);
+        pwm0.setPWM(1, 0, 4095);
+        pwm0.setPWM(2, 0, 4095);
+        pwm0.setPWM(3, 0, 4095);
+        pwm0.setPWM(4, 0, 4095);
+        bluskavka = 3;
+        bluskavkaTime = millis();
+      }
+      if(bluskavka == 3 && millis() - bluskavkaTime > del1){
+        analogWrite(ljystraR, 0);
+        analogWrite(ljystraG, 0);
+        analogWrite(ljystraB, 0);
+        analogWrite(ljystraW, 0);
+        pwm0.setPWM(0, 0, 0);
+        pwm0.setPWM(1, 0, 0);
+        pwm0.setPWM(2, 0, 0);
+        pwm0.setPWM(3, 0, 0);
+        pwm0.setPWM(4, 0, 0);
+        bluskavka = 4;
+        bluskavkaTime = millis();
+        i1--;
+        if(i1 < 0){
+          bluskavka = 2;
+          del1 = random(10, 15);
+          del2 = random(15, 40);
+          i1 = random(1,3);
+        }
+      }
+      if(bluskavka == 4 && millis() - bluskavkaTime > del1){
+        analogWrite(ljystraR, 0);
+        analogWrite(ljystraG, 0);
+        analogWrite(ljystraB, 0);
+        analogWrite(ljystraW, 0);
+        pwm0.setPWM(0, 0, 0);
+        pwm0.setPWM(1, 0, 0);
+        pwm0.setPWM(2, 0, 0);
+        pwm0.setPWM(3, 0, 0);
+        pwm0.setPWM(4, 0, 0);
+        bluskavka = 3;
+        bluskavkaTime = millis();
+      }
+    }
+    if(zirka > 0){ //функція мерехтіння зірки
+      if(zirka == 11){
+        del1 = random(10, 15);
+        del2 = random(15, 40);
+        i1 = random(1,3);
+        zirka = 12;
+        zirkaTime = millis();
+      }
+      if(zirka == 12 && millis() - zirkaTime > del2){
+        pwm0.setPWM(0, 0, 250);
+        pwm0.setPWM(1, 0, 250);
+        pwm0.setPWM(2, 0, 250);
+        pwm0.setPWM(3, 0, 250);
+        pwm0.setPWM(4, 0, 250);
+        zirka = 13;
+        zirkaTime = millis();
+      }
+      if(zirka == 13 && millis() - zirkaTime > del1){
+        pwm0.setPWM(0, 0, 1000);
+        pwm0.setPWM(1, 0, 1000);
+        pwm0.setPWM(2, 0, 1000);
+        pwm0.setPWM(3, 0, 1000);
+        pwm0.setPWM(4, 0, 1000);
+        zirka = 14;
+        zirkaTime = millis();
+        i1--;
+        if(i1 < 0){
+          zirka = 12;
+          del1 = random(10, 15);
+          del2 = random(15, 40);
+          i1 = random(1,3);
+        }
+      }
+      if(zirka == 14 && millis() - zirkaTime > del1){
+        pwm0.setPWM(0, 0, 1000);
+        pwm0.setPWM(1, 0, 1000);
+        pwm0.setPWM(2, 0, 1000);
+        pwm0.setPWM(3, 0, 1000);
+        pwm0.setPWM(4, 0, 1000);
+        zirka = 13;
+        zirkaTime = millis();
+      }
+      if(zirka == 1){
+        zirka = 2;
+        zirkaTime = millis();
+      }
+      if(zirka == 2 && millis() - zirkaTime > 1){
+        zirkaTime = millis();
+        bright0 = bright0 + 10;
+        pwm0.setPWM(0, 0, bright0);
+        if(bright0 == 2050) zirka = 3;
+      }
+      if(zirka == 3 && millis() - zirkaTime > 1){
+        zirkaTime = millis();
+        bright0 = bright0 + 10;
+        pwm0.setPWM(0, 0, bright0);
+        bright1 = bright1 + 10;
+        pwm0.setPWM(1, 0, bright1);
+        if(bright0 == 4090) zirka = 4;
+      }
+      if(zirka == 4 && millis() - zirkaTime > 1){
+        zirkaTime = millis();
+        bright0 = bright0 - 10;
+        pwm0.setPWM(0, 0, bright0);
+        bright1 = bright1 + 10;
+        pwm0.setPWM(1, 0, bright1);
+        bright2 = bright2 + 10;
+        pwm0.setPWM(2, 0, bright2);
+        if(bright1 == 4090) zirka = 5;
+      }
+      if(zirka == 5 && millis() - zirkaTime > 1){
+        zirkaTime = millis();
+        bright0 = bright0 - 10;
+        pwm0.setPWM(0, 0, bright0);
+        bright1 = bright1 - 10;
+        pwm0.setPWM(1, 0, bright1);
+        bright2 = bright2 + 10;
+        pwm0.setPWM(2, 0, bright2);
+        bright3 = bright3 + 10;
+        pwm0.setPWM(3, 0, bright3);
+        if(bright2 == 4090) zirka = 6;
+      }
+      if(zirka == 6 && millis() - zirkaTime > 1){
+        zirkaTime = millis();
+        bright1 = bright1 - 10;
+        pwm0.setPWM(1, 0, bright1);
+        bright2 = bright2 - 10;
+        pwm0.setPWM(2, 0, bright2);
+        bright3 = bright3 + 10;
+        pwm0.setPWM(3, 0, bright3);
+        bright4 = bright4 + 10;
+        pwm0.setPWM(4, 0, bright4);
+        if(bright3 == 4090) zirka = 7;
+      }
+      if(zirka == 7 && millis() - zirkaTime > 1){
+        zirkaTime = millis();
+        bright2 = bright2 - 10;
+        pwm0.setPWM(2, 0, bright2);
+        bright3 = bright3 - 10;
+        pwm0.setPWM(3, 0, bright3);
+        bright4 = bright4 + 10;
+        pwm0.setPWM(4, 0, bright4);
+        bright0 = bright0 + 10;
+        pwm0.setPWM(0, 0, bright0);
+        if(bright4 == 4090) zirka = 8;
+      }
+      if(zirka == 8 && millis() - zirkaTime > 1){
+        zirkaTime = millis();
+        bright3 = bright3 - 10;
+        pwm0.setPWM(3, 0, bright3);
+        bright4 = bright4 - 10;
+        pwm0.setPWM(4, 0, bright4);
+        bright0 = bright0 + 10;
+        pwm0.setPWM(0, 0, bright0);
+        bright1 = bright1 + 10;
+        pwm0.setPWM(1, 0, bright1);
+        if(bright0 == 4090) zirka = 9;
+      }
+      if(zirka == 9 && millis() - zirkaTime > 1){
+        zirkaTime = millis();
+        bright4 = bright4 - 10;
+        pwm0.setPWM(4, 0, bright4);
+        bright0 = bright0 - 10;
+        pwm0.setPWM(0, 0, bright0);
+        bright1 = bright1 + 10;
+        pwm0.setPWM(1, 0, bright1);
+        bright2 = bright2 + 10;
+        pwm0.setPWM(2, 0, bright2);
+        if(bright1 == 4090) zirka = 5;
+      }
+    }
+  }
+}
+
+void execute_CMD(byte CMD, byte Par1, byte Par2, int l){
+  word checksum = -(0xFF + 0x06 + CMD + 0x00 + Par1 + Par2);
+  byte Command_line[10] = { 0x7E, 0xFF, 0x06, CMD, 0x00,
+  Par1, Par2, highByte(checksum), lowByte(checksum), 0xEF};
+  for (byte k=0; k<10; k++)
+  {
+    if(l == 1) Serial1.write( Command_line[k]);
+    if(l == 2) Serial2.write( Command_line[k]);
+    if(l == 3) mySerial.write( Command_line[k]);
+    if(l == 4) mySerial2.write( Command_line[k]);
+  }
+}
