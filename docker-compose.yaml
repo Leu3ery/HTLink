@@ -26,18 +26,23 @@ services:
       - htlink
 
   tailscale:
-    image: tailscale/tailscale:latest
-    hostname: htlink-mongo
+    build: infra/tailscale
+    hostname: htlink-ts
     environment:
-      TS_AUTHKEY: ${TS_AUTH}
+      TS_AUTHKEY: "tskey-xxxxxxxxxxxxxxxx"
       TS_STATE_DIR: /var/lib/tailscale
-      TS_USERSPACE: "true"
     volumes:
       - tailscale_state:/var/lib/tailscale
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
     restart: unless-stopped
+    command: >
+      sh -lc "
+      tailscaled --state=${TS_STATE_DIR}/tailscaled.state &
+      sleep 2 &&
+      tailscale up --authkey=${TS_AUTHKEY} --hostname=htlink-ts
+      && tail -f /dev/null
 
   mongodb:
     image: mongodb/mongodb-community-server:latest
