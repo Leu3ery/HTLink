@@ -42,9 +42,9 @@ services:
       - /bin/sh
       - -lc
       - |
-        tailscaled --state=${TS_STATE_DIR}/tailscaled.state &
+        tailscaled --state=/var/lib/tailscale/tailscaled.state &
         sleep 2
-        tailscale up --authkey=${TS_AUTHKEY} --hostname=htlink-ts --accept-dns=true
+        tailscale up --authkey="$TS_AUTHKEY" --hostname=htlink-ts --accept-dns=true
         tail -f /dev/null
   mongodb:
     image: mongodb/mongodb-community-server:latest
