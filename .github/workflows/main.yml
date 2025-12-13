@@ -13,6 +13,7 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
+      infra: ${{ steps.filter.outputs.infra }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,11 +30,14 @@ jobs:
               - 'server/**'
             frontend:
               - 'client/**'
+            infra:
+              - 'infra/**'
 
       - name: Print detected changes
         run: |
           echo "Backend changed: ${{ steps.filter.outputs.backend }}"
           echo "Frontend changed: ${{ steps.filter.outputs.frontend }}"
+          echo "Infra changed: ${{ steps.filter.outputs.infra }}"
 
   notifyStart:
     runs-on: ubuntu-latest
@@ -140,58 +144,94 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/htlink-frontend:latest
           platforms: linux/amd64,linux/arm64
+  docker-tailscale:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.infra == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push tailscale Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./infra/tailscale
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/htlink-tailscale:latest
+          platforms: linux/amd64,linux/arm64
 
   notifyEnd:
-    runs-on: ubuntu-latest
-    needs: [changes, docker-backend, docker-frontend]
-    if: always()
-    env:
-      COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-      BRANCH_NAME: ${{ github.ref_name }}
-      COMMITED_BY: ${{ github.event.head_commit.author.username || github.actor }}
-    steps:
-      - name: Send Telegram result
-        run: |
-          BACKEND_STATUS="${{ needs['docker-backend'].result }}"
-          FRONTEND_STATUS="${{ needs['docker-frontend'].result }}"
+  runs-on: ubuntu-latest
+  needs: [changes, docker-backend, docker-frontend, docker-tailscale]
+  if: always()
+  env:
+    COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+    BRANCH_NAME: ${{ github.ref_name }}
+    COMMITED_BY: ${{ github.event.head_commit.author.username || github.actor }}
+  steps:
+    - name: Send Telegram result
+      run: |
+        BACKEND_STATUS="${{ needs['docker-backend'].result }}"
+        FRONTEND_STATUS="${{ needs['docker-frontend'].result }}"
+        TAILSCALE_STATUS="${{ needs['docker-tailscale'].result }}"
 
-          if [ "$BACKEND_STATUS" = "success" ] && [ "$FRONTEND_STATUS" = "success" ]; then
-            STATUS_ICON="✅"
-            STATUS_TEXT="Docker-билды прошли успешно (backend + frontend)"
-          elif [ "$BACKEND_STATUS" = "success" ] && [ "$FRONTEND_STATUS" = "skipped" ]; then
-            STATUS_ICON="✅"
-            STATUS_TEXT="Собран только backend (изменений во frontend не было)"
-          elif [ "$BACKEND_STATUS" = "skipped" ] && [ "$FRONTEND_STATUS" = "success" ]; then
-            STATUS_ICON="✅"
-            STATUS_TEXT="Собран только frontend (изменений в backend не было)"
-          elif [ "$BACKEND_STATUS" = "skipped" ] && [ "$FRONTEND_STATUS" = "skipped" ]; then
-            STATUS_ICON="✅"
-            STATUS_TEXT="Изменений в коде не было, сборка пропущена"
-          else
-            STATUS_ICON="❌"
-            STATUS_TEXT="Ошибка в одном из Docker-билдов"
-          fi
+        # Функция для красивого вывода статуса
+        pretty_status () {
+          case "$1" in
+            success) echo "✅ success" ;;
+            skipped) echo "⏭ skipped" ;;
+            failure) echo "❌ failure" ;;
+            cancelled) echo "⚠️ cancelled" ;;
+            *) echo "❓ unknown" ;;
+          esac
+        }
 
-          SHORT_SHA=${GITHUB_SHA::7}
+        BACKEND_PRETTY=$(pretty_status "$BACKEND_STATUS")
+        FRONTEND_PRETTY=$(pretty_status "$FRONTEND_STATUS")
+        TAILSCALE_PRETTY=$(pretty_status "$TAILSCALE_STATUS")
 
-          TEXT="$STATUS_ICON Результат CI/CD
+        # Общий итог
+        if [ "$BACKEND_STATUS" = "failure" ] || \
+           [ "$FRONTEND_STATUS" = "failure" ] || \
+           [ "$TAILSCALE_STATUS" = "failure" ]; then
+          STATUS_ICON="❌"
+          STATUS_TEXT="Ошибка в одном из Docker-билдов"
+        else
+          STATUS_ICON="✅"
+          STATUS_TEXT="CI/CD выполнен успешно"
+        fi
 
-          $STATUS_TEXT
+        SHORT_SHA=${GITHUB_SHA::7}
 
-          📦 Репозиторий: $GITHUB_REPOSITORY
-          🌿 Ветка: $BRANCH_NAME
-          🔢 Коммит: $SHORT_SHA
-          👤 Автор: $COMMITED_BY
+        TEXT="$STATUS_ICON Результат CI/CD
 
-          💬 Сообщение:
-          $COMMIT_MESSAGE
+        $STATUS_TEXT
+        
+        📦 Репозиторий: $GITHUB_REPOSITORY
+        🌿 Ветка: $BRANCH_NAME
+        🔢 Коммит: $SHORT_SHA
+        👤 Автор: $COMMITED_BY
+        
+        💬 Сообщение:
+        $COMMIT_MESSAGE
+        
+        ⚙️ Статусы Docker:
+        - backend: $BACKEND_PRETTY
+        - frontend: $FRONTEND_PRETTY
+        - tailscale: $TAILSCALE_PRETTY
+        
+        🔗 Run:
+        $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
-          ⚙️ Статусы Docker:
-          - backend: $BACKEND_STATUS
-          - frontend: $FRONTEND_STATUS
-
-          🔗 Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TG_CHAT_ID }}" \
-            --data-urlencode "text=$TEXT"
+        curl -s -X POST "https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMessage" \
+          -d "chat_id=${{ secrets.TG_CHAT_ID }}" \
+          --data-urlencode "text=$TEXT"
