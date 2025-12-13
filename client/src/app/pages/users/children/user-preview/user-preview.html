@@ -5,7 +5,9 @@
   <div class="info">
     <div class="name"><h3>{{data().first_name}} {{data().last_name?.slice(0,1)}}.</h3></div>
     <div class="tags">
-      <app-tag type="class">{{data().class}}</app-tag>
+      @if (data().class) {
+        <app-tag type="class">{{data().class}}</app-tag>
+      }
       <app-tag type="department">{{data().department}}</app-tag>
       <app-tag type="role">{{data().role}}</app-tag>
     </div>

@@ -1,19 +1,18 @@
 import {Component, input, model, output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Block} from '@shared/ui/block/block';
-import {SvgIconComponent} from '@shared/utils/svg.component';
-import {CommonModule, NgIf} from '@angular/common';
 import {AppSelectComponent} from '@shared/ui/select/select';
+import { NgIcon } from "@ng-icons/core";
+import { Icons } from '@core/types/icons.enum';
 
 @Component({
   selector: 'app-search-bar',
   imports: [
     FormsModule,
     Block,
-    SvgIconComponent,
-    CommonModule,
-    AppSelectComponent
-  ],
+    AppSelectComponent,
+    NgIcon
+],
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.css'
 })
@@ -25,6 +24,7 @@ export class SearchBar {
 
   submit = output<SearchOutput>();
   filtersValues: {[key: string]: any} = {};
+  Icons = Icons;
 
 
   onSubmit() {

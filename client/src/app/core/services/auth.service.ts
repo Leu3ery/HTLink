@@ -14,7 +14,7 @@ export class AuthService {
     this.token.set(token);
   }
 
-  async login(data: {login: number, password: string}): Promise<void> {
+  async login(data: {login: string, password: string}): Promise<void> {
     this.http.post('/api/login', data).subscribe((response: any) => {
       this.token.set(response.token);
       this.router.navigate(['/more']);

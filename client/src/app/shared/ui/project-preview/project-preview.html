@@ -1,21 +1,21 @@
 <app-block (click)="router.navigate(['/projects', data().id])" class="project-preview">
-    <div class="img">
-      <img [src]="data().images[0].url" alt="">
+  <div class="img">
+    <img [src]="data().images[0].image_path | img" alt="">
+  </div>
+  <div class="info">
+    <div class="title">
+      <h2>{{data().title}}</h2>
     </div>
-    <div class="info">
-      <div class="title">
-        {{data().title}}
-      </div>
-      <div class="description">
-        {{data().description}}
-      </div>
-      <div class="tags-holder">
-        @for (tag of data().tags; track tag) {
-          <app-tag>{{tag.name}}</app-tag>
-        }
-      </div>
-      <div class="likes">
-        <svg icon="heart" /> {{data().likes}}
-      </div>
+    <div class="description">
+      {{data().shortDescription}}
     </div>
+    <div class="tags-holder">
+      @for (tag of data().tags; track tag) {
+      <app-tag>{{tag.name}}</app-tag>
+      }
+    </div>
+    <div class="likes">
+      <ng-icon [name]="Icons.Likes" /> 0
+    </div>
+  </div>
 </app-block>

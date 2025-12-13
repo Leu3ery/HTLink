@@ -20,7 +20,7 @@ export default class ProjectsController{
         
         const dto = validationWrapper(createProjectSchema, body);
         const userId = res.locals?.user?.userId;
-        if (!userId) throw new ErrorWithStatus(400, "User ID is required");
+        if (!userId) throw new ErrorWithStatus(401, "Authentication required");
         const files = (req.files as Express.Multer.File[]) || [];
         const project = await  ProjectsService.createProject(dto,userId, files);
         res.status(201).json({ project });
@@ -43,13 +43,25 @@ export default class ProjectsController{
                 
     }
 
-    static async getMyProjects(req: Request, res: Response, next: NextFunction) {
 
-            const ownerId = res.locals.user.userId;
-            if (!ownerId) throw new ErrorWithStatus(400, "Owner ID is required");
-            const project = await ProjectsService.getProjectByOwnerId(ownerId);
-            res.status(200).json({ project });
 
+    static async getOwnerProjects(req: Request, res: Response, next: NextFunction) {
+
+        const paramId = req.params.id;
+        if (!paramId) throw new ErrorWithStatus(400, "Owner ID is required");
+
+        let ownerId = paramId;
+
+        if (paramId === "me") {
+            const userId = res.locals?.user?.userId;
+
+            if (!userId) throw new ErrorWithStatus(401, "Authentication required");
+            ownerId = userId;
+        }
+
+        const dto = validationWrapper(listProjectsQuerySchema, req.query);
+        const projects = await ProjectsService.listProjects({ ownerId, ...dto });
+        res.status(200).json({ projects });
     }
 
     static async updateProject(req: Request, res: Response, next: NextFunction) {

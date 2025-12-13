@@ -1,4 +1,4 @@
 <ng-content></ng-content>
 @if (removable) {
-  <svg (click)="remove.emit()" icon="plus" style="transform: rotate(45deg)"></svg>
+  <ng-icon (click)="remove.emit()" [name]="Icons.Cross" size="1rem"></ng-icon>
 }

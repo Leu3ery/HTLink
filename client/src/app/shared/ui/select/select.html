@@ -4,7 +4,7 @@
   [class.open-up]="openUp"
   [style.--radius]="rounded"
   (click)="toggle()"
->
+  >
   <div class="selected">
     {{ selectedLabel }}
     <svg
@@ -13,7 +13,7 @@
       viewBox="0 0 24 24"
       width="20"
       height="20"
-    >
+      >
       <path
         d="M7 10l5 5 5-5"
         stroke="currentColor"
@@ -21,23 +21,25 @@
         fill="none"
         stroke-linecap="round"
         stroke-linejoin="round"
-      />
+        />
     </svg>
   </div>
 
-  <div
-    class="dropdown"
-    *ngIf="isOpen"
-    [class.up]="openUp"
-  >
+  @if (isOpen) {
     <div
-      class="option"
-      *ngFor="let opt of options"
-      [class.disabled]="opt.disabled"
-      [class.active]="(opt.value ?? opt) === value"
-      (click)="selectOption(opt, $event)"
-    >
-      {{ opt.label ?? opt }}
+      class="dropdown"
+      [class.up]="openUp"
+      >
+      @for (opt of options; track opt) {
+        <div
+          class="option"
+          [class.disabled]="opt.disabled"
+          [class.active]="(opt.value ?? opt) === value"
+          (click)="selectOption(opt, $event)"
+          >
+          {{ opt.label ?? opt }}
+        </div>
+      }
     </div>
-  </div>
+  }
 </div>

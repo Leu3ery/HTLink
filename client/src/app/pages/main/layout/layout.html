@@ -1,14 +1,14 @@
-
 <app-block class="nav">
   @for (page of pages; track page) {
-    <div class="btn svg" [routerLink]="page.path" [ngClass]="{
+
+  <div class="btn svg" [routerLink]="page.path" [ngClass]="{
       active: isActive(page.path)
     }">
-      <svg icon="{{page.icon}}"></svg>
-      <div class="label">
-        {{page.label}}
-      </div>
+    <ng-icon [name]="page.icon" color="#ff0000"></ng-icon>
+    <div class="label">
+      {{page.label}}
     </div>
+  </div>
   }
 </app-block>
 <div class="holder">

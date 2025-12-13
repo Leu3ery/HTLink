@@ -1,46 +1,45 @@
-@if (data) {
-  <div class="item" style="grid-area: a; display: flex; gap: 10px; height: 30vh">
-    <app-image-gallery [images]="data.images"></app-image-gallery>
-  </div>
+@if (data() !== null) {
+<div class="item" style="grid-area: a; display: flex; gap: 10px; height: 40vh">
+  <app-image-gallery [images]="data()!.images"></app-image-gallery>
+</div>
 
-  <div class="header">
-    <div class="action-buttons">
-      <app-block class="btn like"><svg icon="heart"></svg></app-block>
-      <app-block class="btn save"><svg icon="star"></svg></app-block>
-    </div>
-    <app-block class="members" style="flex-direction: row; width: fit-content">
-      <div class="avatar"></div>
-      <div class="avatar"></div>
-      <div class="avatar"></div>
-      <div class="avatar"></div>
-    </app-block>
+<div class="header">
+  <div class="action-buttons">
+    <app-block class="btn like"><ng-icon size="3rem" [name]="Icons.Likes"></ng-icon></app-block>
+    <app-block class="btn save"><ng-icon size="3rem" [name]="Icons.Star"></ng-icon></app-block>
   </div>
-
-  <app-block class="info" style="padding: 1rem 1rem">
-    <h2>{{data.title}}</h2>
-    <h4>{{data.description}}</h4>
+  <app-block class="members" style="flex-direction: row; width: fit-content">
+    <div class="avatar"></div>
+    <div class="avatar"></div>
+    <div class="avatar"></div>
+    <div class="avatar"></div>
   </app-block>
-  <app-block class="Links" style="grid-area: b">
-      <div class="header">
-        <svg icon="links"></svg>
-        <h3>Links</h3>
-      </div>
-      <div class="body">
-        <div class="links-holder">
-          <div class="link">
-            <svg icon="github" class="github"></svg> <a>GitHub</a>
-          </div>
-        </div>
-      </div>
-    </app-block>
-  <app-block class="ReadMe" style="grid-area: b">
-      <div class="header">
-        <svg icon="book"></svg>
-        <h3>ReadMe</h3>
-      </div>
-      <div class="body">
+</div>
 
+<app-block class="info" style="padding: 1rem 1rem">
+  <h2>{{data()!.title}}</h2>
+  <h4>{{data()!.shortDescription}}</h4>
+</app-block>
+<app-block class="Links" style="grid-area: b">
+  <div class="header">
+    <ng-icon [name]="Icons.Link"></ng-icon>
+    <h3>Links</h3>
+  </div>
+  <div class="body">
+    <div class="links-holder">
+      <div class="link">
+        <ng-icon [name]="Icons.GitHub" class="github"></ng-icon> <a>GitHub</a>
       </div>
-    </app-block>
+    </div>
+  </div>
+</app-block>
+<app-block class="ReadMe" style="grid-area: b">
+  <div class="header">
+    <ng-icon [name]="Icons.Book"></ng-icon>
+    <h3>ReadMe</h3>
+  </div>
+  <div class="body">
+    <markdown [data]="data()!.fullReadme"></markdown>
+  </div>
+</app-block>
 }
-

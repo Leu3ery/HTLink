@@ -17,7 +17,7 @@
 
 .nav .btn.svg.active {
   color: var(--main-color);
-  svg {
+  ng-icon {
     color: var(--main-color);
   }
 }
@@ -49,8 +49,6 @@
 
   overflow: auto;
   z-index: 1;
-
-  padding-bottom: 5rem;
 }
 
 @media (max-width: 800px) {
@@ -59,7 +57,7 @@
   }
   .nav {
     position: fixed;
-    bottom: 10px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
 
@@ -81,6 +79,9 @@
   .holder {
     width: 100%;
     height: 100%;
+  }
+  .content {
+    padding-bottom: 5rem;
   }
 }
 

@@ -1,1 +1,11 @@
-<p>settings works!</p>
+@for (block of blocks; track block) {
+  <app-block>
+    @for (page of block; track page) {
+      <div class="item" [routerLink]="page.path">
+        <ng-icon [name]="page.icon"></ng-icon>{{page.label}}
+
+        <ng-icon style="position: absolute; right: 0" size="1.2rem" [name]="Icons.ChevronRight"></ng-icon>
+      </div>
+    }
+  </app-block>
+}

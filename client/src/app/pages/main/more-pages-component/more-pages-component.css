@@ -20,10 +20,7 @@
 
   font-size: 1rem;
 
-  svg {
-    height: 80%;
-    aspect-ratio: 1/1;
-  }
+  color: black;
 }
 app-block {
   width: 100%;

@@ -1,86 +1,96 @@
 @if (data && data.user()) {
-<app-block class="Main-Info" style="grid-area: a">
-  <div class="header">
-    <div class="banner"></div>
-    <div class="action-btns"></div>
-    <div class="avatar"><img [src]="data.user().photo_path | img" alt=""></div>
-    <div class="btn edit" [routerLink]="'/profile/me/edit'" *ngIf="isMy"><svg icon="pen"></svg></div>
-  </div>
-  <div class="body">
-    <div class="name"><p style="font-size: 18px">{{data.user().first_name}} {{data.user().last_name?.slice(0,1)}}.</p></div>
-    <div class="tags">
-      <app-tag type="class">{{data.user().class}}</app-tag>
-      <app-tag type="department">{{data.user().department}}</app-tag>
-      <app-tag type="role">{{data.user().role}}</app-tag>
-    </div>
-    <div class="blocks">
-      <div class="block-item">
-        <div class="number">{{0}}</div>
-        <div class="label">Projects</div>
-      </div>
-      <div class="block-item">
-        <div class="number">{{0}}</div>
-        <div class="label">Follower</div>
-      </div>
-      <div class="block-item">
-        <div class="number">{{0}}</div>
-        <div class="label">Following</div>
-      </div>
-    </div>
-    <div class="bio">{{data.user().description}}</div>
-    <div class="email">
-      <svg icon="email" /> <span>{{data.user().pc_number}}@htlstp.at</span>
-    </div>
-    <div class="registered-since">
-      <svg icon="calendar" />
-      <span>Dabei seit {{data.user().created_at | date:"MMMM yyyy"}}</span>
-    </div>
-  </div>
-</app-block>
-<app-block class="Links" *ngIf="data.user().github_link || data.user().linkedin_link" style="grid-area: b">
-  <div class="header">
-    <svg icon="links"></svg>
-    <h3>Links</h3>
-  </div>
-  <div class="body">
-    <div class="links-holder">
-      <div class="link" *ngIf="data.user().github_link">
-        <svg icon="github" class="github"></svg> <a [href]="data.user().github_link">GitHub</a>
-      </div>
-      <div class="link" *ngIf="data.user().linkedin_link">
-        <svg icon="linkedin" class="linkedin"></svg> <a [href]="data.user().linkedin_link">LinkedIn</a>
-      </div>
-    </div>
-  </div>
-</app-block>
-
-
-<app-block class="Skill-Set" style="grid-area: c">
+  <app-block class="Main-Info" style="grid-area: a">
     <div class="header">
-      <svg icon="code"></svg>
+      <div class="banner"></div>
+      <div class="action-btns"></div>
+      <div class="avatar"><img [src]="data.user().photo_path | img" alt=""></div>
+      @if (isMy) {
+        <ng-icon class="btn edit" [routerLink]="'/profile/me/edit'" [name]="Icons.Edit">Edit</ng-icon>
+      }
+    </div>
+    <div class="body">
+      <div class="name"><p style="font-size: 18px">{{data.user().first_name}} {{data.user().last_name?.slice(0,1)}}.</p></div>
+      <div class="tags">
+        @if (data.user().class) {
+          <app-tag type="class">{{data.user().class}}</app-tag>
+        }
+        <app-tag type="department">{{data.user().department}}</app-tag>
+        <app-tag type="role">{{data.user().role}}</app-tag>
+      </div>
+      <div class="blocks">
+        <div class="block-item">
+          <div class="number">{{0}}</div>
+          <div class="label">Projects</div>
+        </div>
+        <div class="block-item">
+          <div class="number">{{0}}</div>
+          <div class="label">Follower</div>
+        </div>
+        <div class="block-item">
+          <div class="number">{{0}}</div>
+          <div class="label">Following</div>
+        </div>
+      </div>
+      <div class="bio">{{data.user().description}}</div>
+      <div class="email">
+        <ng-icon [name]="Icons.Email" size="1.25rem"/> <span>{{data.user().pc_number}}@htlstp.at</span>
+      </div>
+      <div class="registered-since">
+        <ng-icon [name]="Icons.Calendar" size="1.25rem"/>
+        <span>Dabei seit {{data.user().created_at | date:"MMMM yyyy"}}</span>
+      </div>
+    </div>
+  </app-block>
+  @if (data.user().github_link || data.user().linkedin_link) {
+    <app-block class="Links" style="grid-area: b">
+      <div class="header">
+        <ng-icon [name]="Icons.Link"></ng-icon>
+        <h3>Links</h3>
+      </div>
+      <div class="body">
+        <div class="links-holder">
+          @if (data.user().github_link) {
+            <div class="link">
+              <ng-icon [name]="Icons.GitHub" class="github"></ng-icon> <a [href]="data.user().github_link">GitHub</a>
+            </div>
+          }
+          @if (data.user().linkedin_link) {
+            <div class="link">
+              <ng-icon [name]="Icons.LinkedIn" class="linkedin"></ng-icon> <a [href]="data.user().linkedin_link">LinkedIn</a>
+            </div>
+          }
+        </div>
+      </div>
+    </app-block>
+  }
+  @if (data.user().skills.length > 0) {
+  <app-block class="Skill-Set" style="grid-area: c">
+    <div class="header">
+      <ng-icon [name]="Icons.Code"></ng-icon>
       <h3>Skills</h3>
     </div>
     <div class="body">
       <div class="tags-holder">
         @for (skill of data.user().skills; track skill) {
-        <app-tag>{{skill.name}}</app-tag>
+          <app-tag>{{skill.name}}</app-tag>
         }
       </div>
     </div>
-</app-block>
-<app-block class="Projects-List" style="grid-area: d">
-  <div class="header">
-    <svg icon="projects"></svg>
-    <h3>Projects</h3>
+  </app-block>
+  }
+  <app-block class="Projects-List" style="grid-area: d">
+    <div class="header">
+      <ng-icon [name]="Icons.Projects"></ng-icon>
+      <h3>Projects</h3>
 
-    <div class="btn secondary" style="position: absolute; right: 0"> Alle anzeigen</div>
-  </div>
-  <div class="body">
-    <div class="projects-holder">
-      @for (project of data.projects; track project.id) {
-      <app-project-preview [data]="project"></app-project-preview>
-      }
+      <div class="btn secondary" style="position: absolute; right: 0"> Alle anzeigen</div>
     </div>
-  </div>
-</app-block>
+    <div class="body">
+      <div class="projects-holder">
+        @for (project of data.projects; track project.id) {
+          <app-project-preview [data]="project"></app-project-preview>
+        }
+      </div>
+    </div>
+  </app-block>
 }

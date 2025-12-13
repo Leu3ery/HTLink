@@ -59,6 +59,6 @@ app-block {
 
 @media (min-width: 801px) {
   :host {
-    max-width: 300px;
+    max-width: 450px;
   }
 }

@@ -8,6 +8,7 @@
 .angular/
 
 client/node_modules/
+client/dist/
 client/.editorconfig
 .idea
 .DS_Store

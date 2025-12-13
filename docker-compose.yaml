@@ -25,9 +25,24 @@ services:
     depends_on:
       - htlink
 
+  tailscale:
+    image: tailscale/tailscale:latest
+    hostname: htlink-mongo
+    environment:
+      TS_AUTHKEY: ${TS_AUTH}
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_USERSPACE: "true"
+    volumes:
+      - tailscale_state:/var/lib/tailscale
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    restart: unless-stopped
 
   mongodb:
     image: mongodb/mongodb-community-server:latest
+    ports:
+      - "127.0.0.1:27017:27017"
     environment:
       MONGODB_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGODB_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
@@ -37,4 +52,5 @@ services:
 volumes:
   mongodb-data:
   htlink-public-data:
+  tailscale_state:
   

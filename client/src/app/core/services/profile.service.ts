@@ -3,7 +3,7 @@ import {ProfileType, TagType} from '@core/types/types.constans';
 import {HttpClient} from '@angular/common/http';
 import {NotificationService} from '@core/services/notification.service';
 import {AuthService} from '@core/services/auth.service';
-import {cleanObject} from '@shared/utils/cleanObject';
+import {cleanObject} from '@shared/utils/utils';
 import {firstValueFrom} from 'rxjs';
 
 @Injectable({
@@ -38,7 +38,7 @@ export class ProfileService {
     return res.users;
 
   }
-  async updateProfile(data: any): Promise<void> {
+  async updateProfile(data: any): Promise<any> {
     const dataNew = new FormData();
     for (const key in data) {
       if (!data[key]) {
@@ -57,7 +57,7 @@ export class ProfileService {
       }
       dataNew.append(key, data[key]);
     }
-    this.http.patch('/api/users/me', dataNew).subscribe((response: any) => {
+    return firstValueFrom(this.http.patch('/api/users/me', dataNew)).then((response: any) => {
       this.notificationsService.addNotification('Profile updated successfully', 2);
       this.me$.set(response.user);
     });

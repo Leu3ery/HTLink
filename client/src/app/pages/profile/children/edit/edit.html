@@ -1,73 +1,60 @@
 @if (profileService.me$()) {
-<div class="header">
-  <div class="btn" routerLink="../">
-    <svg icon="arrowBack"></svg>
+  <div class="header">
+    <div class="btn" routerLink="../">
+      <ng-icon [name]="Icons.ArrowLeft"></ng-icon>
+    </div>
+    <h2>Profile</h2>
+    @if (profileForm.valid) {
+      <div class="btn save" [class.disabled]="isPending" (click)="submitEdit()">
+        <ng-icon [name]="Icons.Check" strokeWidth="2"></ng-icon>
+      </div>
+    }
   </div>
-  <h2>Profile</h2>
-  <div class="btn save" *ngIf="profileForm.valid" (click)="submitEdit()">
-    <svg icon="check"></svg>
-  </div>
-</div>
-<form [formGroup]="profileForm" class="body">
-  <app-block style="align-items: center; grid-area: a">
-    <img class="avatar" [src]="profileForm.value.photo_path" alt="">
-    <label class="btn secondary" for="fileInput">Change Photo</label>
-    <input type="file" hidden id="fileInput" accept="image/*"  (change)="onFileSelected($event)" />
-  </app-block>
-  <app-block style="grid-area: b">
-    <div class="header">
-      <h3>Your name</h3>
-    </div>
-    <div class="content">
-      <div class="input-holder">
-        <label>First name</label>
-        <input formControlName="first_name" type="text" placeholder="" />
+  <form [formGroup]="profileForm" class="body">
+    <app-block style="align-items: center; grid-area: a">
+      <img class="avatar" [src]="profileForm.value.photo_path" alt="">
+      <label class="btn secondary" for="fileInput">Change Photo</label>
+      <input type="file" hidden id="fileInput" accept="image/*"  (change)="onFileSelected($event)" />
+    </app-block>
+    <app-block style="grid-area: b">
+      <div class="header">
+        <h3>Bio</h3>
       </div>
-      <div class="input-holder">
-        <label>Last name</label>
-        <input formControlName="last_name" type="text" placeholder="" />
+      <div class="content">
+        <div class="input-holder big">
+          <label>Tell us about yourself</label>
+          <textarea formControlName="description" placeholder="" ></textarea>
+        </div>
       </div>
-    </div>
-  </app-block>
-  <app-block style="grid-area: c">
-    <div class="header">
-      <h3>Bio</h3>
-    </div>
-    <div class="content">
-      <div class="input-holder">
-        <label>Tell us about yourself</label>
-        <input formControlName="description" type="text" placeholder="" />
+    </app-block>
+    <app-block style="grid-area: c">
+      <div class="header">
+        <h3>Links</h3>
       </div>
-    </div>
-  </app-block>
-  <app-block style="grid-area: d">
-    <div class="header">
-      <h3>Links</h3>
-    </div>
-    <div class="content">
-      <div class="input-holder">
-        <label>GitHub.com</label>
-        <input formControlName="github_link" type="text" placeholder="" />
+      <div class="content">
+        <div class="input-holder">
+          <label>GitHub.com</label>
+          <input formControlName="github_link" type="text" placeholder="" />
+        </div>
+        <div class="input-holder">
+          <label>LinkedIn.com</label>
+          <input formControlName="linkedin_link" type="text" placeholder="" />
+        </div>
       </div>
-      <div class="input-holder">
-        <label>LinkedIn.com</label>
-        <input formControlName="linkedin_link" type="text" placeholder="" />
+    </app-block>
+    <app-block style="grid-area: d">
+      <div class="header">
+        <h3>Skills</h3>
       </div>
-    </div>
-  </app-block>
-  <app-block style="grid-area: e">
-    <div class="header">
-      <h3>Skills</h3>
-    </div>
-    <div class="content">
-      <app-select value="" class="add-skill" (change)="addSkill($event)" [options]="toOptions(skills)">
-      </app-select>
-      <div class="tags-holder">
-        @for (skill of profileForm.value.skills; track skill.id) {
-          <app-tag [removable]="true" (remove)="removeSkill(skill)">{{skill.name}}</app-tag>
-        }
+      <div class="content">
+        <app-select value="" class="add-skill" (change)="addSkill($event)" [options]="toOptions(skills)">
+        </app-select>
+        <div class="tags-holder">
+          @for (skill of profileForm.value.skills; track skill.id) {
+            <app-tag [removable]="true" (remove)="removeSkill(skill)">{{skill.name}}</app-tag>
+          }
+        </div>
       </div>
-    </div>
-  </app-block>
-</form>
+    </app-block>
+  </form>
 }

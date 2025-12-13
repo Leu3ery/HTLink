@@ -2,16 +2,15 @@ import {Component, inject, OnInit} from '@angular/core';
 import {SearchBar} from '@shared/ui/search-bar/search-bar';
 import {ProfileService} from '@core/services/profile.service';
 import {ProfileType} from '@core/types/types.constans';
-import {CommonModule} from '@angular/common';
+
 import {UserPreview} from '@app/pages/users/children/user-preview/user-preview';
 
 @Component({
   selector: 'app-users',
   imports: [
     SearchBar,
-    CommonModule,
     UserPreview
-  ],
+],
   templateUrl: './users.html',
   styleUrl: './users.css'
 })
