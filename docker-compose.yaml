@@ -16,7 +16,7 @@ services:
       LDAP_BIND_PW: ${LDAP_BIND_PW}
       LDAP_SEARCH_BASES: ${LDAP_SEARCH_BASES}
     depends_on:
-      - mongodb
+      - mongo
 
   client:
     image: leu3ery/htlink-frontend:latest
