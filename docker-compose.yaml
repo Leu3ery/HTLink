@@ -16,8 +16,8 @@ services:
       LDAP_BIND_PW: ${LDAP_BIND_PW}
       LDAP_SEARCH_BASES: ${LDAP_SEARCH_BASES}
     depends_on:
-      - mongodb
-      - mongo-admin
+      mongodb:
+            condition: service_healthy
 
   client:
     image: leu3ery/htlink-frontend:latest
@@ -36,6 +36,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongodb-data:/data/db
+    healthcheck:
+      test: [ "CMD-SHELL", "mongosh --quiet -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'db.adminCommand({ ping: 1 }).ok' | grep 1" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   mongo-admin:
     image: mongo-express:latest
@@ -43,9 +48,9 @@ services:
     expose:
       - "8081"
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     environment:
-      # Change web login from default admin:pass
       ME_CONFIG_MONGODB_URL: ${MONGO_URI_COMPOSE}
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
