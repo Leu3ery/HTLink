@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   htlink:
@@ -26,7 +26,8 @@ services:
       - htlink
 
   mongodb:
-    image: mongodb/mongodb-community-server:latest
+    image: mongo:7
+    container_name: mongodb
     ports:
       - "127.0.0.1:27017:27017"
     environment:
@@ -34,17 +35,21 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongodb-data:/data/db
-  mongo-admin:
-      image: mongo-express:latest
-      ports:
-        - "8081:8081"
-      depends_on:
-        - mongodb
-      environment:
-        ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-        ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-        ME_CONFIG_MONGODB_SERVER: mongodb
 
+  mongo-admin:
+    image: mongo-express:latest
+    container_name: mongo-admin
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    environment:
+      # Force correct host + auth (prevents default "mongo")
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/?authSource=admin
+
+      # Change web login from default admin:pass
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
 
 volumes:
   mongodb-data:
