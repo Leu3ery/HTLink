@@ -44,10 +44,8 @@ services:
     depends_on:
       - mongodb
     environment:
-      # Force correct host + auth (prevents default "mongo")
-      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/?authSource=admin
-
       # Change web login from default admin:pass
+      ME_CONFIG_MONGODB_URL: ${MONGO_URI_COMPOSE}
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
 
