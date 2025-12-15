@@ -25,13 +25,13 @@ services:
     depends_on:
       - htlink
 
-  mongodb:
+  mongo:
     image: mongodb/mongodb-community-server:latest
     ports:
       - "127.0.0.1:27017:27017"
     environment:
-      MONGODB_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGODB_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongodb-data:/data/db
   mongo-admin:
@@ -49,5 +49,3 @@ services:
 volumes:
   mongodb-data:
   htlink-public-data:
-  tailscale_state:
-  
