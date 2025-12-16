@@ -4,8 +4,8 @@ server {
 
     client_max_body_size 25m;
 
-   location /database/ {
-     proxy_pass http://admindb:8081/;
+   location /database {
+     proxy_pass http://admindb:8081;
 
      proxy_http_version 1.1;
      proxy_set_header Host $host;
