@@ -44,11 +44,11 @@ services:
   admindb:
     image: mongo-express:latest
     container_name: admindb
-    ports:
-      - "8898:8081"
     depends_on:
       mongodb:
         condition: service_healthy
+    expose:
+      - "8081"
     environment:
       ME_CONFIG_MONGODB_URL: ${MONGO_URI_COMPOSE}
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
