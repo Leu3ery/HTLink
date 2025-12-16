@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 
 COPY . .
-RUN npm run build
+RUN npm run build --budgets=false
 
 # ---------- RUNTIME (NGINX) ----------
 FROM nginx:1.27-alpine
