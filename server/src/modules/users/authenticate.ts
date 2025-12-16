@@ -20,7 +20,7 @@ export default class LDAPService {
   static async getInfo(username: string): Promise<any | number> {
     // -- For testing purposes only -
     return {
-      description: "6DTEST",
+      description: "1AHIF",
       givenName: "John",
       mail: "john.doe@htlstp.at",
       sn: "Doe"
