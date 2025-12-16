@@ -42,9 +42,9 @@ services:
       timeout: 5s
       retries: 20
 
-  mongo-admin:
+  admindb:
     image: mongo-express:latest
-    container_name: mongo-admin
+    container_name: admindb
     ports:
       - "8040:8040"
     depends_on:

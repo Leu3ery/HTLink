@@ -6,7 +6,7 @@ server {
 
    # Direct database access (proxied)
    location ^~ /db/ {
-     proxy_pass http://mongo-admin:8040;
+     proxy_pass http://admindb:8040;
      proxy_set_header Host $host;
      proxy_set_header X-Real-IP $remote_addr;
      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
