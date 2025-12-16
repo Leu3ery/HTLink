@@ -42,6 +42,19 @@ services:
       timeout: 5s
       retries: 20
 
+  admindb:
+    image: mongo-express:latest
+    container_name: admindb
+    ports:
+      - "8898:8898"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      ME_CONFIG_MONGODB_URL: ${MONGO_URI_COMPOSE}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_SITE_BASEURL: /db
 
 volumes:
   mongodb-data:
