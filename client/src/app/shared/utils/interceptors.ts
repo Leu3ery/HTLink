@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { catchError, Observable, throwError } from 'rxjs';
 import {NotificationService} from '@core/services/notification.service';
-import { API_URL, isDevMode } from '@core/eviroments/config.constants';
+import { API_URL, isDevMode } from '@core/environment/config.constants';
 
 export function loggingInterceptor(
   req: HttpRequest<unknown>,

@@ -1,6 +1,6 @@
-@if (data) {
+@if (data() !== null) {
 <div class="item" style="grid-area: a; display: flex; gap: 10px; height: 40vh">
-  <app-image-gallery [images]="data.images"></app-image-gallery>
+  <app-image-gallery [images]="data()!.images"></app-image-gallery>
 </div>
 
 <div class="header">
@@ -17,8 +17,8 @@
 </div>
 
 <app-block class="info" style="padding: 1rem 1rem">
-  <h2>{{data.title}}</h2>
-  <h4>{{data.shortDescription}}</h4>
+  <h2>{{data()!.title}}</h2>
+  <h4>{{data()!.shortDescription}}</h4>
 </app-block>
 <app-block class="Links" style="grid-area: b">
   <div class="header">
@@ -39,7 +39,7 @@
     <h3>ReadMe</h3>
   </div>
   <div class="body">
-    <markdown [data]="data.fullReadme"></markdown>
+    <markdown [data]="data()!.fullReadme"></markdown>
   </div>
 </app-block>
 }

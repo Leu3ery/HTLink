@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FileToDataUrlPipe } from "../../../shared/utils/fileToDataUrl.pipe";
+import { FileToDataUrlPipe } from "@shared/utils/fileToDataUrl.pipe";
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Block } from "@shared/ui/block/block";
 import { AppSelectComponent } from "@shared/ui/select/select";
@@ -37,10 +37,10 @@ export class CreateProject implements OnInit {
 
   selectedFiles: File[] = [];
   createForm = new FormGroup({
-    id: new FormControl('', [
-      Validators.minLength(3),
-      Validators.maxLength(12),
-    ]),
+    // id: new FormControl('', [
+    //   Validators.minLength(3),
+    //   Validators.maxLength(12),
+    // ]),
     title: new FormControl('', [
       Validators.required,
       Validators.minLength(3),

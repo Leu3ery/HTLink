@@ -1,0 +1,48 @@
+:host {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1rem;
+
+  overflow: hidden;
+}
+
+.header {
+  width: 100%;
+  background: var(--primary-color);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 1rem;
+
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  overflow: auto;
+  padding: 0 0.5rem;
+  padding-bottom: 6rem;
+}
+
+.way .body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 801px) {
+  :host {
+    padding: 2% 20% 0 20%;
+
+    .header {
+      border-radius: 2rem;
+    }
+  }
+}

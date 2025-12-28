@@ -3,7 +3,7 @@
     <img [src]="data().photo_path | img" alt="">
   </div>
   <div class="info">
-    <div class="name"><h3>{{data().first_name}} {{data().last_name?.slice(0,1)}}.</h3></div>
+    <div class="name"><h3>{{data().first_name}} {{data().last_name.slice(0,1)}}.</h3></div>
     <div class="tags">
       @if (data().class) {
         <app-tag type="class">{{data().class}}</app-tag>

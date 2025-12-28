@@ -42,6 +42,7 @@ export type ProfileType = {
   pc_number: number;
   skills: TagType[];
   created_at: Date;
+  mail: string;
 };
 
 export type ImageType = {

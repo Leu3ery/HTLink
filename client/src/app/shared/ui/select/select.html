@@ -34,10 +34,10 @@
         <div
           class="option"
           [class.disabled]="opt.disabled"
-          [class.active]="(opt.value ?? opt) === value"
+          [class.active]="(opt.value) === value"
           (click)="selectOption(opt, $event)"
           >
-          {{ opt.label ?? opt }}
+          {{ opt.label }}
         </div>
       }
     </div>

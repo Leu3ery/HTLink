@@ -1,8 +1,12 @@
 import {ProjectLayout} from '@app/pages/projects/project/children/project-layout/project-layout';
 import {Main} from './children/main/main';
 import {Comments} from './children/comments/comments';
-import {Roles} from './children/roles/roles';
 import {Settings} from './children/settings/settings';
+import {Contributors} from "./children/contributors/contributors";
+
+import SettingsRoutes from "./children/settings/settings.routes";
+import settingsRoutes from "./children/settings/settings.routes";
+
 
 export default [
   {
@@ -18,16 +22,13 @@ export default [
         component: Comments
       },
       {
-        path: "roles",
-        component: Roles
+        path: "contributors",
+        component: Contributors
       },
-      {
-        path: "settings",
-        component: Settings
-      },
+      ...settingsRoutes,
       {
         path: "**",
-        redirectTo: "home"
+        redirectTo: 'home',
       }
     ]
   }

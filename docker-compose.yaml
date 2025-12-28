@@ -1,5 +1,4 @@
-version: '3'
-
+version: "3.8"
 services:
   htlink:
     image: leu3ery/htlink-backend:latest
@@ -16,7 +15,8 @@ services:
       LDAP_BIND_PW: ${LDAP_BIND_PW}
       LDAP_SEARCH_BASES: ${LDAP_SEARCH_BASES}
     depends_on:
-      - mongodb
+      mongodb:
+            condition: service_healthy
 
   client:
     image: leu3ery/htlink-frontend:latest
@@ -25,16 +25,40 @@ services:
     depends_on:
       - htlink
 
-
   mongodb:
-    image: mongodb/mongodb-community-server:latest
+    image: mongo:7
+    container_name: mongodb
+    ports:
+      - "127.0.0.1:27017:27017"
     environment:
-      MONGODB_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGODB_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongodb-data:/data/db
+    healthcheck:
+      test: [ "CMD-SHELL", "mongosh --quiet -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'db.adminCommand({ ping: 1 }).ok' | grep 1" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  admindb:
+    image: mongo-express:latest
+    container_name: admindb
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    expose:
+      - "8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: ${MONGO_URI_COMPOSE}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_SERVER: 'mongodb'
+      ME_CONFIG_SITE_BASEURL: '/database'
 
 volumes:
   mongodb-data:
   htlink-public-data:
-  

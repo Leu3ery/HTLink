@@ -18,7 +18,11 @@ import {ImgPipe} from '@shared/utils/img.pipe';
   styleUrl: './user-preview.css'
 })
 export class UserPreview {
+    data = input.required<ProfileType>()
 
-
-  data = input.required<ProfileType>()
+    constructor() {
+      this.data.bind((item: any)=>{
+          this.data = item
+      })
+    }
 }

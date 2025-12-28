@@ -9,7 +9,7 @@
       }
     </div>
     <div class="body">
-      <div class="name"><p style="font-size: 18px">{{data.user().first_name}} {{data.user().last_name?.slice(0,1)}}.</p></div>
+      <div class="name"><p style="font-size: 18px">{{data.user().first_name}} {{data.user().last_name.slice(0,1)}}.</p></div>
       <div class="tags">
         @if (data.user().class) {
           <app-tag type="class">{{data.user().class}}</app-tag>
@@ -33,7 +33,7 @@
       </div>
       <div class="bio">{{data.user().description}}</div>
       <div class="email">
-        <ng-icon [name]="Icons.Email" size="1.25rem"/> <span>{{data.user().pc_number}}@htlstp.at</span>
+        <ng-icon [name]="Icons.Email" size="1.25rem"/> <span>{{data.user().mail}}</span>
       </div>
       <div class="registered-since">
         <ng-icon [name]="Icons.Calendar" size="1.25rem"/>
