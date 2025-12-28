@@ -37,10 +37,10 @@ export class CreateProject implements OnInit {
 
   selectedFiles: File[] = [];
   createForm = new FormGroup({
-    id: new FormControl('', [
-      Validators.minLength(3),
-      Validators.maxLength(12),
-    ]),
+    // id: new FormControl('', [
+    //   Validators.minLength(3),
+    //   Validators.maxLength(12),
+    // ]),
     title: new FormControl('', [
       Validators.required,
       Validators.minLength(3),
