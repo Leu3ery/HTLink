@@ -6,7 +6,7 @@ import {NgIcon} from "@ng-icons/core";
 import {Icons} from "@core/types/icons.enum";
 import {Tag} from "@shared/ui/tag/tag";
 import {Modal} from "@shared/ui/modal/modal";
-import {NgIf} from "@angular/common";
+import {CurrencyPipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-offer',
@@ -16,7 +16,8 @@ import {NgIf} from "@angular/common";
     NgIcon,
     Tag,
     Modal,
-    NgIf
+    NgIf,
+    CurrencyPipe
   ],
   templateUrl: './offer.html',
   styleUrl: './offer.css',

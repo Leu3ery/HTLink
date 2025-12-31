@@ -64,7 +64,7 @@ export enum NotificationType {
 export type OfferType = {
   id: string;
   user: Partial<ProfileType>;
-  rating: number;
+  rating?: number;
   category: {
     id: string;
     name: string;
