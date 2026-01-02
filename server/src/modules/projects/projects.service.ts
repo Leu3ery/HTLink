@@ -1,14 +1,14 @@
 import { CreateProjectDto } from "./dto/create.project.dto";
-import { IProject, Project, ProjectStatus } from "./projects.model";
-import { FullProjectDto } from "./dto/full.project.dto";
+import { Project, ProjectStatus } from "./projects.model";
 import { ErrorWithStatus } from "../../common/middlewares/errorHandlerMiddleware";
-import mongoose, { HydratedDocument } from "mongoose";
-import { fetchCategoryOrFail, fetchSkillsOrFail, mapProjectToFullDto, toObjectId } from "./utils/project.helpers";
+import mongoose from "mongoose";
+import { fetchCategoryOrFail, fetchSkillsOrFail, toObjectId } from "./utils/project.helpers";
 import { IImage, Image } from "./images/image.model";
 import { UpdateProjectDto } from "./dto/patch.project.dto";
 import { ListProjectsQueryDto } from "./dto/list.projects.dto";
 import {ISkill, Skill} from "../skills/skills.model";
 import { Category, ICategory } from "../categories/category.model";
+import { mapToFullProjectResponseDto } from "./projects.mappers";
 
 
 // helpers moved to ./utils/project.helpers
@@ -45,26 +45,7 @@ export default class ProjectsService {
             throw new ErrorWithStatus(404, "Project not found");
         }
 
-        return {
-            id: finishedProject.id.toString(),
-            title: finishedProject.title,
-            category: {
-                id: finishedProject.categoryId._id.toString(),
-                name: finishedProject.categoryId.name
-            },
-            shortDescription: finishedProject.shortDescription,
-            fullReadme: finishedProject.fullReadme,
-            deadline: finishedProject.deadline,
-            ownerId: finishedProject.ownerId.toString(),
-            status: finishedProject.status,
-            skills: finishedProject.skills?.map((skill: any) => ({id: skill._id.toString(), name: skill.name})) ?? [],
-            images: finishedProject.images?.map((img: IImage) => ({
-                id: img._id.toString(),
-                image_path: img.image_path,
-            })) ?? [],
-            createdAt: finishedProject.createdAt,
-            updatedAt: finishedProject.updatedAt,
-        }
+        return mapToFullProjectResponseDto(finishedProject);
     }
 
     static async listProjects(params: ListProjectsQueryDto) {
@@ -184,26 +165,7 @@ export default class ProjectsService {
             throw new ErrorWithStatus(404, "Project not found");
         }
 
-        return {
-            id: finishedProject.id.toString(),
-            title: finishedProject.title,
-            category: {
-                id: finishedProject.categoryId._id.toString(),
-                name: finishedProject.categoryId.name
-            },
-            shortDescription: finishedProject.shortDescription,
-            fullReadme: finishedProject.fullReadme,
-            deadline: finishedProject.deadline,
-            ownerId: finishedProject.ownerId.toString(),
-            status: finishedProject.status,
-            skills: finishedProject.skills?.map((skill: ISkill) => ({id: skill._id.toString(), name: skill.name})) ?? [],
-            images: finishedProject.images?.map((img: IImage) => ({
-                id: img._id.toString(),
-                image_path: img.image_path,
-            })) ?? [],
-            createdAt: finishedProject.createdAt,
-            updatedAt: finishedProject.updatedAt,
-        }
+        return mapToFullProjectResponseDto(finishedProject);
 
     }
 
@@ -247,27 +209,7 @@ export default class ProjectsService {
             throw new ErrorWithStatus(404, "Project not found");
         }
 
-
-        return {
-            id: finishedProject.id.toString(),
-            title: finishedProject.title,
-            category: {
-                id: finishedProject.categoryId._id.toString(),
-                name: finishedProject.categoryId.name
-            },
-            shortDescription: finishedProject.shortDescription,
-            fullReadme: finishedProject.fullReadme,
-            deadline: finishedProject.deadline,
-            ownerId: finishedProject.ownerId.toString(),
-            status: finishedProject.status,
-            skills: finishedProject.skills?.map((skill: ISkill) => ({id: skill._id.toString(), name: skill.name})) ?? [],
-            images: finishedProject.images?.map((img: IImage) => ({
-                id: img._id.toString(),
-                image_path: img.image_path,
-            })) ?? [],
-            createdAt: finishedProject.createdAt,
-            updatedAt: finishedProject.updatedAt,
-        }
+        return mapToFullProjectResponseDto(finishedProject);
     }
 
     static async deleteProject(projectId: string, userId: string) {

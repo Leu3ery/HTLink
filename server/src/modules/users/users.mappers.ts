@@ -1,6 +1,16 @@
 import { IUser } from "./users.model";
 
-class UserMapper {
+export class UserMapper {
+	static toShortUser(user: IUser) {
+		return {
+			id: user._id.toString(),
+			first_name: user.first_name ?? null,
+			last_name: user.last_name ?? null,
+			photo_path: user.photo_path ?? null,
+			mail: user.mail ?? null,
+		}
+	}
+	
     static toPublicUser(user: IUser) {
         return {
 			id: user._id.toString(),

@@ -32,7 +32,7 @@ export const projectSchema = new Schema<IProject>({
         type: String,
         required: true,
         trim: true,
-        maxlength: 30
+        maxlength: 50
     },
     categoryId: {
         type: Schema.Types.ObjectId ,

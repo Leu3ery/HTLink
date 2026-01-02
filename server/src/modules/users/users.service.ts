@@ -26,7 +26,6 @@ class UsersService {
 	static async getUserInfo(dto: LoginDTO) {
 		try {
 			const userInfo = await LDAPService.getInfo(dto.login);
-			console.log(userInfo)
 			if (typeof userInfo === 'number' || !userInfo) {
 				throw new ErrorWithStatus(400, "User not found");
 			}
