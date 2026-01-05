@@ -12,7 +12,8 @@ interface Config {
         bindDN: string,
         bindPW: string,
         searchBases: string[]
-    }
+    },
+    EMAIL_TYPE: string,
 }
 
 export const config: Config = {
@@ -26,5 +27,6 @@ export const config: Config = {
         bindDN: process.env.LDAP_BIND_DN ?? "",
         bindPW: process.env.LDAP_BIND_PW ?? "",
         searchBases: process.env.LDAP_SEARCH_BASES ? process.env.LDAP_SEARCH_BASES.split(";"): []
-    }
+    },
+    EMAIL_TYPE: process.env.EMAIL_TYPE || "dev"
 }

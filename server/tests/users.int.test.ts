@@ -5,7 +5,7 @@ import app, { publicDir } from "../src/app";
 import jwt from "jsonwebtoken";
 import { config } from "../src/config/config";
 import { User } from "../src/modules/users/users.model";
-import UsersService from "../src/modules/users/users.service";
+import AuthService from "../src/modules/authorisation/auth.service";
 import setSkills from "../src/scripts/setSkills";
 import { beforeAll, afterAll, it, expect, describe, jest, afterEach, beforeEach } from "@jest/globals";
 import deleteFile from "../src/common/utils/utils.deleteFile";
@@ -73,8 +73,8 @@ beforeAll(async () => {
   const uri = mongo.getUri();
   await mongoose.connect(uri);
 
-  jest.spyOn(UsersService, "isUserValid").mockResolvedValue(true);
-  jest.spyOn(UsersService, "getUserInfo").mockResolvedValue(mockLDAPUser as any);
+  jest.spyOn(AuthService, "isUserValid").mockResolvedValue(true);
+  jest.spyOn(AuthService, "getUserInfo").mockResolvedValue(mockLDAPUser as any);
 
   await new setSkills(["Express Js", "Angular", "Python"]).set();
 });
@@ -133,7 +133,7 @@ describe("POST /api/login", () => {
   });
 
   it("test login for teacher", async () => {
-	const getUserInfoSpy = jest.spyOn(UsersService, "getUserInfo").mockResolvedValue(mockLDAPAbtailungvorstand as any);
+	const getUserInfoSpy = jest.spyOn(AuthService, "getUserInfo").mockResolvedValue(mockLDAPAbtailungvorstand as any);
     
 	try {
 		const res = await request(app)

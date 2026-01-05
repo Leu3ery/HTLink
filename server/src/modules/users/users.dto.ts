@@ -1,16 +1,6 @@
 import Joi from 'joi'
 import { Department, departmentsList } from './users.model'
 
-export interface LoginDTO {
-	login: string,
-	password: string
-}
-
-export const LoginSchema = Joi.object<LoginDTO>({
-	login: Joi.string().required(),
-	password: Joi.string().required()
-})
-
 export interface UpdateMeDTO {
 	description?: string,
 	photo_path?: string,

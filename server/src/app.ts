@@ -35,12 +35,12 @@ app.use(express.json());
 // ROUTES
 import skills from "./modules/skills/skills.routes";
 import users from "./modules/users/users.routes";
-import login from "./modules/users/users.auth.routes"
+import auth from "./modules/authorisation/auth.routes"
 import projects from "./modules/projects/projects.router";
 import categories from "./modules/categories/category.routes";
 import offers from "./modules/offers/offers.router";
 
-app.use('/api/', login)
+app.use('/api/', auth)
 app.use('/api/skills', skills)
 app.use('/api/users', users)
 app.use('/api/projects', projects)
