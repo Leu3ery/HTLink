@@ -29,15 +29,22 @@
     <div
       class="dropdown"
       [class.up]="openUp"
+      (appClickOutside)="toggle()"
+      (appClickBackspace)="selectOption(null, $event)"
       >
       @for (opt of options; track opt) {
         <div
           class="option"
           [class.disabled]="opt.disabled"
-          [class.active]="(opt.value) === value"
+          [class.active]="value && (isMultiple ? value.includes(opt.value ?? opt): (opt.value ?? opt) === value)"
           (click)="selectOption(opt, $event)"
           >
-          {{ opt.label }}
+            @if (
+              value && isMultiple && (isMultiple ? value.includes(opt.value ?? opt): (opt.value ?? opt) === value)
+                    ){
+            <ng-icon [name]="Icons.Check" size="1.2rem"></ng-icon>
+            }
+          {{ opt.label ?? opt }}
         </div>
       }
     </div>

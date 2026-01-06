@@ -12,7 +12,7 @@
     <div class="filters-holder">
       @for (filter of filters(); track filter) {
         <div class="filter">
-          <app-select [placeholder]="filter.label" [options]="filter.options" (valueChange)="onChangeValueFilter(filter.label, $event)"></app-select>
+          <app-select [isMultiple]="filter.multiple ?? false" [placeholder]="filter.label" [options]="filter.options" (valueChange)="onChangeValueFilter(filter.label, $event)"></app-select>
         </div>
       }
     </div>

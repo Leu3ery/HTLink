@@ -8,8 +8,8 @@ import {TagType} from '@core/types/types.constans';
 export class MainService {
   constructor(private http: HttpClient) {}
 
-  async getSkills(): Promise<TagType[] | undefined> {
-    return await this.http.get<TagType[]>('/api/skills').toPromise();
+  async getSkills(): Promise<TagType[]> {
+    return await this.http.get<TagType[]>('/api/skills').toPromise() ?? [];
   }
   async getCategories(): Promise<any[] | undefined> {
     return await this.http.get<any[]>('/api/categories').toPromise();

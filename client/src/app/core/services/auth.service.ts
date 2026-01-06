@@ -14,8 +14,8 @@ export class AuthService {
     this.token.set(token);
   }
 
-  async login(data: {login: string, password: string}): Promise<void> {
-    this.http.post('/api/login', data).subscribe((response: any) => {
+  async login(data: {email: string, code: string}): Promise<void> {
+    this.http.post('/api/verify-code', data).subscribe((response: any) => {
       this.token.set(response.token);
       this.router.navigate(['/more']);
       localStorage.setItem('token', response.token);
@@ -32,5 +32,9 @@ export class AuthService {
     this.router.navigate(['/more/login']);
     console.log('logged out 2');
 
+  }
+
+  askForCode(value: { email: string }) {
+    this.http.post('/api/send-code', value).subscribe();
   }
 }

@@ -15,14 +15,18 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 export class Login {
   authService = inject(AuthService)
     loginForm = new FormGroup({
-      login: new FormControl<string>("", [Validators.required]),
-      password: new FormControl<string>('', [Validators.required]),
+      email: new FormControl<string>("", [Validators.required]),
+      code: new FormControl<string>('', [Validators.required]),
     })
 
   login(){
     if (this.loginForm.valid) {
-      console.log(this.loginForm.value)
-      this.authService.login(this.loginForm.value as {login:string,password:string})
+      this.authService.login(this.loginForm.value as {email:string,code:string})
     }
+  }
+
+  sendVerificationCode() {
+    console.log("Sending verification code to ", this.loginForm.value.email);
+    this.authService.askForCode({email: this.loginForm.value.email} as {email:string})
   }
 }

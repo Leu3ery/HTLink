@@ -2,21 +2,24 @@
   <form [formGroup]="loginForm" name="loginForm">
   <h2>Login</h2>
   <div class="input-holder">
-    <label for="email">ID</label>
+    <label for="email">Email</label>
     <input
-      formControlName="login"
-      type="text"
+      formControlName="email"
+      type="email"
     >
+      <div class="send-code" style="color:blue; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; z-index: 10;" (click)="sendVerificationCode()">
+          Send
+      </div>
   </div>
     <div class="input-holder">
-      <label for="password">Password</label>
+      <label for="code">Code</label>
       <input
-        formControlName="password"
-        type="password"
+        formControlName="code"
+        type="code"
       >
     </div>
     <div class="btn main" (click)="login()">
-      Login
+      Verify & Login
     </div>
   </form>
 </app-block>

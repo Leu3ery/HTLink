@@ -20,7 +20,7 @@ export class SearchBar {
   placeholder = input("Search...");
   value = model("")
 
-  filters = input<{label: string, options: any[]}[]>();
+  filters = input<{label: string, options: any[], multiple?: boolean}[]>();
 
   submit = output<SearchOutput>();
   filtersValues: {[key: string]: any} = {};
