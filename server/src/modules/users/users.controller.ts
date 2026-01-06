@@ -1,17 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { validationWrapper } from "../../common/utils/utils.wrappers";
-import { GetUsersSchema, LoginSchema, UpdateMeSchema } from "./users.dto";
+import { GetUsersSchema, UpdateMeSchema } from "./users.dto";
 import UsersService from "./users.service";
 import { ErrorWithStatus } from "../../common/middlewares/errorHandlerMiddleware";
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 class UsersController {
-	static async login(req: Request, res: Response, next: NextFunction) {
-		const dto = validationWrapper(LoginSchema, req.body || {})
-		const token = await UsersService.login(dto)
-		res.status(200).json({token: token})
-	}
-
 	static async updateMe(req: Request, res: Response, next: NextFunction) {
 		const userId = res.locals.user.userId
 		if (req.body.photo_path) throw new ErrorWithStatus(400, "photo_path is not allowed")

@@ -6,7 +6,7 @@ HTLink is an internal social network platform designed for connecting students a
 
 **The project consists of:**
 
-**Backend** – handles authentication, user management, project management, LDAP integration, and news administration.
+**Backend** – handles authentication, user management, project management, and news administration.
 
 **Frontend** – Angular-based web application providing a modern and intuitive user interface.
 
@@ -22,9 +22,9 @@ HTLink is an internal social network platform designed for connecting students a
 
 **Angular** – frontend framework
 
-**LDAP (ldapts)** – authentication for students via internal LDAP server
+**JWT** – token-based authentication
 
-**JWT** – authentication
+**Nodemailer** – email service for verification codes
 
 **Express Rate Limit** – API rate limiting
 
@@ -76,11 +76,10 @@ MONGO_URI_COMPOSE=mongodb://username:pass@mongodb:27017/dbname?authSource=admin
 MONGO_INITDB_ROOT_USERNAME=username
 MONGO_INITDB_ROOT_PASSWORD=pass
 
-# LDAP Configuration (for student authentication)
-LDAP_URL=your_ldap_server_url
-LDAP_BIND_DN=your_ldap_bind_dn
-LDAP_BIND_PW=your_ldap_bind_password
-LDAP_SEARCH_BASES=your_search_base1;your_search_base2
+EMAIL_TYPE=production
+RESEND_API_KEY=re_your_actual_api_key_here
+RESEND_FROM_EMAIL=onboarding@resend.dev
+# or dev for tests
 
 # CORS Configuration
 DOMEN=*
@@ -125,7 +124,9 @@ Make sure to create a `.env` file in the root directory with all required enviro
 
 ### ✅ Currently Implemented
 
-**LDAP Authentication:** Secure student login using internal LDAP server
+**Email-Based Authentication:** Secure user login with two methods:
+- Passwordless authentication via email verification code
+- Password-based authentication
 
 **User Profile:** Personal profile management and editing functionality
 
@@ -153,8 +154,11 @@ HTLink/
 │   │   │   ├── config.ts     # Environment configuration
 │   │   │   └── db.ts         # Database connection
 │   │   ├── modules/
+│   │   │   ├── authorisation/ # Authentication module
+│   │   │   │   ├── auth.controller.ts
+│   │   │   │   ├── auth.service.ts
+│   │   │   │   └── email/     # Email service for verification codes
 │   │   │   ├── users/        # User management module
-│   │   │   │   ├── authenticate.ts  # LDAP authentication service
 │   │   │   │   ├── users.controller.ts
 │   │   │   │   ├── users.service.ts
 │   │   │   │   └── users.model.ts
@@ -194,11 +198,16 @@ HTLink/
 
 ## 🔗 API Endpoints
 
-- `/api/` - Authentication endpoints (login via LDAP)
+- `/api/send-code` - Send verification code to email
+- `/api/verify-code` - Verify code and get JWT token
+- `/api/login` - Login with email and password
 - `/api/users` - User management endpoints
 - `/api/projects` - Project management endpoints
 - `/api/skills` - Skills endpoints
 - `/api/categories` - Categories endpoints
+- `/api/offers` - Offers/marketplace endpoints
+
+For detailed API documentation, see the `/server/docs/` directory.
 
 ## 🧪 Testing
 
@@ -213,11 +222,16 @@ Integration tests are located in the `server/tests/` directory.
 
 ## 🔒 Security
 
-- **JWT token authentication** for protected routes
-- **Rate limiting** to prevent API abuse (100 requests per minute)
+- **JWT token authentication** for protected routes (14-day token expiration)
+- **Rate limiting** on authentication endpoints to prevent abuse:
+  - Send code: 3 requests per 15 minutes
+  - Verify code: 5 requests per 15 minutes
+  - Login: 10 requests per 15 minutes
 - **CORS configuration** for secure cross-origin requests
-- **LDAP authentication** for secure student login
+- **Email verification** with cryptographically secure codes (SHA-256 hashing)
+- **Password hashing** using bcrypt for secure storage
 - **Input validation** using Joi schemas
+- **Code expiration** (20 minutes) and attempt limiting (5 attempts per code)
 
 ## 📊 Development Status
 
@@ -225,7 +239,9 @@ Integration tests are located in the `server/tests/` directory.
 
 **Current implementation status:**
 
-✅ **Authentication** - LDAP-based authentication for students is fully implemented and functional
+✅ **Authentication** - Email-based authentication system is fully implemented with two methods:
+- Passwordless login via verification code
+- Traditional login with email and password
 
 ✅ **User Profile** - Personal profile management, viewing, and editing features are complete
 
@@ -254,4 +270,12 @@ Deployment images:
 
 - The application automatically initializes skills and categories on server startup
 - Public files (images) are served from the `/public` directory
-- LDAP search bases can be configured as semicolon-separated values for multiple search bases
+- Email format for authentication: `firstname.lastname@htlstp.at`
+- Verification codes are valid for 20 minutes with maximum 5 attempts
+- JWT tokens are valid for 14 days
+- Comprehensive API documentation is available in `/server/docs/`:
+  - `auth.docs.md` - Authentication endpoints
+  - `users.docs.md` - User management
+  - `offers.docs.md` - Offers/marketplace
+  - `skills.docs.md` - Skills management
+  - `categories.docs.md` - Categories management

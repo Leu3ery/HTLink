@@ -19,7 +19,7 @@ import {ProjectPreviewCardDto} from "../src/modules/projects/dto/project.preview
 
 let projectId: string
 let mongo: MongoMemoryServer;
-const pc_number = "20220467"
+const testUserMail = "test.user@htlstp.at"
 let id: string
 let token: string
 
@@ -120,7 +120,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
     const user = await User.create({
-        pc_number: pc_number,
+        mail: testUserMail,
         first_name: "Test",
         last_name: "User",
     });
@@ -540,7 +540,7 @@ describe("Delete project (DELETE /:id)", () => {
         await ensureProjectExists(base);
 
         const anotherUser = await User.create({
-            pc_number: "20220999",
+            mail: "forbidden.user@htlstp.at",
             first_name: "Another",
             last_name: "User",
         });
@@ -744,7 +744,7 @@ describe("Get projects by owner ID (GET /api/users/:id/projects)", () => {
 
         // Create another user
         const anotherUser = await User.create({
-            pc_number: "20220888",
+            mail: "another.user@htlstp.at",
             first_name: "Another",
             last_name: "User",
         });

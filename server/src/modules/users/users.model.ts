@@ -29,9 +29,9 @@ export interface IUser {
   linkedin_link?: string | null;
   banner_link?: string | null;
   created_at?: Date;
-  pc_number: string;
   skills?: Types.ObjectId[];
   mail?: string | null;
+  password?: string | null;
 }
 
 export const userSchema = new Schema<IUser>(
@@ -101,11 +101,6 @@ export const userSchema = new Schema<IUser>(
       type: Date,
       default: Date.now,
     },
-    pc_number: {
-      type: String,
-      unique: true,
-      required: true
-    },
     skills: {
       type: [Schema.Types.ObjectId],
       ref: "Skill",
@@ -115,7 +110,12 @@ export const userSchema = new Schema<IUser>(
       type: String,
       required: false,
       default: null,
-    }
+    },
+    password: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   { versionKey: false }
 );

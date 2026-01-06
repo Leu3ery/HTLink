@@ -15,7 +15,7 @@ import deleteFile from "../src/common/utils/utils.deleteFile";
 
 let offerId: string;
 let mongo: MongoMemoryServer;
-const pc_number = "20220467";
+const testUserMail = "test.user@htlstp.at";
 let id: string;
 let token: string;
 let skillIds: string[] = [];
@@ -110,7 +110,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
     const user = await User.create({
-        pc_number: pc_number,
+        mail: testUserMail,
         first_name: "Test",
         last_name: "User",
     });
@@ -464,7 +464,7 @@ describe("Get my offers (GET /api/offers/my)", () => {
 
         // Create another user
         const anotherUser = await User.create({
-            pc_number: "20220888",
+            mail: "another.user@htlstp.at",
             first_name: "Another",
             last_name: "User",
         });
@@ -614,7 +614,7 @@ describe("Update offer (PATCH /api/offers/:id)", () => {
         await ensureOfferExists(base);
 
         const anotherUser = await User.create({
-            pc_number: "20220999",
+            mail: "forbidden.user@htlstp.at",
             first_name: "Another",
             last_name: "User",
         });
@@ -731,7 +731,7 @@ describe("Delete offer (DELETE /api/offers/:id)", () => {
         await ensureOfferExists(base);
 
         const anotherUser = await User.create({
-            pc_number: "20220999",
+            mail: "forbidden2.user@htlstp.at",
             first_name: "Another",
             last_name: "User",
         });

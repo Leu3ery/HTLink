@@ -7,6 +7,7 @@ const config = {
   },
   testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
+  setupFiles: ['<rootDir>/jest.setup.js'],
 };
 
 module.exports = config;

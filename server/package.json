@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "NODE_ENV=test jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@jest/test-sequencer": "^30.2.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.4",
     "@types/jest": "^30.0.0",
     "@types/mongodb": "^4.0.6",
@@ -34,12 +36,14 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mongoose": "^5.11.96",
     "@types/multer": "^2.0.0",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "express-rate-limit": "^8.1.0",
     "joi": "^18.0.1",
     "jsonwebtoken": "^9.0.2",
     "ldapts": "^8.0.9",
     "mongoose": "^8.19.2",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "resend": "^6.6.0"
   }
 }
