@@ -4,6 +4,7 @@ import {SearchProjects} from '@app/pages/projects/search-projects/search-project
 import {MyProjects} from '@app/pages/projects/my-projects/my-projects';
 import {MorePagesComponent} from '@app/pages/main/more-pages-component/more-pages-component';
 import {Marketplace} from '@app/pages/marketplace/marketplace';
+import {MyOffers} from '@app/pages/marketplace/my-offers/my-offers';
 import ProjectRoutes from '@app/pages/projects/project/project.routes';
 import {Profile} from '@app/pages/profile/profile';
 import {Feed} from '@app/pages/feed/feed';
@@ -46,7 +47,19 @@ export const routes: Routes = [
       },
       {
         path: 'marketplace',
-        component: Marketplace,
+        children: [
+          {
+            path: '',
+            component: Marketplace,
+            pathMatch: 'full',
+          },
+          {
+            path: 'my',
+            component: MyOffers,
+            canActivate: [AuthGuard],
+            pathMatch: 'full',
+          },
+        ],
       },
       {
         path: 'news',

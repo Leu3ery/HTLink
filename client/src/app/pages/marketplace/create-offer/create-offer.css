@@ -1,0 +1,318 @@
+:host {
+  display: block;
+  width: 60vh;
+  height: 80vh;
+  background: var(--bg-color);
+  border-radius: 2rem;
+  overflow: hidden;
+}
+
+.step {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.step > .header {
+  position: relative;
+  width: 100%;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 1.5rem;
+}
+
+.step > .content {
+  width: 100%;
+  height: calc(100% - 4rem);
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  overflow: auto;
+}
+
+.form-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+app-block {
+  padding: 1rem;
+  width: 100%;
+  height: auto;
+  min-height: fit-content;
+
+  .header {
+    height: 2rem;
+    align-items: center;
+    font-weight: 600;
+    background: var(--primary-color);
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+}
+
+.photo-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--secondary-color);
+
+  ng-icon {
+    color: var(--gray-color);
+  }
+
+  .select {
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--main-color);
+    color: var(--bg-color);
+    border-radius: 1rem;
+
+    label {
+      width: 100%;
+      height: 100%;
+      padding: 1rem 2rem;
+      cursor: pointer;
+    }
+  }
+}
+
+.photo-preview {
+  position: relative;
+  width: 100%;
+  max-height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 0.5rem;
+  }
+
+  .btn.delete {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.input-holder {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  input {
+    padding: 0.75rem 1rem;
+    border: none;
+    outline: none;
+    border-radius: 2rem;
+    font-size: 0.85rem;
+    background: transparent;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: 2px solid var(--main-color);
+    }
+
+    &::placeholder {
+      color: var(--gray-color);
+    }
+  }
+}
+
+.add-skill {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.tags-holder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+
+  button {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &.danger {
+      background: #dc3545;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: #c82333;
+      }
+    }
+  }
+}
+
+.delete-confirm-modal {
+  padding: 2rem;
+  width: 400px;
+  max-width: 90vw;
+  text-align: center;
+
+  .modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    ng-icon {
+      color: #dc3545;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--text-color);
+    }
+  }
+
+  .modal-body {
+    margin-bottom: 2rem;
+
+    p {
+      margin: 0;
+      color: var(--gray-color);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    button {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      &.secondary {
+        background: var(--secondary-color);
+        color: var(--text-color);
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+
+      &.danger {
+        background: #dc3545;
+        color: white;
+
+        &:hover {
+          background: #c82333;
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  :host {
+    position: absolute;
+    bottom: 0;
+    border-radius: 2rem 2rem 0 0;
+    width: 100vw;
+    height: 90vh;
+  }
+
+  .step > .header {
+    font-size: 1.2rem;
+  }
+
+  .step > .content {
+    padding: 1rem;
+  }
+
+  .delete-confirm-modal {
+    width: 90vw;
+    padding: 1.5rem;
+  }
+}

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, Input, Output, ElementRef, OnInit} from '@angular/core';
+import {Component, EventEmitter, HostListener, HostBinding, Input, Output, ElementRef, OnInit} from '@angular/core';
 import {ClickOutsideDirective} from "@shared/utils/click-outside";
 import {NgIcon} from "@ng-icons/core";
 import {Icons} from "@core/types/icons.enum";
@@ -19,6 +19,9 @@ export interface SelectOption {
   ],
   templateUrl: './select.html',
   styleUrls: ['./select.css'],
+  host: {
+    '[class.open]': 'isOpen'
+  }
 })
 export class AppSelectComponent {
   @Input() options: SelectOption[] = [];

@@ -63,16 +63,37 @@ export enum NotificationType {
 
 export type OfferType = {
   id: string;
-  user: Partial<ProfileType>;
-  rating?: number;
-  category: {
-    id: string;
-    name: string;
-  };
   title: string;
   description: string;
-  price: number;
+  phoneNumber: string;
+  price?: number;
+  photo_path?: string;
+  skills: TagType[];
+  ownerId: {
+    id: string;
+    first_name: string | null;
+    last_name: string | null;
+    photo_path: string | null;
+    mail: string | null;
+  };
   createdAt: string;
-  updatedAt?: string;
-  tags: TagType[];
+  updatedAt: string;
+}
+
+export type CreateOfferData = {
+  title: string;
+  description: string;
+  phoneNumber: string;
+  price?: number;
+  skills: string[];
+  photo_path?: File;
+}
+
+export type UpdateOfferData = {
+  title?: string;
+  description?: string;
+  phoneNumber?: string;
+  price?: number;
+  skills?: string[];
+  photo_path?: File;
 }

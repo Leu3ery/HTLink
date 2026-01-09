@@ -1,0 +1,39 @@
+<div class="header">
+  <h2></h2>
+  <div class="btn create" (click)="openCreateModal()">
+    <ng-icon [name]="Icons.Plus"></ng-icon>
+  </div>
+</div>
+
+@if (isLoading) {
+  <div class="loading">Loading...</div>
+}
+@else if (myOffers.length === 0) {
+  <div class="empty">
+    <p>У вас поки немає офферів</p>
+    <button class="btn main" (click)="openCreateModal()">Створити перший офер</button>
+  </div>
+}
+@else {
+  <div class="offers-grid">
+    @for (offer of myOffers; track offer.id) {
+      <app-offer 
+        [data]="offer" 
+        [showEditButton]="true"
+        (edit)="openEditModal($event)">
+      </app-offer>
+    }
+  </div>
+}
+
+@if (isCreateModalOpen()) {
+  <app-modal (click)="isCreateModalOpen.set(false); editingOffer = undefined">
+    <app-create-offer 
+      [editOffer]="editingOffer"
+      (click)="eventPreventDefault($event)" 
+      (close)="onOfferCreated()"
+      (delete)="deleteOffer($event)">
+    </app-create-offer>
+  </app-modal>
+}
+

@@ -1,0 +1,151 @@
+<div class="step">
+  <div class="header">
+    {{ isEditMode ? 'Edit Offer' : 'Create New Offer' }}
+  </div>
+  <div class="content">
+    <form [formGroup]="offerForm" class="form-content">
+
+      <app-block>
+        <div class="header">
+          <h3>Photo</h3>
+        </div>
+        @if (!previewUrl) {
+          <div class="photo-upload">
+            <ng-icon [name]="Icons.Photo" size="4rem"></ng-icon>
+            <div class="select">
+              <label for="photo-input">Select Photo</label>
+              <input 
+                type="file" 
+                hidden 
+                id="photo-input" 
+                accept="image/*" 
+                (change)="onFileSelected($event)"
+              />
+            </div>
+          </div>
+        } @else {
+          <div class="photo-preview">
+            <img [src]="(isEditMode && !selectedFile) ? (previewUrl | img) : previewUrl" alt="Preview" />
+            <div class="btn delete" (click)="removeFile()">
+              <ng-icon [name]="Icons.Trash" size="1.5rem" color="red"></ng-icon>
+            </div>
+          </div>
+        }
+      </app-block>
+
+      <app-block>
+        <div class="header">
+          Info
+        </div>
+        <div class="input-holder">
+          <label for="title">Title</label>
+          <input 
+            id="title" 
+            formControlName="title" 
+            type="text" 
+            placeholder="e.g. Web Development Service"
+          />
+        </div>
+        <div class="input-holder">
+          <label for="description">Description</label>
+          <input 
+            id="description" 
+            formControlName="description" 
+            type="text" 
+            placeholder="Detailed description..."
+          />
+        </div>
+      </app-block>
+
+      <app-block>
+        <div class="header">
+          Contact
+        </div>
+        <div class="input-holder">
+          <label for="phoneNumber">Phone Number</label>
+          <input 
+            id="phoneNumber" 
+            formControlName="phoneNumber" 
+            type="tel" 
+            placeholder="+380123456789"
+          />
+        </div>
+        <div class="input-holder">
+          <label for="price">Price (optional)</label>
+          <input 
+            id="price" 
+            formControlName="price" 
+            type="number" 
+            placeholder="0"
+            min="0"
+          />
+        </div>
+      </app-block>
+
+      <app-block style="z-index: 99;">
+        <div class="header">
+          <h3>Skills</h3>
+        </div>
+        <div class="content">
+          <app-select 
+            value="" 
+            class="add-skill" 
+            (change)="addSkill($event)" 
+            [options]="toOptions(skills)"
+            placeholder="Select skills"
+          >
+          </app-select>
+          <div class="tags-holder">
+            @for (skill of offerForm.value.skills; track skill.id) {
+              <app-tag [removable]="true" (remove)="removeSkill(skill)">
+                {{skill.name}}
+              </app-tag>
+            }
+          </div>
+        </div>
+      </app-block>
+
+      <div class="btn-section">
+        @if (isEditMode) {
+          <button 
+            type="button" 
+            class="btn danger" 
+            [disabled]="isLoading"
+            (click)="showDeleteConfirmation()">
+            <ng-icon [name]="Icons.Trash"></ng-icon>
+            Delete
+          </button>
+        }
+        <button 
+          type="button" 
+          class="btn main" 
+          [disabled]="!offerForm.valid || isLoading"
+          (click)="createOffer()">
+          {{ isLoading ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Offer') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@if (showDeleteConfirm) {
+  <app-modal (click)="cancelDelete()">
+    <app-block (click)="stopPropagation($event)" class="delete-confirm-modal">
+      <div class="modal-header">
+        <ng-icon [name]="Icons.Trash" size="2rem"></ng-icon>
+        <h3>Delete Offer?</h3>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this offer? This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn secondary" (click)="cancelDelete()">Cancel</button>
+        <button class="btn danger" (click)="confirmDelete()">
+          <ng-icon [name]="Icons.Trash"></ng-icon>
+          Delete
+        </button>
+      </div>
+    </app-block>
+  </app-modal>
+}
+

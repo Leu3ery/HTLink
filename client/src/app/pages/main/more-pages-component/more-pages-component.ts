@@ -20,6 +20,7 @@ export class MorePagesComponent {
     [{ label: 'My Profile', path: '/profile', icon: Icons.User }],
     [
       { label: 'My Projects', path: '/projects/my', icon: Icons.Briefcase },
+      { label: 'My Offers', path: '/marketplace/my', icon: Icons.Marketplace },
       { label: 'News', path: '/news', icon: Icons.News },
       { label: 'Users', path: '/users', icon: Icons.Users },
       // { label: 'Chats (comming soon)', path: '/chats', icon: 'chats' },

@@ -43,8 +43,16 @@ export class Marketplace implements OnInit {
     });
   }
   onSearchSubmit(event: {value: string, filters: {[key: string]: any}}) {
-    this.filters = event.filters;
-    this.filters['title'] = event.value ?? undefined;
-    this.marketplaceService.fetchOffers(this.filters);
+    const filters: any = {};
+    
+    if (event.value) {
+      filters['title'] = event.value;
+    }
+    
+    if (event.filters['skills']) {
+      filters['skills'] = event.filters['skills'];
+    }
+    
+    this.marketplaceService.fetchOffers(filters);
   }
 }

@@ -1,35 +1,44 @@
 <app-block>
+    @if (showEditButton()) {
+        <div class="edit-icon" (click)="onEdit($event)">
+            <ng-icon [name]="Icons.Edit"></ng-icon>
+        </div>
+    }
     <div class="header">
-        <div class="avatar"><img [src]="(data().user.photo_path ?? '') | img" alt=""></div>
+        <div class="avatar"><img [src]="(data().ownerId.photo_path ?? '') | img" alt=""></div>
         <div class="info">
             <div class="name">
-                {{data().user.first_name}} {{data().user.last_name}}
+                {{ getCleanName() }}
             </div>
-        </div>
-        <div class="category">
-            <app-tag type="department">{{data().category.name}}</app-tag>
         </div>
     </div>
     <div class="body">
+        @if (data().photo_path) {
+            <div class="offer-image">
+                <img [src]="(data().photo_path ?? '') | img" alt="{{data().title}}">
+            </div>
+        }
         <div class="title">
             {{ data().title }}
         </div>
         <div class="description">
             {{
-                data().description.length > 70 ? data().description.slice(1, 70)+'...' : data().description.slice(1, 70)
+                data().description.length > 70 ? data().description.slice(0, 70)+'...' : data().description
             }}
         </div>
         <div class="tags">
-            @for (tag of data().tags; track tag.id) {
-                <app-tag type="class">{{ tag.name }}</app-tag>
+            @for (skill of data().skills; track skill.id) {
+                <app-tag type="class">{{ skill.name }}</app-tag>
             }
         </div>
     </div>
     <div class="footer">
-        <div class="price">
-            <p>Preis</p>
-            <h3>{{data().price | currency:'EUR':'symbol':'1.2-2'}}</h3>
-        </div>
+        @if (data().price) {
+            <div class="price">
+                <p>Preis</p>
+                <h3>{{data().price | currency:'EUR':'symbol':'1.2-2'}}</h3>
+            </div>
+        }
         <div class="btn main" (click)="modalOpen = true">
             Anfragen
         </div>
@@ -39,12 +48,24 @@
 <app-modal *ngIf="modalOpen" (click)="modalOpen=false">
     <app-block (click)="stopPropagation($event)" class="RequestOfferModal">
         <div class="header">
-            <h3>Anfrage für "{{data().title}}" senden</h3>
+            <h3>Contact</h3>
             <ng-icon class="btn close" (click)="modalOpen = false" [name]="Icons.Cross"></ng-icon>
         </div>
         <div class="body">
-            <ng-icon [name]="Icons.Email"></ng-icon>
-            <a [href]="`mailto:${data().user.mail}?subject=${`Anfrage%20zum%20${data().title}`}&body=`">{{ data().user.mail }}</a>
+            <div class="contact-item">
+                <ng-icon [name]="Icons.User"></ng-icon>
+                <span>{{ getCleanName() }}</span>
+            </div>
+            <div class="contact-item">
+                <ng-icon [name]="Icons.Email"></ng-icon>
+                <a [href]="'mailto:' + data().ownerId.mail + '?subject=Anfrage%20zum%20' + data().title">{{ data().ownerId.mail }}</a>
+            </div>
+            @if (data().phoneNumber) {
+                <div class="contact-item">
+                    <ng-icon [name]="Icons.Info"></ng-icon>
+                    <a [href]="'tel:' + data().phoneNumber">{{ data().phoneNumber }}</a>
+                </div>
+            }
         </div>
     </app-block>
 </app-modal>
