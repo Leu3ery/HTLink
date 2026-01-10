@@ -119,7 +119,7 @@
         <button 
           type="button" 
           class="btn main" 
-          [disabled]="!offerForm.valid || isLoading"
+          [disabled]="!offerForm.valid || isLoading || (isEditMode && !hasChanges())"
           (click)="createOffer()">
           {{ isLoading ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Offer') }}
         </button>

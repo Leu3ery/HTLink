@@ -49,7 +49,7 @@ export class MyOffers implements OnInit {
       this.editingOffer = undefined;
     } catch (error) {
       console.error('Error deleting offer:', error);
-      alert('Помилка при видаленні офера');
+      alert('Error deleting offer');
     }
   }
 

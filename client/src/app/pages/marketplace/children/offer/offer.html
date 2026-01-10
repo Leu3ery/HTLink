@@ -35,12 +35,12 @@
     <div class="footer">
         @if (data().price) {
             <div class="price">
-                <p>Preis</p>
+                <p>Price</p>
                 <h3>{{data().price | currency:'EUR':'symbol':'1.2-2'}}</h3>
             </div>
         }
         <div class="btn main" (click)="modalOpen = true">
-            Anfragen
+            Contact
         </div>
     </div>
 </app-block>
@@ -58,7 +58,7 @@
             </div>
             <div class="contact-item">
                 <ng-icon [name]="Icons.Email"></ng-icon>
-                <a [href]="'mailto:' + data().ownerId.mail + '?subject=Anfrage%20zum%20' + data().title">{{ data().ownerId.mail }}</a>
+                <a [href]="'mailto:' + data().ownerId.mail + '?subject=Inquiry%20about%20' + data().title">{{ data().ownerId.mail }}</a>
             </div>
             @if (data().phoneNumber) {
                 <div class="contact-item">

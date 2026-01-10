@@ -63,6 +63,14 @@ export class ProfileService {
         dataNew.append(key, data[key]);
       }
     }
+    
+    // Check if FormData is empty
+    const hasData = Array.from(dataNew.entries()).length > 0;
+    if (!hasData) {
+      this.notificationsService.addNotification('No changes to save', 3);
+      return Promise.resolve();
+    }
+    
     return firstValueFrom(this.http.patch('/api/users/me', dataNew)).then((response: any) => {
       this.notificationsService.addNotification('Profile updated successfully', 2);
       this.me$.set(response.user);

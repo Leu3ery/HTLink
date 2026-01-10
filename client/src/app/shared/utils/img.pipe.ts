@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { API_URL, DEFAULT_AVATAR_URL, isDevMode } from '@core/environment/config.constants';
+import { API_URL, DEFAULT_AVATAR_URL } from '@core/environment/config.constants';
 
 @Pipe({
   name: 'img',
@@ -12,7 +12,7 @@ export class ImgPipe implements PipeTransform {
     if (!value) {
       return DEFAULT_AVATAR_URL;
     }
-    return '/api/public/' + value;
+    return API_URL + '/api/public/' + value;
   }
 
   public transform(

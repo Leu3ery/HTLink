@@ -31,13 +31,6 @@ export class Offer {
   protected readonly Icons = Icons;
 
   constructor() {
-    // Log data when component initializes
-    setTimeout(() => {
-      console.log('Offer Data:', this.data());
-      console.log('Owner Info:', this.data().ownerId);
-      console.log('First Name:', this.data().ownerId.first_name);
-      console.log('Last Name:', this.data().ownerId.last_name);
-    }, 0);
   }
 
   getCleanName() {

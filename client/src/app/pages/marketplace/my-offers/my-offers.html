@@ -5,17 +5,16 @@
   </div>
 </div>
 
-@if (isLoading) {
-  <div class="loading">Loading...</div>
-}
-@else if (myOffers.length === 0) {
-  <div class="empty">
-    <p>У вас поки немає офферів</p>
-    <button class="btn main" (click)="openCreateModal()">Створити перший офер</button>
-  </div>
-}
-@else {
-  <div class="offers-grid">
+<div class="holder">
+  @if (isLoading) {
+    <div class="loading">Loading...</div>
+  }
+  @else if (myOffers.length === 0) {
+    <div class="empty">
+      <p>You don't have any offers yet</p>
+    </div>
+  }
+  @else {
     @for (offer of myOffers; track offer.id) {
       <app-offer 
         [data]="offer" 
@@ -23,8 +22,8 @@
         (edit)="openEditModal($event)">
       </app-offer>
     }
-  </div>
-}
+  }
+</div>
 
 @if (isCreateModalOpen()) {
   <app-modal (click)="isCreateModalOpen.set(false); editingOffer = undefined">

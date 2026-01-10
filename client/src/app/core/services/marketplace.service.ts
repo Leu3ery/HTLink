@@ -16,7 +16,7 @@ export class MarketplaceService {
    * @param filters - { title?: string, skills?: string[], offset?: number, limit?: number }
    */
   fetchOffers(filters: any){
-    this.http.get<{ offers: OfferType[]; }>(API_URL + "/offers", {params: filters})
+    this.http.get<{ offers: OfferType[]; }>(API_URL + "/api/offers", {params: filters})
       .subscribe((data) => {
         this.currOffers.set(data.offers);
         return data.offers;
@@ -32,7 +32,7 @@ export class MarketplaceService {
    */
   async getMyOffers(): Promise<OfferType[]> {
     const response = await firstValueFrom(
-      this.http.get<{ offers: OfferType[] }>(API_URL + "/offers/my")
+      this.http.get<{ offers: OfferType[] }>(API_URL + "/api/offers/my")
     );
     return response.offers;
   }
@@ -59,7 +59,7 @@ export class MarketplaceService {
     }
 
     return firstValueFrom(
-      this.http.post<{ offer: OfferType }>(API_URL + "/offers", formData)
+      this.http.post<{ offer: OfferType }>(API_URL + "/api/offers", formData)
     );
   }
 
@@ -69,6 +69,11 @@ export class MarketplaceService {
    * @param data - Updated offer data
    */
   async updateOffer(id: string, data: UpdateOfferData): Promise<{ offer: OfferType }> {
+    // Check if data object is empty
+    if (Object.keys(data).length === 0) {
+      throw new Error('No data to update');
+    }
+    
     const formData = new FormData();
     
     if (data.title) formData.append('title', data.title);
@@ -83,7 +88,7 @@ export class MarketplaceService {
     }
 
     return firstValueFrom(
-      this.http.patch<{ offer: OfferType }>(API_URL + `/offers/${id}`, formData)
+      this.http.patch<{ offer: OfferType }>(API_URL + `/api/offers/${id}`, formData)
     );
   }
 
@@ -93,7 +98,7 @@ export class MarketplaceService {
    */
   async deleteOffer(id: string): Promise<{ offer: OfferType }> {
     return firstValueFrom(
-      this.http.delete<{ offer: OfferType }>(API_URL + `/offers/${id}`)
+      this.http.delete<{ offer: OfferType }>(API_URL + `/api/offers/${id}`)
     );
   }
 }

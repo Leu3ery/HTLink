@@ -40,6 +40,7 @@ export class CreateOffer implements OnInit {
   isLoading = false;
   isEditMode = false;
   showDeleteConfirm = false;
+  initialFormValue: any = null;
 
   offerForm = new FormGroup({
     title: new FormControl('', [
@@ -71,6 +72,16 @@ export class CreateOffer implements OnInit {
         price: this.editOffer.price || null,
         skills: this.editOffer.skills
       });
+      
+      // Save initial form values for comparison
+      this.initialFormValue = {
+        title: this.editOffer.title,
+        description: this.editOffer.description,
+        phoneNumber: this.editOffer.phoneNumber,
+        price: this.editOffer.price || null,
+        skills: this.editOffer.skills.map(s => s.id).sort(),
+        photo_path: this.editOffer.photo_path
+      };
     }
   }
 
@@ -117,6 +128,29 @@ export class CreateOffer implements OnInit {
     return items.map((i) => ({ label: i.name, value: i.id }));
   }
 
+  hasChanges(): boolean {
+    if (!this.isEditMode || !this.initialFormValue) {
+      return true; // For new offers, always allow submission
+    }
+
+    const currentValue = this.offerForm.value;
+    const currentSkills = (currentValue.skills || []).map((s: TagType) => s.id).sort();
+    
+    // Check if form values changed
+    const formChanged = 
+      currentValue.title !== this.initialFormValue.title ||
+      currentValue.description !== this.initialFormValue.description ||
+      currentValue.phoneNumber !== this.initialFormValue.phoneNumber ||
+      currentValue.price !== this.initialFormValue.price ||
+      JSON.stringify(currentSkills) !== JSON.stringify(this.initialFormValue.skills);
+    
+    // Check if photo changed (new file selected or photo removed)
+    const photoChanged = this.selectedFile !== null || 
+                        (this.previewUrl === null && this.initialFormValue.photo_path !== null);
+    
+    return formChanged || photoChanged;
+  }
+
   async createOffer() {
     if (this.offerForm.invalid) {
       Object.keys(this.offerForm.controls).forEach(key => {
@@ -130,19 +164,46 @@ export class CreateOffer implements OnInit {
 
     if (this.isLoading) return;
 
+    // Check if there are any changes
+    if (!this.hasChanges()) {
+      this.close.emit();
+      return;
+    }
+
     this.isLoading = true;
     const formValue = this.offerForm.value;
 
     try {
       if (this.isEditMode && this.editOffer) {
-        const data: UpdateOfferData = {
-          title: formValue.title!,
-          description: formValue.description!,
-          phoneNumber: formValue.phoneNumber!,
-          price: formValue.price ?? undefined,
-          skills: (formValue.skills || []).map((s) => s.id),
-          photo_path: this.selectedFile ?? undefined
-        };
+        const data: UpdateOfferData = {};
+        const currentSkills = (formValue.skills || []).map((s: TagType) => s.id).sort();
+        
+        // Only include fields that changed
+        if (formValue.title !== this.initialFormValue.title) {
+          data.title = formValue.title!;
+        }
+        if (formValue.description !== this.initialFormValue.description) {
+          data.description = formValue.description!;
+        }
+        if (formValue.phoneNumber !== this.initialFormValue.phoneNumber) {
+          data.phoneNumber = formValue.phoneNumber!;
+        }
+        if (formValue.price !== this.initialFormValue.price) {
+          data.price = formValue.price ?? undefined;
+        }
+        if (JSON.stringify(currentSkills) !== JSON.stringify(this.initialFormValue.skills)) {
+          data.skills = currentSkills;
+        }
+        if (this.selectedFile) {
+          data.photo_path = this.selectedFile;
+        }
+        
+        // Double check if there's any data to update
+        if (Object.keys(data).length === 0) {
+          this.close.emit();
+          return;
+        }
+        
         await this.marketplaceService.updateOffer(this.editOffer.id, data);
       } else {
         const data: CreateOfferData = {
